@@ -18,11 +18,12 @@ import {
   FaSpotify,
   FaSoundcloud,
   FaFacebook,
-  FaUserShield, FaBolt, FaTrophy, FaMedal, FaBug, FaServer, 
+  FaUserShield, FaBolt, FaTrophy, FaMedal, FaBug, FaServer,
   FaTree, FaMoon, FaCrown, FaUserSecret, FaGavel, FaLaptopCode,
   FaShieldAlt, FaGamepad, FaUserTie, FaSkullCrossbones, FaHeart,
   FaFire, FaChessQueen, FaGhost, FaRocket, FaCrosshairs, FaStar
 } from "react-icons/fa";
+import Views from "@/components/views";
 
 
 declare global {
@@ -41,7 +42,7 @@ const badgeIcons: Record<string, JSX.Element> = {
   "Support Team": <FaLaptopCode />,
   "Bug Hunter": <FaBug />,
   "Helper": <FaUserTie />,
-  
+
   // Rank Roles
   "OG": <FaBolt />,
   "Legendary": <FaFire />,
@@ -49,19 +50,19 @@ const badgeIcons: Record<string, JSX.Element> = {
   "Veteran": <FaSkullCrossbones />,
   "Server Booster": <FaServer />,
   "Top Contributor": <FaGavel />,
-  
+
   // Gaming Roles
   "Pro Gamer": <FaGamepad />,
   "Esports Champion": <FaTrophy />,
   "Speedrunner": <FaRocket />, // Replaced with rocket icon
   "Top Fragger": <FaCrosshairs />, // Now using the correct icon from Fa
-  
+
   // Event-Specific Badges
   "Christmas 2024": <FaTree />,
   "Ramzan Mubarak": <FaMoon />,
   "Halloween 2024": <FaGhost />,
   "Valentine's 2025": <FaHeart />,
-  
+
   // Achievement Badges
   "Winner": <FaTrophy />,
   "Second Place": <FaMedal />,
@@ -130,7 +131,7 @@ const UserPage = () => {
     fetchUser();
   }, [username]);
 
-  
+
 
   const incrementProfileViews = async (userId: string) => {
     await supabase
@@ -320,12 +321,12 @@ const UserPage = () => {
 
           {/* Badges */}
           <div className="flex justify-center mt-2 gap-2">
-  {userData?.badges?.map((badge: string, index: number) => (
-    <span key={index} className="text-sm bg-white/20 px-2 py-1 rounded-full flex items-center gap-1 text-white">
-      {badgeIcons[badge]} {badge}
-    </span>
-  ))}
-</div>
+            {userData?.badges?.map((badge: string, index: number) => (
+              <span key={index} className="text-sm bg-white/20 px-2 py-1 rounded-full flex items-center gap-1 text-white">
+                {badgeIcons[badge]} {badge}
+              </span>
+            ))}
+          </div>
 
 
           <p className=" text-white" style={{ textShadow: "0 0 15px white" }}>{userData?.bio}</p>

@@ -14,10 +14,10 @@ const Footer = () => {
         {/* Left Section */}
         <div className="mb-10 md:mb-0">
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            ⚔️ <span className="bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text">Sword.xd</span>
+            ⚔️ <span className="bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text">sword.lol</span>
           </h2>
           <p className="text-gray-400 mt-2 max-w-xs leading-relaxed">
-            Build customizable, feature-rich bio pages & host files securely with Sword.xd.
+            Build customizable, feature-rich bio pages & host files securely with sword.lol.
           </p>
 
           {/* Social Icons */}
@@ -37,7 +37,7 @@ const Footer = () => {
           </div>
 
           <p className="text-gray-500 text-xs mt-5">
-            © 2025 Sword.xd | All Rights Reserved.
+            © 2025 sword.lol | All Rights Reserved.
           </p>
         </div>
 

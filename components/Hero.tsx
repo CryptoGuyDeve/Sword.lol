@@ -66,7 +66,7 @@ const Hero = () => {
         transition={{ delay: 0.3, duration: 1 }}
         className="mt-5 text-lg md:text-2xl max-w-2xl text-gray-300"
       >
-        Sword.xd is your go-to for modern biolinks, custom profiles, and fast file hosting.
+        sword.lol is your go-to for modern biolinks, custom profiles, and fast file hosting.
         Unlock your digital identity now.
       </motion.p>
 
@@ -79,7 +79,7 @@ const Hero = () => {
       >
         <input
           type="text"
-          placeholder="sword.xd/username"
+          placeholder="sword.lol/username"
           className="px-6 py-4 w-72 md:w-96 rounded-full bg-[#121025] text-white outline-none border border-transparent focus:border-purple-500 transition duration-300 placeholder-gray-500"
         />
         <motion.button

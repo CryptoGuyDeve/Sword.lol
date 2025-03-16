@@ -57,7 +57,7 @@ const SecondHero = () => {
         transition={{ duration: 1 }}
         className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text"
       >
-        Over <span className="text-purple-400">1,000+</span> users trust sword.xd 🚀
+        Over <span className="text-purple-400">1,000+</span> users trust sword.lol 🚀
       </motion.h2>
 
       {/* Subtext */}
@@ -67,7 +67,7 @@ const SecondHero = () => {
         transition={{ delay: 0.3, duration: 1 }}
         className="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-gray-300"
       >
-        Build your modern biolink page, unlock exclusive profile layouts, and host files securely, all with sword.xd.
+        Build your modern biolink page, unlock exclusive profile layouts, and host files securely, all with sword.lol.
       </motion.p>
 
       {/* Stats Section */}
@@ -101,7 +101,7 @@ const SecondHero = () => {
       >
         <input
           type="text"
-          placeholder="sword.xd/username"
+          placeholder="sword.lol/username"
           className="px-5 py-4 w-72 md:w-96 rounded-full bg-[#121025] text-white outline-none border-2 border-transparent focus:border-purple-500 transition"
         />
         <Link href="/claim">

@@ -50,7 +50,7 @@ const ThirdHero = () => {
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
           className="text-gray-400 mt-4 leading-relaxed"
         >
-          Sword.xd delivers <span className="text-white font-medium">modern biolinks</span> and{" "}
+          sword.lol delivers <span className="text-white font-medium">modern biolinks</span> and{" "}
           <span className="text-white font-medium">blazing-fast file hosting</span> in one sleek platform.
         </motion.p>
 
@@ -66,7 +66,7 @@ const ThirdHero = () => {
             <input
               type="text"
               className="bg-transparent ml-3 outline-none w-64 placeholder-gray-500"
-              placeholder="sword.xd/username"
+              placeholder="sword.lol/username"
             />
           </div>
           <Link href={user ? `/account/${user.id}` : "/login"}>
