@@ -25,14 +25,11 @@ const Footer = () => {
             <a href="#" target="_blank" rel="noopener noreferrer">
               <Gamepad className="hover:text-white transition-all duration-300" size={22} />
             </a>
-            <a href="https://www.tiktok.com/@yourprofile" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.tiktok.com/@sward.lol" target="_blank" rel="noopener noreferrer">
               <FaTiktok className="hover:text-white transition-all duration-300" size={22} />
             </a>
-            <a href="https://discord.gg/yourserver" target="_blank" rel="noopener noreferrer">
+            <a href="https://discord.gg/pwQaFQuRpN" target="_blank" rel="noopener noreferrer">
               <FaDiscord className="hover:text-white transition-all duration-300" size={22} />
-            </a>
-            <a href="https://t.me/yourchannel" target="_blank" rel="noopener noreferrer">
-              <FaTelegramPlane className="hover:text-white transition-all duration-300" size={22} />
             </a>
           </div>
 
