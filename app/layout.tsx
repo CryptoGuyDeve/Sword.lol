@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "sward.xd",
+  title: "sward.lol",
   description: "A sleek and customizable user platform with live game status, social links, and personalized profiles.",
 };
 
