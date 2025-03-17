@@ -44,7 +44,6 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
               >
                 <Link href={`/account/${id}`} className="block hover:text-white">Overview</Link>
                 <Link href={`/account/${id}/badges`} className="block hover:text-white">Badges</Link>
-                <Link href={`/account/${id}/settings`} className="block hover:text-white">Settings</Link>
               </motion.div>
             )}
           </AnimatePresence>

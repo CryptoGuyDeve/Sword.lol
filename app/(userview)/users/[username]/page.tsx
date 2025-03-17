@@ -265,8 +265,9 @@ const UserPage = () => {
         <div className="absolute top-0 left-0 w-full h-full z-0">
           <div
             id="youtube-player"
-            className="w-full h-full absolute top-0 left-0 blur-[8px] opacity-60"
+            className="w-full h-full absolute top-0 left-0 blur-[8px] opacity-60 sm:blur-[4px]"
           ></div>
+
         </div>
       )}
 
@@ -303,7 +304,7 @@ const UserPage = () => {
       <div className="relative w-full min-h-screen flex items-center justify-center" style={{ perspective: "1000px" }}>
         <motion.div
           ref={cardRef}
-          className="relative z-10 p-8 rounded-xl bg-white/10 backdrop-blur-lg shadow-xl text-center border border-white/20"
+          className="relative z-10 p-8 rounded-xl bg-white/10 backdrop-blur-lg shadow-xl text-center border border-white/20 sm:p-4 sm:w-[90%] md:w-[60%] lg:w-[40%]"
           style={{
             transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
           }}
@@ -320,7 +321,7 @@ const UserPage = () => {
           </h2>
 
           {/* Badges */}
-          <div className="flex justify-center mt-2 gap-2">
+          <div className="flex flex-wrap justify-center mt-2 gap-2">
             {userData?.badges?.map((badge: string, index: number) => (
               <span key={index} className="text-sm bg-white/20 px-2 py-1 rounded-full flex items-center gap-1 text-white">
                 {badgeIcons[badge]} {badge}
