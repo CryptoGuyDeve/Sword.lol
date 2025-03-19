@@ -153,11 +153,12 @@ const SignupPage = () => {
               type="text"
               placeholder="your-username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value.replace(/\s+/g, ""))} // Removes spaces
               className="w-full bg-transparent py-1 px-2 focus:outline-none text-gray-300 placeholder-gray-500"
             />
           </div>
         </div>
+
 
         <div className="flex items-center gap-2 text-gray-400 text-sm mb-4">
           <input type="checkbox" checked={agree} onChange={() => setAgree(!agree)} />

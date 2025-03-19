@@ -13,6 +13,7 @@ const supabase = createClient(
 const Hero = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState(""); // Ensure input is controlled
   const router = useRouter();
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const Hero = () => {
 
   return (
     <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col items-center justify-center text-white text-center">
-
       {/* Subtle Animated Background */}
       <motion.div
         className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-900 via-black to-[#060012] opacity-50 blur-3xl"
@@ -54,7 +54,7 @@ const Hero = () => {
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
-        className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text tracking-tight drop-shadow-xl"
+        className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text tracking-tight drop-shadow-xl relative z-10"
       >
         Everything you want,<br /> right here.
       </motion.h1>
@@ -64,9 +64,9 @@ const Hero = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 1 }}
-        className="mt-5 text-lg md:text-2xl max-w-2xl text-gray-300"
+        className="mt-5 text-lg md:text-2xl max-w-2xl text-gray-300 relative z-10"
       >
-        sword.lol is your go-to for modern biolinks, custom profiles, and fast file hosting.
+        sward.lol is your go-to for modern biolinks, custom profiles, and fast file hosting.
         Unlock your digital identity now.
       </motion.p>
 
@@ -75,11 +75,13 @@ const Hero = () => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.6, duration: 0.8 }}
-        className="mt-8 flex flex-col md:flex-row items-center gap-4"
+        className="mt-8 flex flex-col md:flex-row items-center gap-4 relative z-10"
       >
         <input
           type="text"
-          placeholder="sword.lol/username"
+          placeholder="sward.lol/username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)} // Ensure input works
           className="px-6 py-4 w-72 md:w-96 rounded-full bg-[#121025] text-white outline-none border border-transparent focus:border-purple-500 transition duration-300 placeholder-gray-500"
         />
         <motion.button
