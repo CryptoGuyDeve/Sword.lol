@@ -62,7 +62,7 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-white mb-3">Contact</h3>
             <ul className="space-y-2">
-              <li><a href="https://discord.gg/yourserver" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-all">Discord Server</a></li>
+              <li><a href="https://discord.gg/pwQaFQuRpN" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-all">Discord Server</a></li>
               <li><a href="mailto:codeandmotion.business@gmail.com" className="hover:text-purple-400 transition-all">Support Email</a></li>
               <li><a href="mailto:m.faizurrehman.business@gmail.com" className="hover:text-purple-400 transition-all">Business Email</a></li>
             </ul>
