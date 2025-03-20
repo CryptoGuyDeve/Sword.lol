@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -13,7 +14,7 @@ const supabase = createClient(
 const Hero = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState(""); // Ensure input is controlled
+  const [username, setUsername] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const Hero = () => {
 
   const handleClick = () => {
     if (userId) {
-      router.push(/account/${userId});
+      router.push(`/account/${userId}`);
     } else {
       router.push("/signup");
     }
@@ -35,26 +36,39 @@ const Hero = () => {
 
   return (
     <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col items-center justify-center text-white text-center">
-      {/* Subtle Animated Background */}
+      {/* Animated Background */}
       <motion.div
         className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-900 via-black to-[#060012] opacity-50 blur-3xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.4, 0.2],
-        }}
+        animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 15, repeat: Infinity }}
       />
 
-      {/* Glowing Light Rings */}
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-purple-500 opacity-20 blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-500 opacity-10 blur-[120px] pointer-events-none" />
+      {/* Glowing Light Effects */}
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-purple-500 opacity-20 blur-[180px]" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-500 opacity-10 blur-[120px]" />
+
+      {/* Animated Dashboard Image */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        className="absolute top-20 md:top-32 w-[80%] max-w-4xl mx-auto"
+      >
+        <Image
+          src="/dashboard.png"
+          alt="Dashboard Preview"
+          width={1200}
+          height={600}
+          className="rounded-lg shadow-lg"
+        />
+      </motion.div>
 
       {/* Heading Text */}
       <motion.h1
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
-        className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text tracking-tight drop-shadow-xl relative z-10"
+        className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text tracking-tight drop-shadow-xl relative z-10 mt-[320px] md:mt-[400px]"
       >
         Everything you want,<br /> right here.
       </motion.h1>
@@ -81,7 +95,7 @@ const Hero = () => {
           type="text"
           placeholder="sward.lol/username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)} // Ensure input works
+          onChange={(e) => setUsername(e.target.value)}
           className="px-6 py-4 w-72 md:w-96 rounded-full bg-[#121025] text-white outline-none border border-transparent focus:border-purple-500 transition duration-300 placeholder-gray-500"
         />
         <motion.button
