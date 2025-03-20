@@ -47,22 +47,6 @@ const Hero = () => {
       <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-purple-500 opacity-20 blur-[180px]" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-500 opacity-10 blur-[120px]" />
 
-      {/* Animated Dashboard Image */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        className="absolute top-20 md:top-32 w-[80%] max-w-4xl mx-auto"
-      >
-        <Image
-          src="/dashboard.png"
-          alt="Dashboard Preview"
-          width={1200}
-          height={600}
-          className="rounded-lg shadow-lg"
-        />
-      </motion.div>
-
       {/* Heading Text */}
       <motion.h1
         initial={{ opacity: 0, y: -30 }}
