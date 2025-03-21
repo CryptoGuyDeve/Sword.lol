@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -35,42 +34,27 @@ const Hero = () => {
   };
 
   return (
-    <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col items-center justify-center text-white text-center">
+    <div className="relative h-screen w-full bg-black flex flex-col items-center justify-center text-white text-center overflow-hidden">
       {/* Animated Background */}
       <motion.div
-        className="absolute inset-0 w-full h-full bg-gradient-to-br from-purple-900 via-black to-[#060012] opacity-50 blur-3xl"
+        className="absolute inset-0 bg-gradient-to-r from-[#1a0033] via-black to-[#00001a] opacity-60 blur-3xl"
         animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-        transition={{ duration: 15, repeat: Infinity }}
+        transition={{ duration: 12, repeat: Infinity }}
       />
 
-      {/* Glowing Light Effects */}
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-purple-500 opacity-20 blur-[180px]" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-500 opacity-10 blur-[120px]" />
-
-      {/* Animated Dashboard Image */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        className="absolute top-20 md:top-32 w-[80%] max-w-4xl mx-auto"
-      >
-        <Image
-          src="/dashboard.png"
-          alt="Dashboard Preview"
-          width={1200}
-          height={600}
-          className="rounded-lg shadow-lg"
-        />
-      </motion.div>
+      {/* Glowing Effects */}
+      <div className="absolute -top-56 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-purple-500 opacity-30 blur-[200px]" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-500 opacity-20 blur-[150px]" />
+      <div className="absolute bottom-20 right-0 w-[400px] h-[400px] rounded-full bg-indigo-500 opacity-15 blur-[120px]" />
 
       {/* Heading Text */}
       <motion.h1
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
-        className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text tracking-tight drop-shadow-xl relative z-10 mt-[320px] md:mt-[400px]"
+        className="text-5xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-[#b517ff] via-[#6200ea] to-[#00bcd4] text-transparent bg-clip-text drop-shadow-xl relative z-10"
       >
-        Everything you want,<br /> right here.
+        Own Your Digital Identity
       </motion.h1>
 
       {/* Subtext */}
@@ -80,8 +64,8 @@ const Hero = () => {
         transition={{ delay: 0.3, duration: 1 }}
         className="mt-5 text-lg md:text-2xl max-w-2xl text-gray-300 relative z-10"
       >
-        sward.lol is your go-to for modern biolinks, custom profiles, and fast file hosting.
-        Unlock your digital identity now.
+        sward.lol is your ultimate platform for biolinks, custom profiles, and seamless file hosting.  
+        Take control of your online presence now.
       </motion.p>
 
       {/* Input and Button */}
@@ -96,19 +80,21 @@ const Hero = () => {
           placeholder="sward.lol/username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="px-6 py-4 w-72 md:w-96 rounded-full bg-[#121025] text-white outline-none border border-transparent focus:border-purple-500 transition duration-300 placeholder-gray-500"
+          className="px-6 py-4 w-72 md:w-96 rounded-full bg-[#121025] text-white outline-none border border-gray-700 focus:border-purple-500 transition duration-300 placeholder-gray-500 shadow-md"
         />
         <motion.button
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleClick}
-          className="bg-purple-600 hover:bg-purple-700 px-8 py-4 rounded-full font-semibold text-white transition-shadow shadow-md hover:shadow-purple-500/50"
+          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 px-8 py-4 rounded-full font-semibold text-white transition-all shadow-lg hover:shadow-purple-500/50"
         >
           {loading ? "Loading..." : "Claim Now"}
         </motion.button>
       </motion.div>
 
-      {/* Smooth Blur Merge Effect */}
+      {/* Animated Lines and Blur Effects */}
+      <div className="absolute top-1/2 -left-32 w-96 h-96 bg-gradient-to-b from-purple-500 to-transparent opacity-20 blur-[100px] rotate-45" />
+      <div className="absolute top-1/3 right-0 w-72 h-72 bg-gradient-to-b from-blue-500 to-transparent opacity-25 blur-[100px] rotate-45" />
       <div className="absolute bottom-0 left-0 w-full h-[200px] bg-gradient-to-b from-transparent to-black blur-2xl pointer-events-none" />
     </div>
   );

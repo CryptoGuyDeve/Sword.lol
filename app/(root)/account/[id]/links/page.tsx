@@ -4,7 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
-import { FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaEdit, FaTrash, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero,  FaAddressCard } from 'react-icons/fa';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,6 +20,18 @@ const socialPlatforms = [
   { name: 'TikTok', icon: <FaTiktok />, key: 'tiktok' },
   { name: 'Telegram', icon: <FaTelegram />, key: 'telegram' },
   { name: 'Discord', icon: <FaDiscord />, key: 'discord' },
+  { name: 'Kick', icon: <FaKickstarter />, key: 'kick' },
+  { name: 'Spotify', icon: <FaSpotify />, key: 'spotify' },
+  { name: 'SoundCloud', icon: <FaSoundcloud />, key: 'soundcloud' },
+  { name: 'Twitch', icon: <FaTwitch />, key: 'twitch' },
+  { name: 'Linkedin', icon: <FaLinkedin />, key: 'linkedin' },
+  { name: 'Steam', icon: <FaSteam />, key: 'steam' },
+  { name: 'Pinterest', icon: <FaPinterest />, key: 'pinterest' },
+  { name: 'Patreon', icon: <FaPatreon />, key: 'patreon' },
+  { name: 'Bitcoin', icon: <FaBitcoin />, key: 'bitcoin' },
+  { name: 'Ethereum', icon: <FaEthereum />, key: 'ethereum' },
+  { name: 'Monero', icon: <FaMonero />, key: 'monero' },
+  { name: 'Custom Url', icon: <FaAddressCard />, key: 'customurl' },
 ];
 
 const Links = () => {

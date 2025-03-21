@@ -21,7 +21,17 @@ import {
   FaUserShield, FaBolt, FaTrophy, FaMedal, FaBug, FaServer,
   FaTree, FaMoon, FaCrown, FaUserSecret, FaGavel, FaLaptopCode,
   FaShieldAlt, FaGamepad, FaUserTie, FaSkullCrossbones, FaHeart,
-  FaFire, FaChessQueen, FaGhost, FaRocket, FaCrosshairs, FaStar
+  FaFire, FaChessQueen, FaGhost, FaRocket, FaCrosshairs, FaStar,
+  FaKickstarter,
+  FaTwitch,
+  FaLinkedin,
+  FaSteam,
+  FaPinterest,
+  FaPatreon,
+  FaBitcoin,
+  FaEthereum,
+  FaMonero,
+  FaAddressCard
 } from "react-icons/fa";
 import Views from "@/components/views";
 
@@ -102,10 +112,20 @@ const UserPage = () => {
     tiktok: <FaTiktok />,
     telegram: <FaTelegram />,
     discord: <FaDiscord />,
+    kick: <FaKickstarter />,
     spotify: <FaSpotify />,
     soundcloud: <FaSoundcloud />,
-    facebook: <FaFacebook />,
+    twitch: <FaTwitch />,
+    linkedin: <FaLinkedin />,
+    steam: <FaSteam />,
+    pinterest: <FaPinterest />,
+    patreon: <FaPatreon />,
+    bitcoin: <FaBitcoin />,
+    ethereum: <FaEthereum />,
+    monero: <FaMonero />,
+    customurl: <FaAddressCard />,
   };
+  
 
   useEffect(() => {
     if (!username) return;
@@ -171,19 +191,25 @@ const UserPage = () => {
         playerVars: {
           autoplay: 1,
           loop: 1,
-          playlist: videoId,
-          mute: isMuted ? 1 : 0,
+          playlist: videoId, // Required for proper looping
+          mute: 0, // Start with sound
           controls: 0,
           disablekb: 1,
+          modestbranding: 1,
+          rel: 0,
+          showinfo: 0,
+          iv_load_policy: 3,
+          playsinline: 1,
         },
         events: {
           onReady: (event: any) => {
             event.target.setVolume(volume);
-            if (!isMuted) event.target.unMute();
+            event.target.unMute();
           },
           onStateChange: (event: any) => {
-            if (event.data === 2) {
-              setTimeout(() => event.target.playVideo(), 500);
+            if (event.data === window.YT.PlayerState.ENDED) {
+              event.target.seekTo(0); // Force loop restart
+              event.target.playVideo();
             }
           },
         },
@@ -203,6 +229,7 @@ const UserPage = () => {
       setIsMuted(!isMuted);
     }
   };
+
   const changeVolume = (newVolume: number) => {
     if (playerRef.current) {
       playerRef.current.setVolume(newVolume);
@@ -262,14 +289,24 @@ const UserPage = () => {
       onClick={handleScreenClick}
     >
       {userData?.background_video && (
-        <div className="absolute top-0 left-0 w-full h-full z-0">
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+          {/* YouTube Video Fullscreen */}
           <div
             id="youtube-player"
-            className="w-full h-full absolute top-0 left-0 blur-[8px] opacity-60 sm:blur-[4px]"
+            className="absolute inset-0 w-full h-full"
+            style={{
+              width: "100vw",
+              height: "56.25vw", // 16:9 Aspect Ratio
+              minHeight: "100vh",
+              minWidth: "177.78vh", // Ensures Full Coverage
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
           ></div>
-
         </div>
       )}
+
 
       <AnimatePresence>
         {isBlurred && (
@@ -302,46 +339,72 @@ const UserPage = () => {
       </motion.div>
 
       <div className="relative w-full min-h-screen flex items-center justify-center" style={{ perspective: "1000px" }}>
-        <motion.div
-          ref={cardRef}
-          className="relative z-10 p-8 rounded-xl bg-white/10 backdrop-blur-lg shadow-xl text-center border border-white/20 sm:p-4 sm:w-[90%] md:w-[60%] lg:w-[40%]"
-          style={{
-            transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        >
-          <img
-            src={userData?.profile_pic}
-            alt="Profile"
-            className="w-28 h-28 rounded-full mx-auto border-4 border-white/30 shadow-md"
-          />
-          <h2 className="text-4xl font-bold mt-4 text-white" style={{ textShadow: "0 0 15px white" }}>
-            {userData?.username}
-          </h2>
+  {/* Background Video */}
+  {userData?.background_video && (
+    <div className="absolute top-0 left-0 w-full h-full z-0">
+      <div
+        id="youtube-player"
+        className="w-full h-full absolute top-0 left-0 blur-[6px] opacity-50 sm:blur-[4px]"
+      ></div>
+    </div>
+  )}
 
-          {/* Badges */}
-          <div className="flex flex-wrap justify-center mt-2 gap-2">
-            {userData?.badges?.map((badge: string, index: number) => (
-              <span key={index} className="text-sm bg-white/20 px-2 py-1 rounded-full flex items-center gap-1 text-white">
-                {badgeIcons[badge]} {badge}
-              </span>
-            ))}
-          </div>
+  {/* Profile Card */}
+  <motion.div
+    ref={cardRef}
+    className="relative z-10 p-8 rounded-2xl bg-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] text-center border border-white/30 
+               sm:p-6 sm:w-[90%] md:w-[60%] lg:w-[40%] transition-all duration-300 hover:shadow-[0px_0px_40px_10px_rgba(255,255,255,0.2)]"
+    style={{
+      transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+    }}
+    onMouseMove={handleMouseMove}
+    onMouseLeave={handleMouseLeave}
+  >
+    {/* Profile Picture */}
+    <div className="relative">
+      <img
+        src={userData?.profile_pic}
+        alt="Profile"
+        className="w-28 h-28 rounded-full mx-auto border-[4px] border-white/40 shadow-md transition-transform duration-300 hover:scale-105"
+      />
+      <div className="absolute inset-0 rounded-full bg-white/20 blur-lg opacity-30"></div>
+    </div>
 
+    {/* Username */}
+    <h2 className="text-4xl font-bold mt-4 text-white tracking-wide drop-shadow-lg">
+      {userData?.username}
+    </h2>
 
-          <p className=" text-white" style={{ textShadow: "0 0 15px white" }}>{userData?.bio}</p>
-          {userData?.location && (
-            <div className="mt-4 flex items-center justify-center text-gray-400">
-              <FiMapPin className="mr-2 text-lg text-red-400" />
-              <span>{userData.location}</span>
-            </div>
-          )}
-          <div className="flex items-center justify-center gap-4 mt-6">
-            {renderSocialIcons(userData?.social_links)}
-          </div>
-        </motion.div>
+    {/* Badges */}
+    <div className="flex flex-wrap justify-center mt-2 gap-2">
+      {userData?.badges?.map((badge: string, index: number) => (
+        <span key={index} className="flex items-center gap-2 text-sm font-semibold px-3 py-1 
+                   bg-white/10 border border-white/30 rounded-full text-white shadow-md">
+          {badgeIcons[badge]} {badge}
+        </span>
+      ))}
+    </div>
+
+    {/* Bio */}
+    <p className="text-white text-lg mt-3 opacity-80">
+      {userData?.bio}
+    </p>
+
+    {/* Location */}
+    {userData?.location && (
+      <div className="mt-4 flex items-center justify-center text-gray-400">
+        <FiMapPin className="mr-2 text-lg text-red-400" />
+        <span>{userData.location}</span>
       </div>
+    )}
+
+    {/* Social Icons */}
+    <div className="flex items-center justify-center gap-5 mt-6">
+      {renderSocialIcons(userData?.social_links)}
+    </div>
+  </motion.div>
+</div>
+
     </div>
   );
 };

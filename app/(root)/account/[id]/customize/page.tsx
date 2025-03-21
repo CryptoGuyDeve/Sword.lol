@@ -72,6 +72,11 @@ const Customize = () => {
     }
   };
 
+  const formatPinterestURL = (url: string) => {
+    const match = url.match(/https:\/\/i\.pinimg\.com\/.*?\.(jpg|png|jpeg)/);
+    return match ? match[0] : url;
+  };
+
   return (
     <div className="flex bg-[#0e0e0e] min-h-screen text-white">
       <Sidebar id={id} username={username || "Loading..."} /> {/* ✅ No more error here */}
@@ -94,7 +99,7 @@ const Customize = () => {
             <input
               type="text"
               value={profilePic || ""}
-              onChange={(e) => setProfilePic(e.target.value)}
+              onChange={(e) => setProfilePic(formatPinterestURL(e.target.value))}
               className="w-full p-2 bg-black/50 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
               placeholder="Paste image URL here..."
             />
