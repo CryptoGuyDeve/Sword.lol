@@ -125,7 +125,7 @@ const UserPage = () => {
     monero: <FaMonero />,
     customurl: <FaAddressCard />,
   };
-  
+
 
   useEffect(() => {
     if (!username) return;
@@ -324,9 +324,10 @@ const UserPage = () => {
 
       <div className="absolute top-4 left-4 z-10 bg-black/50 p-3 rounded-lg">
         <button onClick={toggleMute} className="text-white text-3xl">
-          {isMuted ? <FiVolumeX /> : <FiVolume2 />}
+          {!isMuted ? <FiVolume2 /> : <FiVolumeX />}
         </button>
       </div>
+
 
       <motion.div
         className="absolute top-4 left-4 flex flex-col items-center bg-black/50 p-3 rounded-lg z-10"
@@ -339,71 +340,71 @@ const UserPage = () => {
       </motion.div>
 
       <div className="relative w-full min-h-screen flex items-center justify-center" style={{ perspective: "1000px" }}>
-  {/* Background Video */}
-  {userData?.background_video && (
-    <div className="absolute top-0 left-0 w-full h-full z-0">
-      <div
-        id="youtube-player"
-        className="w-full h-full absolute top-0 left-0 blur-[6px] opacity-50 sm:blur-[4px]"
-      ></div>
-    </div>
-  )}
+        {/* Background Video */}
+        {userData?.background_video && (
+          <div className="absolute top-0 left-0 w-full h-full z-0">
+            <div
+              id="youtube-player"
+              className="w-full h-full absolute top-0 left-0 blur-[6px] opacity-50 sm:blur-[4px]"
+            ></div>
+          </div>
+        )}
 
-  {/* Profile Card */}
-  <motion.div
-    ref={cardRef}
-    className="relative z-10 p-8 rounded-2xl bg-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] text-center border border-white/30 
+        {/* Profile Card */}
+        <motion.div
+          ref={cardRef}
+          className="relative z-10 p-8 rounded-2xl bg-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] text-center border border-white/30 
                sm:p-6 sm:w-[90%] md:w-[60%] lg:w-[40%] transition-all duration-300 hover:shadow-[0px_0px_40px_10px_rgba(255,255,255,0.2)]"
-    style={{
-      transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-    }}
-    onMouseMove={handleMouseMove}
-    onMouseLeave={handleMouseLeave}
-  >
-    {/* Profile Picture */}
-    <div className="relative">
-      <img
-        src={userData?.profile_pic}
-        alt="Profile"
-        className="w-28 h-28 rounded-full mx-auto border-[4px] border-white/40 shadow-md transition-transform duration-300 hover:scale-105"
-      />
-      <div className="absolute inset-0 rounded-full bg-white/20 blur-lg opacity-30"></div>
-    </div>
+          style={{
+            transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/* Profile Picture */}
+          <div className="relative">
+            <img
+              src={userData?.profile_pic}
+              alt="Profile"
+              className="w-28 h-28 rounded-full mx-auto border-[4px] border-white/40 shadow-md transition-transform duration-300 hover:scale-105"
+            />
+            <div className="absolute inset-0 rounded-full bg-white/20 blur-lg opacity-30"></div>
+          </div>
 
-    {/* Username */}
-    <h2 className="text-4xl font-bold mt-4 text-white tracking-wide drop-shadow-lg">
-      {userData?.username}
-    </h2>
+          {/* Username */}
+          <h2 className="text-4xl font-bold mt-4 text-white tracking-wide drop-shadow-lg">
+            {userData?.username}
+          </h2>
 
-    {/* Badges */}
-    <div className="flex flex-wrap justify-center mt-2 gap-2">
-      {userData?.badges?.map((badge: string, index: number) => (
-        <span key={index} className="flex items-center gap-2 text-sm font-semibold px-3 py-1 
+          {/* Badges */}
+          <div className="flex flex-wrap justify-center mt-2 gap-2">
+            {userData?.badges?.map((badge: string, index: number) => (
+              <span key={index} className="flex items-center gap-2 text-sm font-semibold px-3 py-1 
                    bg-white/10 border border-white/30 rounded-full text-white shadow-md">
-          {badgeIcons[badge]} {badge}
-        </span>
-      ))}
-    </div>
+                {badgeIcons[badge]} {badge}
+              </span>
+            ))}
+          </div>
 
-    {/* Bio */}
-    <p className="text-white text-lg mt-3 opacity-80">
-      {userData?.bio}
-    </p>
+          {/* Bio */}
+          <p className="text-white text-lg mt-3 opacity-80">
+            {userData?.bio}
+          </p>
 
-    {/* Location */}
-    {userData?.location && (
-      <div className="mt-4 flex items-center justify-center text-gray-400">
-        <FiMapPin className="mr-2 text-lg text-red-400" />
-        <span>{userData.location}</span>
+          {/* Location */}
+          {userData?.location && (
+            <div className="mt-4 flex items-center justify-center text-gray-400">
+              <FiMapPin className="mr-2 text-lg text-red-400" />
+              <span>{userData.location}</span>
+            </div>
+          )}
+
+          {/* Social Icons */}
+          <div className="flex items-center justify-center gap-5 mt-6">
+            {renderSocialIcons(userData?.social_links)}
+          </div>
+        </motion.div>
       </div>
-    )}
-
-    {/* Social Icons */}
-    <div className="flex items-center justify-center gap-5 mt-6">
-      {renderSocialIcons(userData?.social_links)}
-    </div>
-  </motion.div>
-</div>
 
     </div>
   );

@@ -43,7 +43,7 @@ const Page = () => {
         {/* Free Plan */}
         <div className="bg-[#121212] p-8 rounded-2xl w-full md:w-80 text-center">
           <h2 className="text-2xl font-semibold mb-4">Free</h2>
-          <p className="text-4xl font-bold mb-2">0€<span className="text-lg font-normal"> / Lifetime</span></p>
+          <p className="text-4xl font-bold mb-2">0$<span className="text-lg font-normal"> / Lifetime</span></p>
           <p className="text-gray-400 mb-6">For beginners, link all your socials in one place.</p>
           {renderFeatures(featuresFree)}
           <Button className='bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg w-full'>Get Started</Button>
@@ -55,7 +55,7 @@ const Page = () => {
             Most Popular
           </div>
           <h2 className="text-2xl font-semibold mb-4">💎 Premium</h2>
-          <p className="text-4xl font-bold mb-2">6,99€<span className="text-lg font-normal"> / Lifetime</span></p>
+          <p className="text-4xl font-bold mb-2">5$<span className="text-lg font-normal"> / Lifetime</span></p>
           <p className="text-gray-400 mb-6">Unlock your creativity & access advanced features.</p>
           {renderFeatures(featuresPremium)}
           <button className="bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg w-full">
