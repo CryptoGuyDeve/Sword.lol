@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@supabase/supabase-js";
+import { motion } from "framer-motion";
 
 // Supabase client setup
 const supabase = createClient(
@@ -70,22 +71,32 @@ const ExplorePage = () => {
       <Sidebar username={currentUser?.username || "Guest"} id={currentUser?.id || "0"} />
 
       {/* Main Content */}
-      <div className="flex-1 p-6">
-        <div className="max-w-4xl mx-auto">
+      <motion.div
+        className="flex-1 p-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="max-w-5xl mx-auto">
           <h1 className="text-4xl font-bold text-center mb-6 bg-gradient-to-r from-blue-400 to-purple-600 text-transparent bg-clip-text">
             Explore Users
           </h1>
 
           {/* Search Bar */}
-          <div className="mb-6">
+          <motion.div
+            className="relative mb-6"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
             <Input
               type="text"
               placeholder="Search users..."
-              className="w-full p-3 bg-black/50 border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 bg-black/40 border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-blue-500 transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-          </div>
+          </motion.div>
 
           {/* User List */}
           {loading ? (
@@ -95,12 +106,17 @@ const ExplorePage = () => {
                 .map((_, i) => (
                   <Skeleton
                     key={i}
-                    className="h-36 w-full bg-gray-800 rounded-lg"
+                    className="h-40 w-full bg-gray-800 rounded-lg"
                   />
                 ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            <motion.div
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
                   <Link
@@ -109,7 +125,10 @@ const ExplorePage = () => {
                     target="_blank"
                     className="block rounded-lg p-4 bg-black/50 border border-gray-800 shadow-lg transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   >
-                    <div className="flex flex-col items-center">
+                    <motion.div
+                      className="flex flex-col items-center glassmorphism-card p-4 rounded-lg"
+                      whileHover={{ scale: 1.05 }}
+                    >
                       <img
                         src={user.profile_pic}
                         alt={user.username}
@@ -119,16 +138,16 @@ const ExplorePage = () => {
                       <p className="text-xs text-gray-400 text-center mt-1">
                         {user.bio}
                       </p>
-                    </div>
+                    </motion.div>
                   </Link>
                 ))
               ) : (
-                <p className="text-center text-gray-400">No users found.</p>
+                <p className="text-center text-gray-400 col-span-full">No users found.</p>
               )}
-            </div>
+            </motion.div>
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

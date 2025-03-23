@@ -100,46 +100,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Icon */}
-        <button className="md:hidden text-gray-300" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <AiOutlineClose size={28} /> : <AiOutlineMenu size={28} />}
-        </button>
       </div>
-
-      {/* Mobile Dropdown */}
-      {isOpen && (
-        <div className="md:hidden mt-4 bg-black/90 backdrop-blur-lg p-4 rounded-lg space-y-4">
-          <Link href="https://discord.gg/pwQaFQuRpN" target="_blank" className="block text-gray-300 hover:text-white transition duration-300">
-            Discord
-          </Link>
-          <Link href="/pricing" className="block text-gray-300 hover:text-white transition duration-300">
-            Pricing
-          </Link>
-          <hr className="border-gray-700" />
-          {user ? (
-            <>
-              <Link href={`/account/${user.id}`} className="block text-gray-300 hover:text-white transition duration-300">
-                Account
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left text-red-400 hover:text-red-500 transition duration-300"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="block text-gray-300 hover:text-white transition duration-300">
-                Login
-              </Link>
-              <Link href="/signup" className="block text-blue-400 hover:text-blue-500 transition duration-300">
-                Sign Up
-              </Link>
-            </>
-          )}
-        </div>
-      )}
     </nav>
   );
 };

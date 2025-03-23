@@ -185,7 +185,7 @@ const UserPage = () => {
     const createPlayer = () => {
       const videoId = getVideoId(userData.background_video);
       if (!videoId) return;
-
+    
       playerRef.current = new window.YT.Player("youtube-player", {
         videoId,
         playerVars: {
@@ -206,18 +206,13 @@ const UserPage = () => {
             event.target.setVolume(volume);
             event.target.unMute();
           },
-          onStateChange: (event: any) => {
-            if (event.data === window.YT.PlayerState.ENDED) {
-              event.target.seekTo(0); // Force loop restart
-              event.target.playVideo();
-            }
-          },
         },
       });
     };
-
+    
     loadYouTubeAPI();
-  }, [userData?.background_video]);
+    }, [userData?.background_video]);
+    
 
   const toggleMute = () => {
     if (playerRef.current) {
