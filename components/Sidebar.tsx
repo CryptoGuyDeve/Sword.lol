@@ -75,7 +75,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
       {/* Profile Link */}
       <div className="mt-6">
         <Link
-          href={`/users/${username}`}
+          href={`/${username}`}
           className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition"
         >
           <HiExternalLink size={18} /> My Page

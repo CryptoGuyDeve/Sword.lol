@@ -121,7 +121,7 @@ const ExplorePage = () => {
                 filteredUsers.map((user) => (
                   <Link
                     key={user.id}
-                    href={`/users/${user.username}`}
+                    href={`/${user.username}`}
                     target="_blank"
                     className="block rounded-lg p-4 bg-black/50 border border-gray-800 shadow-lg transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   >
