@@ -63,7 +63,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
       {/* Discord Link */}
       <div className="mt-8">
         <a
-          href="https://discord.gg/pwQaFQuRpN"
+          href="https://discord.gg/GwFKb9NPvY"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 bg-[#5865F2] hover:opacity-90 text-white py-2 px-4 rounded-lg transition"

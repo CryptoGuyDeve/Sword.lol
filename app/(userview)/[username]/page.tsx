@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, JSX } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
-import { FiVolumeX, FiVolume2, FiMapPin } from "react-icons/fi";
+import { FiVolumeX, FiVolume2, FiMapPin, FiEye } from "react-icons/fi";
 
 import {
   FaYoutube,
@@ -82,8 +82,6 @@ const badgeIcons: Record<string, JSX.Element> = {
 };
 
 
-
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -101,6 +99,7 @@ const UserPage = () => {
   const cardRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
   const [isBlurred, setIsBlurred] = useState(true);
+  const [views, setViews] = useState(0);
   type SocialPlatform = keyof typeof socialIcons;
 
   const socialIcons = {
@@ -151,8 +150,6 @@ const UserPage = () => {
     fetchUser();
   }, [username]);
 
-
-
   const incrementProfileViews = async (userId: string) => {
     await supabase
       .from("users")
@@ -185,7 +182,7 @@ const UserPage = () => {
     const createPlayer = () => {
       const videoId = getVideoId(userData.background_video);
       if (!videoId) return;
-    
+
       playerRef.current = new window.YT.Player("youtube-player", {
         videoId,
         playerVars: {
@@ -209,10 +206,9 @@ const UserPage = () => {
         },
       });
     };
-    
+
     loadYouTubeAPI();
-    }, [userData?.background_video]);
-    
+  }, [userData?.background_video]);
 
   const toggleMute = () => {
     if (playerRef.current) {
@@ -225,14 +221,19 @@ const UserPage = () => {
     }
   };
 
-  const changeVolume = (newVolume: number) => {
-    if (playerRef.current) {
-      playerRef.current.setVolume(newVolume);
-      setVolume(newVolume);
-      if (newVolume === 0) setIsMuted(true);
-      else setIsMuted(false);
-    }
-  };
+  useEffect(() => {
+    if (!userData?.id) return; // Ensure user has a valid ID
+
+    const storageKey = `page_views_${userData.id}`; // Unique key for each user
+    let count = parseInt(localStorage.getItem(storageKey) || "0");
+
+    count += 1; // Increment the count
+
+    localStorage.setItem(storageKey, count.toString()); // Save new count
+    setViews(count); // Update state
+  }, [userData?.id]);
+
+
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const card = cardRef.current;
@@ -302,7 +303,6 @@ const UserPage = () => {
         </div>
       )}
 
-
       <AnimatePresence>
         {isBlurred && (
           <motion.div
@@ -322,7 +322,6 @@ const UserPage = () => {
           {!isMuted ? <FiVolume2 /> : <FiVolumeX />}
         </button>
       </div>
-
 
       <motion.div
         className="absolute top-4 left-4 flex flex-col items-center bg-black/50 p-3 rounded-lg z-10"
@@ -348,59 +347,75 @@ const UserPage = () => {
         {/* Profile Card */}
         <motion.div
           ref={cardRef}
-          className="relative z-10 p-8 rounded-2xl bg-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] text-center border border-white/30 
-               sm:p-6 sm:w-[90%] md:w-[60%] lg:w-[40%] transition-all duration-300 hover:shadow-[0px_0px_40px_10px_rgba(255,255,255,0.2)]"
+          className="relative z-10 p-6 sm:p-8 rounded-3xl bg-white/10 backdrop-blur-3xl 
+             shadow-[0_4px_40px_rgba(255,255,255,0.3)] border border-white/20 
+             text-center transition-all duration-500 hover:scale-105 
+             w-[95%] max-w-[380px] sm:max-w-[450px] md:max-w-[500px] lg:max-w-[600px]"
           style={{
             transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
           }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          {/* Profile Picture */}
-          <div className="relative">
+          {/* Floating Soft Glow */}
+          <div className="absolute inset-0 w-full h-full rounded-3xl bg-white/10 blur-[120px] opacity-30"></div>
+
+          {/* Profile Picture with 3D Glow */}
+          <div className="relative flex justify-center">
+            <div className="absolute inset-0 w-32 h-32 sm:w-36 sm:h-36 bg-white/20 blur-3xl opacity-50 rounded-full animate-pulse"></div>
             <img
               src={userData?.profile_pic}
               alt="Profile"
-              className="w-28 h-28 rounded-full mx-auto border-[4px] border-white/40 shadow-md transition-transform duration-300 hover:scale-105"
+              className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full border-[5px] border-white/50 
+                 shadow-lg transition-transform duration-300 
+                 hover:scale-110 hover:border-white/70"
             />
-            <div className="absolute inset-0 rounded-full bg-white/20 blur-lg opacity-30"></div>
           </div>
 
-          {/* Username */}
-          <h2 className="text-4xl font-bold mt-4 text-white tracking-wide drop-shadow-lg">
+          {/* Username with Elegant Glow */}
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mt-5 bg-gradient-to-r from-white to-gray-300 
+                 text-transparent bg-clip-text tracking-wide drop-shadow-2xl leading-tight">
             {userData?.username}
           </h2>
 
-          {/* Badges */}
-          <div className="flex flex-wrap justify-center mt-2 gap-2">
+          {/* Badges Section with Hover Effects */}
+          <div className="flex flex-wrap justify-center mt-3 gap-2 sm:gap-3">
             {userData?.badges?.map((badge: string, index: number) => (
-              <span key={index} className="flex items-center gap-2 text-sm font-semibold px-3 py-1 
-                   bg-white/10 border border-white/30 rounded-full text-white shadow-md">
+              <span
+                key={index}
+                className="flex items-center gap-2 text-xs sm:text-sm md:text-md font-semibold px-4 py-1 sm:px-5 sm:py-2 
+                 bg-white/10 border border-white/30 rounded-full text-white shadow-lg 
+                 transition-all duration-500 hover:bg-white/20 hover:shadow-xl hover:scale-105"
+              >
                 {badgeIcons[badge]} {badge}
               </span>
             ))}
           </div>
 
-          {/* Bio */}
-          <p className="text-white text-lg mt-3 opacity-80">
-            {userData?.bio}
+          {/* Bio Section - Emotional & Engaging */}
+          <p className="text-white text-sm sm:text-lg md:text-xl mt-3 opacity-90 tracking-wide leading-relaxed italic">
+            "{userData?.bio}"
           </p>
 
-          {/* Location */}
+          {/* Location with Floating Glow Effect */}
           {userData?.location && (
-            <div className="mt-4 flex items-center justify-center text-gray-400">
-              <FiMapPin className="mr-2 text-lg text-red-400" />
-              <span>{userData.location}</span>
+            <div className="mt-5 flex items-center justify-center text-gray-300">
+              <FiMapPin className="mr-2 text-lg sm:text-xl md:text-2xl text-red-400 animate-bounce" />
+              <span className="text-sm sm:text-lg md:text-xl font-medium">{userData.location}</span>
             </div>
           )}
 
-          {/* Social Icons */}
-          <div className="flex items-center justify-center gap-5 mt-6">
+          {/* Social Icons with Smooth Glow & Tap Effects */}
+          <div className="flex items-center justify-center gap-5 sm:gap-6 mt-6">
             {renderSocialIcons(userData?.social_links)}
+          </div>
+
+          <div className="absolute bottom-4 left-4 flex items-center gap-1 text-white/70 text-sm sm:text-md md:text-lg font-semibold">
+            <FiEye className="text-white text-lg sm:text-xl md:text-2xl animate-pulse" />
+            <span>{views}</span>
           </div>
         </motion.div>
       </div>
-
     </div>
   );
 };
