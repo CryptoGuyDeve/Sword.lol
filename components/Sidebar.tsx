@@ -58,6 +58,9 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
         <Link href={`/account/${id}/explore`} className="block py-3 hover:text-purple-400 transition">
           Explore
         </Link>
+        <Link href={`/account/getviews`} className="block py-3 hover:text-purple-400 transition">
+          Get Views
+        </Link>
       </nav>
 
       {/* Discord Link */}
