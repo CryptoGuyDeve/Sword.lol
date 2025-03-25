@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "sward.lol",
-  description: "A sleek and customizable user platform with live game status, social links, and personalized profiles.",
+  description:
+    "A sleek and customizable user platform with live game status, social links, and personalized profiles.",
 };
 
 export default function RootLayout({
@@ -28,6 +29,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4258781057309417"
+          crossOrigin="anonymous"
+        ></script>
+
+        {/* Google Ads Tracking */}
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=AW-11480288079"
