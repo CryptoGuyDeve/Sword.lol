@@ -14,7 +14,7 @@ const stats = [
 const plans = [
   {
     title: "Free",
-    price: "0€ / Lifetime",
+    price: "0$ / Lifetime",
     description: "For beginners, link all your socials in one place.",
     features: ["Basic Customization", "Basic Effects", "Add Your Socials"],
     link: "/get-started",
@@ -24,7 +24,7 @@ const plans = [
   },
   {
     title: "Premium",
-    price: "6,99€ / Lifetime",
+    price: "4,00$ / Lifetime",
     description: "Unlock full customization & exclusive features.",
     features: [
       "Exclusive Badge",
@@ -36,7 +36,7 @@ const plans = [
       "Metadata & SEO Customization",
     ],
     link: "/premium",
-    button: "Its Not working Right Now. U can use everything free.",
+    button: "Get Started",
     bgColor: "bg-[#2b1a3a]",
     border: "border border-purple-500 relative",
     badge: "Most Popular",
