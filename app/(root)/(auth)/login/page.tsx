@@ -116,7 +116,7 @@ const LoginPage = () => {
         </motion.button>
          {/* Sign Up Link */}
          <p className="text-sm text-center text-gray-400 mt-6">
-          Are you new to <span className="text-purple-400">sward.xd</span>?{" "}
+          Are you new to <span className="text-purple-400">sward.lol</span>?{" "}
           <Link href="/signup" className="text-purple-500 hover:text-purple-400">
             Create an account
           </Link>
