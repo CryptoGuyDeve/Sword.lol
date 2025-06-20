@@ -47,6 +47,18 @@ const SecondHero = () => {
   return (
     <div className="relative bg-black text-white py-20 px-6 text-center overflow-hidden">
 
+      {/* Animated Background */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-[#1a0033] via-black to-[#00001a] opacity-60 blur-3xl"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+              transition={{ duration: 12, repeat: Infinity }}
+            />
+      
+            {/* Glowing Effects */}
+            {/* <div className="absolute -top-56 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-purple-500 opacity-30 blur-[200px]" /> */}
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-500 opacity-20 blur-[150px]" />
+            <div className="absolute bottom-20 right-0 w-[400px] h-[400px] rounded-full bg-indigo-500 opacity-15 blur-[120px]" />
+
       {/* Subtle Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-purple-800/10 via-transparent to-black opacity-50 blur-[200px]" />
 

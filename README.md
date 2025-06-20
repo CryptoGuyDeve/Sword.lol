@@ -35,3 +35,10 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 # Sword.lol
+
+## Dependencies
+
+- recharts (for charts)
+- papaparse (for CSV export)
+- bowser (for device/browser analytics)
+- @hello-pangea/dnd (for drag-and-drop widgets)

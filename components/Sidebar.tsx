@@ -61,6 +61,12 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
         <Link href={`/account/getviews`} className="block py-3 hover:text-purple-400 transition">
           Get Views
         </Link>
+        <Link href="/leaderboard" className="sidebar-link">
+          <span className="inline-flex items-center gap-2">
+            <svg width="18" height="18" fill="currentColor" className="text-yellow-400"><use href="#icon-crown" /></svg>
+            Leaderboard
+          </span>
+        </Link>
       </nav>
 
       {/* Discord Link */}

@@ -5,6 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiVolumeX, FiVolume2, FiMapPin, FiEye } from "react-icons/fi";
+import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import { FaUserPlus, FaUserCheck, FaUsers } from "react-icons/fa";
+import Link from "next/link";
+import Bowser from "bowser";
 
 import {
   FaYoutube,
@@ -100,6 +104,15 @@ const UserPage = () => {
   const playerRef = useRef<any>(null);
   const [isBlurred, setIsBlurred] = useState(true);
   const [views, setViews] = useState(0);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followersModal, setFollowersModal] = useState(false);
+  const [followingModal, setFollowingModal] = useState(false);
+  const [followersList, setFollowersList] = useState<any[]>([]);
+  const [followingList, setFollowingList] = useState<any[]>([]);
+  const [followLoading, setFollowLoading] = useState(false);
   type SocialPlatform = keyof typeof socialIcons;
 
   const socialIcons = {
@@ -221,19 +234,180 @@ const UserPage = () => {
     }
   };
 
+  // Add persistent view logging and counting with analytics fields
   useEffect(() => {
-    if (!userData?.id) return; // Ensure user has a valid ID
+    if (!userData?.id) return;
 
-    const storageKey = `page_views_${userData.id}`; // Unique key for each user
-    let count = parseInt(localStorage.getItem(storageKey) || "0");
+    let sessionStart = Date.now();
+    let didLogView = false;
 
-    count += 1; // Increment the count
+    const logAndFetchViews = async () => {
+      // Get current user (viewer)
+      const { data: sessionData } = await supabase.auth.getSession();
+      const viewerId = sessionData.session?.user?.id || null;
 
-    localStorage.setItem(storageKey, count.toString()); // Save new count
-    setViews(count); // Update state
+      // Prevent self-views
+      if (viewerId === userData.id) return;
+
+      // Only one view per day per user
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const { data: existing } = await supabase
+        .from("profile_views")
+        .select("id")
+        .eq("user_id", userData.id)
+        .eq("viewer_id", viewerId)
+        .gte("viewed_at", today.toISOString())
+        .single();
+
+      if (!existing) {
+        // Get country via geo-IP API
+        let country = "Unknown";
+        try {
+          const res = await fetch("https://ipapi.co/json/");
+          const geo = await res.json();
+          country = geo.country_name || geo.country || "Unknown";
+        } catch {}
+        // Parse device/browser
+        const browser = Bowser.getParser(window.navigator.userAgent);
+        const device = browser.getPlatformType(true) || "Unknown";
+        const browserName = browser.getBrowserName() || "Unknown";
+        // Insert view (session_duration will be updated on unmount)
+        await supabase.from("profile_views").insert({
+          user_id: userData.id,
+          viewer_id: viewerId,
+          country,
+          device,
+          browser: browserName,
+          session_duration: 0,
+        });
+        didLogView = true;
+      }
+
+      // Fetch total views
+      const { count } = await supabase
+        .from("profile_views")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userData.id);
+      setViews(count || 0);
+    };
+
+    logAndFetchViews();
+
+    // On unmount, update session_duration
+    return () => {
+      if (!didLogView || !userData?.id) return;
+      const sessionEnd = Date.now();
+      const duration = Math.floor((sessionEnd - sessionStart) / 1000); // seconds
+      // TODO: Create the update_last_profile_view_duration function in Supabase
+      if (supabase.rpc) {
+        supabase.rpc("update_last_profile_view_duration", {
+          user_id: userData.id,
+          viewer_id: currentUser?.id || null,
+          duration,
+        }).catch(() => {});
+      }
+    };
   }, [userData?.id]);
 
+  // Fetch current user
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) return;
+      const userId = sessionData.session.user.id;
+      const { data: userData } = await supabase
+        .from("users")
+        .select("id, username")
+        .eq("id", userId)
+        .single();
+      setCurrentUser(userData);
+    };
+    fetchCurrentUser();
+  }, []);
 
+  // Fetch follow status and counts
+  useEffect(() => {
+    if (!userData?.id || !currentUser?.id) return;
+    const fetchFollowData = async () => {
+      // Check if following
+      const { data: followData } = await supabase
+        .from("follows")
+        .select("id")
+        .eq("follower_id", currentUser.id)
+        .eq("following_id", userData.id)
+        .single();
+      setIsFollowing(!!followData);
+      // Followers count
+      const { count: followers } = await supabase
+        .from("follows")
+        .select("id", { count: "exact", head: true })
+        .eq("following_id", userData.id);
+      setFollowersCount(followers || 0);
+      // Following count
+      const { count: following } = await supabase
+        .from("follows")
+        .select("id", { count: "exact", head: true })
+        .eq("follower_id", userData.id);
+      setFollowingCount(following || 0);
+    };
+    fetchFollowData();
+  }, [userData?.id, currentUser?.id]);
+
+  // Fetch followers/following lists for modals
+  const fetchFollowersList = async () => {
+    const { data } = await supabase
+      .from("follows")
+      .select("follower_id, users:follower_id(id, username, profile_pic)")
+      .eq("following_id", userData.id);
+    setFollowersList((data || []).map((f: any) => f.users));
+  };
+  const fetchFollowingList = async () => {
+    const { data } = await supabase
+      .from("follows")
+      .select("following_id, users:following_id(id, username, profile_pic)")
+      .eq("follower_id", userData.id);
+    setFollowingList((data || []).map((f: any) => f.users));
+  };
+
+  // Follow/Unfollow logic
+  const handleFollow = async () => {
+    if (!currentUser?.id) {
+      alert("You must be logged in to follow users.");
+      return;
+    }
+    if (!userData?.id) return;
+    if (currentUser.id === userData.id) {
+      alert("You cannot follow yourself.");
+      return;
+    }
+    setFollowLoading(true);
+    try {
+      if (isFollowing) {
+        // Unfollow
+        await supabase
+          .from("follows")
+          .delete()
+          .eq("follower_id", currentUser.id)
+          .eq("following_id", userData.id);
+        setIsFollowing(false);
+        setFollowersCount((c) => c - 1);
+      } else {
+        // Follow
+        const { error } = await supabase
+          .from("follows")
+          .insert({ follower_id: currentUser.id, following_id: userData.id });
+        if (error && error.code !== "23505") { // 23505: unique violation
+          alert("Error following user: " + error.message);
+        } else {
+          setIsFollowing(true);
+          setFollowersCount((c) => c + 1);
+        }
+      }
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const card = cardRef.current;
@@ -377,6 +551,86 @@ const UserPage = () => {
                  text-transparent bg-clip-text tracking-wide drop-shadow-2xl leading-tight">
             {userData?.username}
           </h2>
+
+          {/* Follow/Unfollow Button & Counts */}
+          {currentUser && currentUser.id !== userData?.id && (
+            <div className="flex flex-col items-center mt-4 mb-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleFollow}
+                className={`px-6 py-2 rounded-full font-semibold shadow-lg transition-all duration-300 
+                  ${isFollowing ? "bg-gradient-to-r from-green-400 to-blue-500 text-white" : "bg-gradient-to-r from-purple-500 to-pink-500 text-white"}
+                  glassmorphism-btn border border-white/20 backdrop-blur-xl`}
+                disabled={followLoading}
+              >
+                {followLoading ? (
+                  <span className="flex items-center gap-2 animate-pulse">Processing...</span>
+                ) : isFollowing ? (
+                  <span className="flex items-center gap-2"><FaUserCheck /> Following</span>
+                ) : (
+                  <span className="flex items-center gap-2"><FaUserPlus /> Follow</span>
+                )}
+              </motion.button>
+              <div className="flex gap-6 mt-3">
+                <button
+                  className="flex items-center gap-1 text-white/80 hover:text-white/100 transition text-sm"
+                  onClick={() => { setFollowersModal(true); fetchFollowersList(); }}
+                >
+                  <FaUsers className="mr-1" /> {followersCount} Followers
+                </button>
+                <button
+                  className="flex items-center gap-1 text-white/80 hover:text-white/100 transition text-sm"
+                  onClick={() => { setFollowingModal(true); fetchFollowingList(); }}
+                >
+                  <FaUsers className="mr-1" /> {followingCount} Following
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Followers Modal */}
+          {followersModal && (
+            <AlertDialog open={followersModal} onOpenChange={setFollowersModal}>
+              <AlertDialogContent className="bg-white dark:bg-[#18181b] rounded-2xl p-6 w-full max-w-md shadow-2xl">
+                <h3 className="text-lg font-bold mb-4 text-center">Followers</h3>
+                <div className="max-h-60 overflow-y-auto">
+                  {followersList.length === 0 ? (
+                    <p className="text-center text-gray-400">No followers yet.</p>
+                  ) : (
+                    followersList.map((user) => (
+                      <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition">
+                        <img src={user.profile_pic} alt={user.username} className="w-8 h-8 rounded-full" />
+                        <span className="text-blue-500 hover:underline">{user.username}</span>
+                      </Link>
+                    ))
+                  )}
+                </div>
+                <button onClick={() => setFollowersModal(false)} className="mt-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg">Close</button>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          {/* Following Modal */}
+          {followingModal && (
+            <AlertDialog open={followingModal} onOpenChange={setFollowingModal}>
+              <AlertDialogContent className="bg-white dark:bg-[#18181b] rounded-2xl p-6 w-full max-w-md shadow-2xl">
+                <h3 className="text-lg font-bold mb-4 text-center">Following</h3>
+                <div className="max-h-60 overflow-y-auto">
+                  {followingList.length === 0 ? (
+                    <p className="text-center text-gray-400">Not following anyone yet.</p>
+                  ) : (
+                    followingList.map((user) => (
+                      <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition">
+                        <img src={user.profile_pic} alt={user.username} className="w-8 h-8 rounded-full" />
+                        <span className="text-blue-500 hover:underline">{user.username}</span>
+                      </Link>
+                    ))
+                  )}
+                </div>
+                <button onClick={() => setFollowingModal(false)} className="mt-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg">Close</button>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
 
           {/* Badges Section with Hover Effects */}
           <div className="flex flex-wrap justify-center mt-3 gap-2 sm:gap-3">
