@@ -124,7 +124,7 @@ const AccountPage = () => {
       setLoading(true);
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("username, id, profile_views")
+        .select("username, id, profile_views, profile_pic")
         .eq("id", id)
         .single();
 
@@ -440,185 +440,144 @@ const AccountPage = () => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className={`flex min-h-screen text-white ${theme === 'dark' ? 'bg-[#0e0e0e]' : 'bg-white text-black'}`}>
+    <div className={`flex min-h-screen text-white relative overflow-x-hidden ${theme === 'dark' ? 'bg-[#0e0e0e]' : 'bg-white text-black'}`}>
+      {/* Animated Background */}
+      <motion.div
+        className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-900/30 via-black to-blue-900/30 blur-2xl opacity-80 animate-pulse"
+        animate={{ opacity: [0.7, 1, 0.7] }}
+        transition={{ duration: 10, repeat: Infinity }}
+      />
       <Sidebar username={userData.username} id={userData.id} />
+
+      {/* Floating Action Button */}
+      <motion.button
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-8 right-8 z-40 bg-gradient-to-r from-purple-500 to-blue-500 text-white p-5 rounded-full shadow-2xl hover:shadow-purple-500/30 transition-all flex items-center gap-2 text-lg font-bold"
+        onClick={() => router.push(`/account/${userData.id}/customize`)}
+        title="Quick Customize"
+      >
+        <FaUserEdit className="text-white text-2xl" />
+      </motion.button>
 
       {/* Main Content */}
       <motion.main
-        className="flex-1 p-8"
+        className="flex-1 p-8 md:p-14 relative z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-          Account Overview
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-10 bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text drop-shadow-lg">
+          Dashboard Overview
         </h2>
 
         {/* Filter Controls & Dark/Light Toggle */}
-        <div className="flex flex-wrap gap-4 mb-8 items-center">
-          <select className="bg-black/40 border border-gray-700 rounded-md px-4 py-2 text-white" value={dateRange} onChange={e => setDateRange(e.target.value as any)}>
+        <div className="flex flex-wrap gap-4 mb-10 items-center">
+          <select className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition" value={dateRange} onChange={e => setDateRange(e.target.value as any)}>
             <option value="7">Last 7 Days</option>
             <option value="30">Last 30 Days</option>
             <option value="all">All Time</option>
           </select>
-          <select className="bg-black/40 border border-gray-700 rounded-md px-4 py-2 text-white">
+          <select className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition">
             <option>All Devices</option>
             <option>Desktop</option>
             <option>Mobile</option>
           </select>
-          <select className="bg-black/40 border border-gray-700 rounded-md px-4 py-2 text-white">
+          <select className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition">
             <option>All Countries</option>
-            {/* Dynamically fill with countries */}
           </select>
-          <button className="ml-auto bg-black/40 border border-gray-700 rounded-md px-4 py-2 text-white" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          <button className="ml-auto bg-gradient-to-r from-purple-500 to-blue-500 px-5 py-2 rounded-full text-white font-semibold shadow-lg hover:from-purple-600 hover:to-blue-600 transition" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
             Toggle {theme === 'dark' ? 'Light' : 'Dark'}
           </button>
-          <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md text-white" onClick={() => {/* CSV Export logic */}}>Export CSV</button>
+          <button className="bg-gradient-to-r from-pink-500 to-purple-500 px-5 py-2 rounded-full text-white font-semibold shadow-lg hover:from-pink-600 hover:to-purple-600 transition" onClick={() => {/* CSV Export logic */}}>Export CSV</button>
         </div>
 
-        {/* Real-Time Analytics & Health Score */}
-        <div className="flex flex-wrap gap-6 mb-8">
-          <div className="bg-black/30 dark:bg-black/30 light:bg-white/80 rounded-xl p-6 flex flex-col items-center min-w-[180px]">
-            <span className="text-2xl font-bold text-green-400">{realTimeViewers}</span>
-            <span className="text-xs text-gray-400 mt-1">Live Viewers</span>
-          </div>
-          <div className="bg-black/30 dark:bg-black/30 light:bg-white/80 rounded-xl p-6 flex flex-col items-center min-w-[180px]">
-            <span className="text-2xl font-bold text-blue-400">{getHealthScore(analytics)}%</span>
-            <span className="text-xs text-gray-400 mt-1">Profile Health Score</span>
-          </div>
-          {/* Milestone Badges */}
-          <div className="flex flex-wrap gap-3 items-center">
-            {milestoneList.map(milestone => {
-              const achieved = (milestone.key === 'views' && analytics.totalViews >= milestone.value) || (milestone.key === 'followers' && analytics.followers >= milestone.value);
-              return (
-                <span key={milestone.label} className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${achieved ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none shadow-lg' : 'bg-black/20 text-gray-400 border-gray-600'} transition`}>
-                  {milestone.icon} {milestone.label}
-                  {achieved && (
-                    <>
-                      <FaMedal className="ml-1 text-yellow-400 animate-bounce" />
-                      <button
-                        className="ml-2 px-2 py-1 rounded bg-purple-700 hover:bg-purple-800 text-white text-xs flex items-center gap-1"
-                        onClick={() => handleShareBadge(milestone)}
-                      >
-                        <FaShareAlt /> Share
-                      </button>
-                      {shareSuccess === milestone.label && (
-                        <span className="ml-2 text-green-300 animate-pulse">Copied!</span>
-                      )}
-                    </>
-                  )}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Profile Score Breakdown */}
-        <div className="mt-8 bg-black/20 rounded-xl p-6">
-          <h4 className="text-lg font-bold mb-3 text-purple-300">Profile Health Score Breakdown</h4>
-          <ul className="list-disc pl-6 text-sm text-gray-200 space-y-1">
-            <li><span className="font-semibold text-purple-400">Views:</span> {analytics.totalViews} / 10,000 ({Math.round(Math.min(analytics.totalViews / 10000, 1) * 100)}%)</li>
-            <li><span className="font-semibold text-green-400">Followers:</span> {analytics.followers} / 1,000 ({Math.round(Math.min(analytics.followers / 1000, 1) * 100)}%)</li>
-            <li><span className="font-semibold text-blue-400">Unique Visitors:</span> {analytics.uniqueVisitors} / 5,000 ({Math.round(Math.min(analytics.uniqueVisitors / 5000, 1) * 100)}%)</li>
-          </ul>
-          <div className="mt-4 text-sm text-gray-300">
-            <span className="font-bold text-pink-400">Tips to improve:</span>
-            <ul className="list-disc pl-6 mt-1 space-y-1">
-              <li>Share your profile on social media to get more views.</li>
-              <li>Engage with your followers and encourage them to follow you back.</li>
-              <li>Add more social links and keep your profile updated for higher engagement.</li>
-              <li>Unlock more badges by reaching new milestones!</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Username Card */}
-          <motion.div
-            className="glassmorphism-card w-full md:max-w-md p-6 rounded-xl"
-            whileHover={{ scale: 1.02 }}
-          >
-            <p className="text-lg mb-4 flex items-center gap-2">
-              <FaUserEdit className="text-purple-400" /> Username: {userData.username}
-            </p>
-            <input
-              type="text"
-              placeholder="Enter new username"
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              className="w-full p-3 rounded-md bg-black/50 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-            <button
-              onClick={handleUsernameChange}
-              className="mt-4 w-full bg-purple-600 hover:bg-purple-700 py-2 rounded-md transition"
-            >
-              Update Username
-            </button>
-          </motion.div>
-
-          {/* Analytics Card */}
-          <motion.div
-            className="glassmorphism-card w-full md:w-96 p-6 text-center rounded-xl flex flex-col gap-6"
-            whileHover={{ scale: 1.05 }}
-          >
-            <h3 className="text-xl font-semibold mb-4 text-gray-300">
-              <FaEye className="inline-block text-purple-400 mr-2" /> Profile Analytics
+        {/* Profile Card */}
+        <motion.div
+          className="w-full max-w-3xl mx-auto mb-12 p-8 rounded-3xl bg-gradient-to-br from-purple-900/60 via-black/60 to-blue-900/60 shadow-2xl flex flex-col md:flex-row items-center gap-8 backdrop-blur-xl border border-purple-500/20"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <img src={userData.profile_pic} alt={userData.username} className="w-28 h-28 rounded-full border-4 border-purple-500 shadow-lg object-cover" />
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text mb-2">
+              @{userData.username}
             </h3>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-black/30 rounded-lg p-4">
-                <div className="text-3xl font-bold text-purple-400">{analytics.totalViews}</div>
-                <div className="text-xs text-gray-400 mt-1">Total Views</div>
-              </div>
-              <div className="bg-black/30 rounded-lg p-4">
-                <div className="text-3xl font-bold text-blue-400">{analytics.uniqueVisitors}</div>
-                <div className="text-xs text-gray-400 mt-1">Unique Visitors</div>
-              </div>
-              <div className="bg-black/30 rounded-lg p-4">
-                <div className="text-3xl font-bold text-green-400">{analytics.followers}</div>
-                <div className="text-xs text-gray-400 mt-1">Followers</div>
-              </div>
-              <div className="bg-black/30 rounded-lg p-4">
-                <div className="text-3xl font-bold text-pink-400">{analytics.following}</div>
-                <div className="text-xs text-gray-400 mt-1">Following</div>
-              </div>
+            <div className="flex flex-wrap gap-4 justify-center md:justify-start mb-2">
+              <span className="px-4 py-2 rounded-full bg-white/10 text-purple-300 font-semibold text-sm shadow">{analytics.followers} Followers</span>
+              <span className="px-4 py-2 rounded-full bg-white/10 text-blue-300 font-semibold text-sm shadow">{analytics.totalViews} Views</span>
+              <span className="px-4 py-2 rounded-full bg-white/10 text-pink-300 font-semibold text-sm shadow">{analytics.uniqueVisitors} Unique</span>
             </div>
-            <div className="text-left mt-4">
-              <div className="font-semibold text-sm text-gray-300 mb-2 flex items-center gap-2"><FaUserPlus className="text-green-400" /> Recent Followers</div>
-              <div className="flex flex-wrap gap-3 mb-4">
-                {analytics.recentFollowers.length === 0 ? (
-                  <span className="text-xs text-gray-400">No recent followers.</span>
-                ) : (
-                  analytics.recentFollowers.map((user) => (
-                    <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full hover:bg-purple-900/30 transition">
-                      <img src={user.profile_pic} alt={user.username} className="w-7 h-7 rounded-full" />
-                      <span className="text-xs text-blue-400">{user.username}</span>
-                    </Link>
-                  ))
-                )}
-              </div>
-              <div className="font-semibold text-sm text-gray-300 mb-2 flex items-center gap-2"><FaEye className="text-purple-400" /> Recent Viewers</div>
-              <div className="flex flex-wrap gap-3">
-                {analytics.recentViewers.length === 0 ? (
-                  <span className="text-xs text-gray-400">No recent viewers.</span>
-                ) : (
-                  analytics.recentViewers.map((user) => (
-                    <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-2 bg-black/20 px-3 py-1 rounded-full hover:bg-blue-900/30 transition">
-                      <img src={user.profile_pic} alt={user.username} className="w-7 h-7 rounded-full" />
-                      <span className="text-xs text-blue-400">{user.username}</span>
-                    </Link>
-                  ))
-                )}
-              </div>
-            </div>
+            <button
+              onClick={handleLogout}
+              className="mt-4 px-6 py-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold shadow hover:from-red-600 hover:to-pink-600 transition"
+            >
+              <FaSignOutAlt className="inline-block mr-2" /> Logout
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-12">
+          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-purple-700/40 to-purple-900/40 shadow-xl flex flex-col items-center gap-2">
+            <FaEye className="text-3xl text-purple-400 mb-2 animate-pulse" />
+            <span className="text-3xl font-bold text-purple-200">{analytics.totalViews}</span>
+            <span className="text-xs text-gray-300">Total Views</span>
           </motion.div>
+          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-blue-700/40 to-blue-900/40 shadow-xl flex flex-col items-center gap-2">
+            <FaUsers className="text-3xl text-blue-400 mb-2 animate-pulse" />
+            <span className="text-3xl font-bold text-blue-200">{analytics.uniqueVisitors}</span>
+            <span className="text-xs text-gray-300">Unique Visitors</span>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-green-700/40 to-green-900/40 shadow-xl flex flex-col items-center gap-2">
+            <FaUserPlus className="text-3xl text-green-400 mb-2 animate-pulse" />
+            <span className="text-3xl font-bold text-green-200">{analytics.followers}</span>
+            <span className="text-xs text-gray-300">Followers</span>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-pink-700/40 to-pink-900/40 shadow-xl flex flex-col items-center gap-2">
+            <FaFire className="text-3xl text-pink-400 mb-2 animate-pulse" />
+            <span className="text-3xl font-bold text-pink-200">{analytics.following}</span>
+            <span className="text-xs text-gray-300">Following</span>
+          </motion.div>
+        </div>
+
+        {/* Milestone Badges */}
+        <div className="flex flex-wrap gap-3 items-center mb-12">
+          {milestoneList.map(milestone => {
+            const achieved = (milestone.key === 'views' && analytics.totalViews >= milestone.value) || (milestone.key === 'followers' && analytics.followers >= milestone.value);
+            return (
+              <motion.span
+                key={milestone.label}
+                whileHover={{ scale: 1.08 }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border shadow transition-all ${achieved ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none shadow-lg' : 'bg-black/20 text-gray-400 border-gray-600'}`}
+              >
+                {milestone.icon} {milestone.label}
+                {achieved && (
+                  <>
+                    <FaMedal className="ml-1 text-yellow-400 animate-bounce" />
+                    <button
+                      className="ml-2 px-2 py-1 rounded-full bg-purple-700 hover:bg-purple-800 text-white text-xs flex items-center gap-1 shadow"
+                      onClick={() => handleShareBadge(milestone)}
+                    >
+                      <FaShareAlt /> Share
+                    </button>
+                    {shareSuccess === milestone.label && (
+                      <span className="ml-2 text-green-300 animate-pulse">Copied!</span>
+                    )}
+                  </>
+                )}
+              </motion.span>
+            );
+          })}
         </div>
 
         {/* Widget Picker */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-8">
           {defaultWidgets.map(w => (
             <button
               key={w.id}
-              className={`px-3 py-1 rounded-full text-xs font-semibold border ${widgetVisibility[w.id] ? 'bg-purple-600 text-white border-none' : 'bg-black/20 text-gray-400 border-gray-600'} transition`}
+              className={`px-4 py-2 rounded-full text-xs font-semibold border shadow transition-all ${widgetVisibility[w.id] ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-none' : 'bg-black/20 text-gray-400 border-gray-600'}`}
               onClick={() => toggleWidget(w.id)}
             >
               {widgetVisibility[w.id] ? 'Hide' : 'Show'} {w.label}
@@ -638,11 +597,12 @@ const AccountPage = () => {
                 {widgetOrder.filter(id => widgetVisibility[id]).map((id, idx) => (
                   <Draggable key={id} draggableId={id} index={idx}>
                     {(dragProvided) => (
-                      <div
+                      <motion.div
                         ref={dragProvided.innerRef}
                         {...dragProvided.draggableProps}
                         {...dragProvided.dragHandleProps}
-                        className="bg-black/30 rounded-xl p-6"
+                        className="bg-gradient-to-br from-black/40 to-purple-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
+                        whileHover={{ scale: 1.03 }}
                       >
                         {id === 'viewsOverTime' && (
                           <>
@@ -752,7 +712,7 @@ const AccountPage = () => {
                             </ResponsiveContainer>
                           </>
                         )}
-                      </div>
+                      </motion.div>
                     )}
                   </Draggable>
                 ))}
@@ -761,14 +721,6 @@ const AccountPage = () => {
             )}
           </Droppable>
         </DragDropContext>
-
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="mt-10 flex items-center gap-2 text-gray-300 hover:text-red-500 transition"
-        >
-          <FaSignOutAlt /> Logout
-        </button>
       </motion.main>
     </div>
   );
