@@ -1,16 +1,52 @@
 'use client'
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, HelpCircle, Sparkles } from "lucide-react";
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const faqs = [
-    { question: "How does our platform work?", answer: "Our platform allows users to create customizable bio pages, link socials, and securely store and share files." },
-    { question: "Is there a free plan available?", answer: "Yes! We offer a free plan with essential features, and a premium plan for those who want advanced customization." },
-    { question: "What features are included in the premium plan?", answer: "The premium plan includes exclusive badges, custom profile layouts, advanced effects, metadata SEO customization, and much more." },
-    { question: "How secure is our platform?", answer: "We use industry-leading encryption and security protocols to ensure your data and files remain safe and private." },
-    { question: "How long does it take to set up a profile?", answer: "Creating a profile takes only a few minutes! Just sign up, customize your page, and start sharing your links." },
+    {
+      question: "How does sword.lol work?",
+      answer: "sword.lol is an all-in-one platform that lets you create stunning bio pages, host files securely, and manage your online presence. Simply sign up, customize your profile, add your links, and share your unique sword.lol URL with the world.",
+      category: "Getting Started"
+    },
+    {
+      question: "Is there a free plan available?",
+      answer: "Absolutely! We offer a generous free plan with essential features including custom bio links, basic customization, social media integration, and 100MB file hosting. Perfect for getting started with your online presence.",
+      category: "Pricing"
+    },
+    {
+      question: "What features are included in the premium plan?",
+      answer: "Our premium plan unlocks exclusive features like advanced profile layouts, custom fonts & colors, typewriter animations, special effects, unlimited file hosting, priority support, custom domain support, and exclusive premium badges.",
+      category: "Premium Features"
+    },
+    {
+      question: "How secure is your platform?",
+      answer: "Security is our top priority. We use industry-leading encryption, secure file storage, regular security audits, and follow best practices to ensure your data and files remain completely safe and private.",
+      category: "Security"
+    },
+    {
+      question: "How long does it take to set up a profile?",
+      answer: "Creating your profile takes just a few minutes! Sign up, choose your username, customize your page with our intuitive tools, add your links, and you're ready to share your professional bio page.",
+      category: "Setup"
+    },
+    {
+      question: "Can I use my own domain?",
+      answer: "Yes! Premium users can connect their own custom domain to their sword.lol profile. This gives you a professional branded URL while keeping all the powerful features of our platform.",
+      category: "Customization"
+    },
+    {
+      question: "Do you offer analytics?",
+      answer: "Yes! All users get access to our analytics dashboard showing profile views, link clicks, visitor demographics, and more. Premium users get advanced analytics with detailed insights and export capabilities.",
+      category: "Analytics"
+    },
+    {
+      question: "What file types can I host?",
+      answer: "We support all major file types including images, videos, documents, music, and more. Free users get 100MB storage, while premium users enjoy unlimited file hosting with no restrictions.",
+      category: "File Hosting"
+    }
   ];
 
   const toggleFAQ = (index: number) => {
@@ -18,43 +54,145 @@ const FAQ = () => {
   };
 
   return (
-    <div className="bg-black text-white py-16 px-6 text-center">
+    <div className="relative bg-black text-white py-20 px-6 overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/5 via-black to-blue-900/5" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
 
-      
-      <h2 className="text-2xl md:text-3xl font-bold mb-10">Frequently Asked Questions</h2>
-      <div className="max-w-3xl mx-auto space-y-3">
-        {faqs.map((faq, index) => (
+      <div className="max-w-4xl mx-auto relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
           <motion.div
-            key={index}
-            className={`rounded-lg overflow-hidden ${openIndex === index ? 'bg-[#1a1a1a] border border-blue-500 shadow-blue-500/20' : 'bg-[#121212]'}`}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
           >
-            <motion.button
-              className="w-full text-left px-5 py-4 flex justify-between items-center focus:outline-none hover:bg-[#1a1a1a] transition-all duration-300"
-              onClick={() => toggleFAQ(index)}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="text-lg">{faq.question}</span>
-              <motion.span
-                animate={{ rotate: openIndex === index ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-                className="text-gray-400"
-              >
-                ▼
-              </motion.span>
-            </motion.button>
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={openIndex === index ? { height: "auto", opacity: 1 } : { height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="px-5 text-gray-300 overflow-hidden"
-            >
-              <p className="py-3">{faq.answer}</p>
-            </motion.div>
+            <HelpCircle className="w-5 h-5 text-purple-400" />
+            <span className="text-sm font-medium text-gray-300">
+              Got Questions?
+            </span>
           </motion.div>
-        ))}
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-4xl md:text-5xl font-bold mb-6"
+          >
+            Frequently Asked <span className="bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text">Questions</span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-xl text-gray-300 max-w-2xl mx-auto"
+          >
+            Everything you need to know about sword.lol. Can't find the answer you're looking for? 
+            Join our Discord community for support.
+          </motion.p>
+        </motion.div>
+
+        {/* FAQ Items */}
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
+              whileHover={{ scale: 1.01 }}
+              className={`rounded-2xl overflow-hidden backdrop-blur-sm transition-all duration-300 ${
+                openIndex === index 
+                  ? 'bg-white/10 border border-purple-500/30 shadow-lg shadow-purple-500/10' 
+                  : 'bg-white/5 border border-white/10 hover:bg-white/8'
+              }`}
+            >
+              <motion.button
+                className="w-full text-left px-6 py-5 flex justify-between items-center focus:outline-none transition-all duration-300 group"
+                onClick={() => toggleFAQ(index)}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full" />
+                    <span className="text-xs font-medium text-purple-400 uppercase tracking-wide">
+                      {faq.category}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-white group-hover:text-purple-300 transition-colors">
+                    {faq.question}
+                  </h3>
+                </div>
+                <motion.div
+                  animate={{ rotate: openIndex === index ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="ml-4 text-gray-400 group-hover:text-purple-400 transition-colors"
+                >
+                  <ChevronDown className="w-5 h-5" />
+                </motion.div>
+              </motion.button>
+
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-5">
+                      <div className="border-t border-white/10 pt-4">
+                        <p className="text-gray-300 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="text-center mt-16"
+        >
+          <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-8 backdrop-blur-sm">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <Sparkles className="w-6 h-6 text-purple-400" />
+              <h3 className="text-2xl font-bold text-white">
+                Still Have Questions?
+              </h3>
+            </div>
+            <p className="text-gray-300 mb-6 max-w-md mx-auto">
+              Join our Discord community to get help from our team and connect with other creators.
+            </p>
+            <motion.a
+              href="https://discord.gg/pwQaFQuRpN"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-xl font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+            >
+              <span>Join Discord Community</span>
+              <ChevronDown className="w-5 h-5 rotate-[-90deg]" />
+            </motion.a>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

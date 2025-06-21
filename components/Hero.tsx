@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
+import { Sparkles, ArrowRight, Star, Zap, Crown } from "lucide-react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,72 +34,194 @@ const Hero = () => {
     }
   };
 
+  const features = [
+    { icon: Sparkles, text: "Custom Bio Links", color: "text-purple-400" },
+    { icon: Zap, text: "Lightning Fast", color: "text-blue-400" },
+    { icon: Crown, text: "Premium Features", color: "text-yellow-400" },
+  ];
+
   return (
-    <div className="relative h-screen w-full bg-black flex flex-col items-center justify-center text-white text-center overflow-hidden">
+    <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center text-white text-center overflow-hidden">
       {/* Animated Background */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-[#1a0033] via-black to-[#00001a] opacity-60 blur-3xl"
-        animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-        transition={{ duration: 12, repeat: Infinity }}
+        className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20"
+        animate={{ 
+          background: [
+            "linear-gradient(45deg, rgba(147, 51, 234, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(59, 130, 246, 0.1) 100%)",
+            "linear-gradient(45deg, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(147, 51, 234, 0.1) 100%)",
+            "linear-gradient(45deg, rgba(147, 51, 234, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(59, 130, 246, 0.1) 100%)",
+          ]
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Glowing Effects */}
-      <div className="absolute -top-56 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full bg-purple-500 opacity-30 blur-[200px]" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-500 opacity-20 blur-[150px]" />
-      <div className="absolute bottom-20 right-0 w-[400px] h-[400px] rounded-full bg-indigo-500 opacity-15 blur-[120px]" />
+      {/* Floating Particles */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-purple-400/30 rounded-full"
+            animate={{
+              x: [0, Math.random() * 1000 - 500],
+              y: [0, Math.random() * 1000 - 500],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: Math.random() * 10 + 10,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+            }}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+          />
+        ))}
+      </div>
 
-      {/* Heading Text */}
-      <motion.h1
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        className="text-5xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-[#b517ff] via-[#6200ea] to-[#00bcd4] text-transparent bg-clip-text drop-shadow-xl relative z-10"
-      >
-        Own Your Digital Identity
-      </motion.h1>
+      {/* Glowing Orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-500/15 rounded-full blur-2xl animate-pulse delay-500" />
 
-      {/* Subtext */}
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 1 }}
-        className="mt-5 text-lg md:text-2xl max-w-2xl text-gray-300 relative z-10"
-      >
-        sward.lol is your ultimate platform for biolinks, custom profiles, and seamless file hosting.
-        Take control of your online presence now.
-      </motion.p>
+      {/* Main Content */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
+        >
+          <Star className="w-5 h-5 text-yellow-400 animate-spin" />
+          <span className="text-sm font-medium text-gray-300">
+            Trusted by 1,000+ creators worldwide
+          </span>
+        </motion.div>
 
-      {/* Input and Button */}
+        {/* Main Heading */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-6"
+        >
+          <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text">
+            Own Your
+          </span>
+          <br />
+          <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+            Digital Identity
+          </span>
+        </motion.h1>
+
+        {/* Subtext */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 1 }}
+          className="text-xl md:text-2xl max-w-3xl mx-auto text-gray-300 mb-12 leading-relaxed"
+        >
+          Create stunning bio links, host files securely, and build your online presence with{" "}
+          <span className="text-white font-semibold">sword.lol</span>. 
+          The ultimate platform for modern creators.
+        </motion.p>
+
+        {/* Features */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="flex flex-wrap justify-center gap-6 mb-12"
+        >
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2"
+            >
+              <feature.icon className={`w-5 h-5 ${feature.color}`} />
+              <span className="text-sm font-medium text-gray-300">{feature.text}</span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push("/signup")}
+            className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-full font-semibold text-white transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 overflow-hidden"
+          >
+            <span className="relative z-10 flex items-center space-x-2">
+              <span>Get Started Free</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push("/login")}
+            className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 rounded-full font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-white/10"
+          >
+            Sign In
+          </motion.button>
+        </motion.div>
+
+        {/* Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+        >
+          {[
+            { value: "50K+", label: "Profile Views" },
+            { value: "1.7K+", label: "Active Users" },
+            { value: "32K+", label: "Files Hosted" },
+            { value: "99.9%", label: "Uptime" },
+          ].map((stat, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.05 }}
+              className="text-center"
+            >
+              <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
+                {stat.value}
+              </div>
+              <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Scroll Indicator */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
-        className="mt-8 flex flex-col md:flex-row items-center gap-4 relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 1 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
       >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => router.push("/login")}
-          className="bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 px-8 py-4 rounded-full font-semibold text-white transition-all shadow-lg hover:shadow-gray-500/50"
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center"
         >
-          Login
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => router.push("/signup")}
-          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 px-8 py-4 rounded-full font-semibold text-white transition-all shadow-lg hover:shadow-purple-500/50"
-        >
-          Signup
-        </motion.button>
+          <motion.div
+            animate={{ y: [0, 12, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-1 h-3 bg-white/60 rounded-full mt-2"
+          />
+        </motion.div>
       </motion.div>
-
-
-      {/* Animated Lines and Blur Effects */}
-      <div className="absolute top-1/2 -left-32 w-96 h-96 bg-gradient-to-b from-purple-500 to-transparent opacity-20 blur-[100px] rotate-45" />
-      <div className="absolute top-1/3 right-0 w-72 h-72 bg-gradient-to-b from-blue-500 to-transparent opacity-25 blur-[100px] rotate-45" />
-      <div className="absolute bottom-0 left-0 w-full h-[200px] bg-gradient-to-b from-transparent to-black blur-2xl pointer-events-none" />
     </div>
   );
 };

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { Sparkles, Zap, Crown } from "lucide-react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,6 +17,7 @@ const Navbar = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -34,8 +35,14 @@ const Navbar = () => {
       }
     });
 
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
     return () => {
       authListener?.subscription.unsubscribe();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -46,92 +53,116 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      className="bg-[#0e0e0e] text-white py-4 px-8 fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] max-w-7xl z-50 shadow-2xl rounded-2xl border border-gray-800 backdrop-blur-lg"
-      initial={{ y: -50, opacity: 0 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled 
+          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl' 
+          : 'bg-transparent'
+      }`}
+      initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 120, damping: 12 }}
     >
-      <div className="flex justify-between items-center">
-        {/* Logo */}
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Link
-            href="/"
-            className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600"
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center space-x-2"
           >
-            sword.lol
-          </Link>
-        </motion.div>
-
-        {/* Desktop Links */}
-        <div className="hidden md:flex gap-8 text-gray-400">
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Link href="https://discord.gg/pwQaFQuRpN" target="_blank" className="hover:text-white transition duration-300 text-lg">
-              Discord
+            <div className="relative">
+              <Sparkles className="w-8 h-8 text-purple-400 animate-pulse" />
+              <div className="absolute inset-0 bg-purple-400/20 rounded-full blur-lg animate-ping" />
+            </div>
+            <Link
+              href="/"
+              className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500"
+            >
+              sword.lol
             </Link>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.1 }}>
-            <Link href="/pricing" className="hover:text-white transition duration-300 text-lg">
-              Pricing
-            </Link>
-          </motion.div>
-        </div>
 
-        {/* Right Side Buttons */}
-        <div className="hidden md:flex gap-6">
-          {user ? (
-            <>
-              <motion.div whileHover={{ scale: 1.05 }}>
-                <Link
-                  href={`/account/${user.id}`}
-                  className="bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 text-lg"
-                >
-                  Account
-                </Link>
-              </motion.div>
-              <motion.button
-                onClick={handleLogout}
-                className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 text-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <motion.div whileHover={{ scale: 1.05 }} className="relative group">
+              <Link 
+                href="https://discord.gg/pwQaFQuRpN" 
+                target="_blank" 
+                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-purple-400"
               >
-                Logout
-              </motion.button>
-            </>
-          ) : (
-            <>
-              <motion.div whileHover={{ scale: 1.05 }}>
-                <Link
-                  href="/login"
-                  className="bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 text-lg"
-                >
-                  Login
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }}>
-                <Link
-                  href="/signup"
-                  className="bg-blue-500 px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300 text-lg"
-                >
-                  Sign Up Free
-                </Link>
-              </motion.div>
-            </>
-          )}
-        </div>
+                <Zap className="w-4 h-4" />
+                <span className="font-medium">Discord</span>
+              </Link>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-300 group-hover:w-full" />
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.05 }} className="relative group">
+              <Link 
+                href="/pricing" 
+                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-purple-400"
+              >
+                <Crown className="w-4 h-4" />
+                <span className="font-medium">Pricing</span>
+              </Link>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-300 group-hover:w-full" />
+            </motion.div>
+          </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center">
-          <motion.button
-            onClick={() => setIsOpen(!isOpen)}
-            className="text-white"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            {isOpen ? <AiOutlineClose size={30} /> : <AiOutlineMenu size={30} />}
-          </motion.button>
+          {/* Right Side Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href={`/account/${user.id}`}
+                    className="px-6 py-2.5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-gray-500/25 border border-gray-600/50"
+                  >
+                    Dashboard
+                  </Link>
+                </motion.div>
+                <motion.button
+                  onClick={handleLogout}
+                  className="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-red-500/25"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Logout
+                </motion.button>
+              </>
+            ) : (
+              <>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href="/login"
+                    className="px-6 py-2.5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-gray-500/25 border border-gray-600/50"
+                  >
+                    Login
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Link
+                    href="/signup"
+                    className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-purple-500/25 relative overflow-hidden group"
+                  >
+                    <span className="relative z-10">Get Started Free</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </Link>
+                </motion.div>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <motion.button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-white p-2 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {isOpen ? <AiOutlineClose size={24} /> : <AiOutlineMenu size={24} />}
+            </motion.button>
+          </div>
         </div>
       </div>
 
@@ -139,49 +170,63 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden flex flex-col items-center gap-6 py-4 bg-[#0e0e0e] text-white rounded-2xl mt-4 border border-gray-800"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ type: "spring", stiffness: 100, damping: 10 }}
+            className="md:hidden bg-black/95 backdrop-blur-xl border-t border-white/10"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 15 }}
           >
-            <Link href="https://discord.gg/pwQaFQuRpN" target="_blank" className="text-lg">
-              Discord
-            </Link>
-            <Link href="/pricing" className="text-lg">
-              Pricing
-            </Link>
-            {user ? (
-              <>
-                <Link
-                  href={`/account/${user.id}`}
-                  className="text-lg"
-                >
-                  Account
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-lg"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-lg"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="text-lg"
-                >
-                  Sign Up Free
-                </Link>
-              </>
-            )}
+            <div className="px-4 py-6 space-y-4">
+              <Link 
+                href="https://discord.gg/pwQaFQuRpN" 
+                target="_blank" 
+                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors duration-300 py-2"
+              >
+                <Zap className="w-5 h-5" />
+                <span className="font-medium">Discord</span>
+              </Link>
+              <Link 
+                href="/pricing" 
+                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors duration-300 py-2"
+              >
+                <Crown className="w-5 h-5" />
+                <span className="font-medium">Pricing</span>
+              </Link>
+              
+              <div className="pt-4 border-t border-gray-700/50">
+                {user ? (
+                  <div className="space-y-3">
+                    <Link
+                      href={`/account/${user.id}`}
+                      className="block w-full px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg font-medium text-white text-center transition-all duration-300"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 rounded-lg font-medium text-white transition-all duration-300"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Link
+                      href="/login"
+                      className="block w-full px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg font-medium text-white text-center transition-all duration-300"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="block w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg font-medium text-white text-center transition-all duration-300"
+                    >
+                      Get Started Free
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

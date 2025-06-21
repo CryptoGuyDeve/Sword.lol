@@ -1,81 +1,191 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { FaTiktok, FaDiscord, FaTelegramPlane } from "react-icons/fa";
-import { Gamepad } from "lucide-react"; // Keeping Lucide for Gamepad icon
+import { Gamepad, Sparkles, Heart, ArrowUp } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Footer = () => {
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const footerLinks = {
+    product: [
+      { name: "Features", href: "/features" },
+      { name: "Pricing", href: "/pricing" },
+      { name: "Documentation", href: "/docs" },
+      { name: "API", href: "/api" },
+    ],
+    company: [
+      { name: "About", href: "/about" },
+      { name: "Blog", href: "/blog" },
+      { name: "Careers", href: "/careers" },
+      { name: "Press", href: "/press" },
+    ],
+    support: [
+      { name: "Help Center", href: "/help" },
+      { name: "Discord", href: "https://discord.gg/pwQaFQuRpN" },
+      { name: "Contact", href: "mailto:codeandmotion.business@gmail.com" },
+      { name: "Status", href: "/status" },
+    ],
+    legal: [
+      { name: "Privacy Policy", href: "/privacy" },
+      { name: "Terms of Service", href: "/terms" },
+      { name: "Cookie Policy", href: "/cookies" },
+      { name: "Copyright", href: "/copyright" },
+    ],
+  };
+
   return (
-    <footer className="relative bg-[#0b0813] text-white py-14 px-6 md:px-12 overflow-hidden">
+    <footer className="relative bg-black text-white overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/5 via-black to-blue-900/5" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+      
+      {/* Main Footer Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Top Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+          {/* Brand Section */}
+          <div className="lg:col-span-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center space-x-3 mb-6"
+            >
+              <div className="relative">
+                <Sparkles className="w-8 h-8 text-purple-400 animate-pulse" />
+                <div className="absolute inset-0 bg-purple-400/20 rounded-full blur-lg animate-ping" />
+              </div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text">
+                sword.lol
+              </h2>
+            </motion.div>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-gray-400 mb-6 leading-relaxed max-w-md"
+            >
+              Build customizable, feature-rich bio pages & host files securely with sword.lol. 
+              The ultimate platform for modern creators and businesses.
+            </motion.p>
 
-      {/* Subtle Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-transparent to-black opacity-60 blur-[200px]" />
-
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center relative z-10">
-        {/* Left Section */}
-        <div className="mb-10 md:mb-0">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            ⚔️ <span className="bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text">sword.lol</span>
-          </h2>
-          <p className="text-gray-400 mt-2 max-w-xs leading-relaxed">
-            Build customizable, feature-rich bio pages & host files securely with sword.lol.
-          </p>
-
-          {/* Social Icons */}
-          <div className="flex gap-4 mt-4 text-gray-400">
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              <Gamepad className="hover:text-white transition-all duration-300" size={22} />
-            </a>
-            <a href="https://www.tiktok.com/@sward.lol" target="_blank" rel="noopener noreferrer">
-              <FaTiktok className="hover:text-white transition-all duration-300" size={22} />
-            </a>
-            <a href="https://discord.gg/pwQaFQuRpN" target="_blank" rel="noopener noreferrer">
-              <FaDiscord className="hover:text-white transition-all duration-300" size={22} />
-            </a>
+            {/* Social Links */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex space-x-4"
+            >
+              {[
+                { icon: Gamepad, href: "#", label: "Gaming" },
+                { icon: FaTiktok, href: "https://www.tiktok.com/@sward.lol", label: "TikTok" },
+                { icon: FaDiscord, href: "https://discord.gg/pwQaFQuRpN", label: "Discord" },
+                { icon: FaTelegramPlane, href: "#", label: "Telegram" },
+              ].map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300 group"
+                >
+                  <social.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                </motion.a>
+              ))}
+            </motion.div>
           </div>
 
-          <p className="text-gray-500 text-xs mt-5">
-            © 2025 sword.lol | All Rights Reserved.
-          </p>
+          {/* Links Sections */}
+          {Object.entries(footerLinks).map(([category, links], categoryIndex) => (
+            <motion.div
+              key={category}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 + categoryIndex * 0.1 }}
+            >
+              <h3 className="font-semibold text-white mb-4 capitalize">
+                {category}
+              </h3>
+              <ul className="space-y-3">
+                {links.map((link, linkIndex) => (
+                  <li key={linkIndex}>
+                    <Link
+                      href={link.href}
+                      className="text-gray-400 hover:text-white transition-colors duration-300 text-sm group"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform inline-block">
+                        {link.name}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Right Section - Links Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm text-gray-400">
-          {/* General Links */}
-          <div>
-            <h3 className="font-semibold text-white mb-3">General</h3>
-            <ul className="space-y-2">
-              <li><Link href="/login" className="hover:text-purple-400 transition-all">Login</Link></li>
-              <li><Link href="/signup" className="hover:text-purple-400 transition-all">Sign Up</Link></li>
-              <li><Link href="/pricing" className="hover:text-purple-400 transition-all">Pricing</Link></li>
-            </ul>
+        {/* Newsletter Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-8 mb-12 backdrop-blur-sm"
+        >
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Stay Updated
+            </h3>
+            <p className="text-gray-400 mb-6 max-w-md mx-auto">
+              Get the latest updates, features, and exclusive offers delivered to your inbox.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-lg font-medium text-white transition-all duration-300"
+              >
+                Subscribe
+              </motion.button>
+            </div>
           </div>
+        </motion.div>
 
-          {/* Resources Links */}
-          <div>
-            <h3 className="font-semibold text-white mb-3">Resources</h3>
-            <ul className="space-y-2">
-              <li><Link href="/docs" className="hover:text-purple-400 transition-all">Documentation</Link></li>
-            </ul>
-          </div>
+        {/* Bottom Section */}
+        <div className="border-t border-white/10 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex items-center space-x-2 text-gray-400 text-sm mb-4 md:mb-0"
+            >
+              <span>© 2025 sword.lol. Made with</span>
+              <Heart className="w-4 h-4 text-red-400 animate-pulse" />
+              <span>for creators worldwide.</span>
+            </motion.div>
 
-          {/* Contact Links */}
-          <div>
-            <h3 className="font-semibold text-white mb-3">Contact</h3>
-            <ul className="space-y-2">
-              <li><a href="https://discord.gg/pwQaFQuRpN" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-all">Discord Server</a></li>
-              <li><a href="mailto:codeandmotion.business@gmail.com" className="hover:text-purple-400 transition-all">Support Email</a></li>
-              <li><a href="mailto:m.faizurrehman.business@gmail.com" className="hover:text-purple-400 transition-all">Business Email</a></li>
-            </ul>
-          </div>
-
-          {/* Legal Links */}
-          <div>
-            <h3 className="font-semibold text-white mb-3">Legal</h3>
-            <ul className="space-y-2">
-              <li><Link href="/terms" className="hover:text-purple-400 transition-all">Terms of Service</Link></li>
-              <li><Link href="/copyright" className="hover:text-purple-400 transition-all">Copyright Policy</Link></li>
-              <li><Link href="/privacy" className="hover:text-purple-400 transition-all">Privacy Policy</Link></li>
-            </ul>
+            <button
+              onClick={scrollToTop}
+              className="w-10 h-10 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300 hover:scale-110 hover:-translate-y-1"
+            >
+              <ArrowUp className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </div>
