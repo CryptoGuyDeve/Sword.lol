@@ -301,11 +301,12 @@ const UserPage = () => {
       const duration = Math.floor((sessionEnd - sessionStart) / 1000); // seconds
       // TODO: Create the update_last_profile_view_duration function in Supabase
       if (supabase.rpc) {
-        supabase.rpc("update_last_profile_view_duration", {
+        const { error } = await supabase.rpc("update_last_profile_view_duration", {
           user_id: userData.id,
           viewer_id: currentUser?.id || null,
           duration,
-        }).catch(() => {});
+        });
+        // Silently ignore errors for this analytics call
       }
     };
   }, [userData?.id]);
