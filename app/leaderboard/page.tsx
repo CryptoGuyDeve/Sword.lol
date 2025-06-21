@@ -26,17 +26,18 @@ export default function LeaderboardPage() {
       setLoading(true);
       let { data } = await supabase
         .from("users")
-        .select("id, username, profile_pic, profile_views, badges, followers:follows(count)")
+        .select("id, username, profile_pic, profile_views, badges")
         .order("profile_views", { ascending: false })
         .limit(50);
       // Fetch followers count for each user
       if (data) {
-        for (let user of data) {
+        for (let i = 0; i < data.length; i++) {
+          const user = data[i];
           const { count } = await supabase
             .from("follows")
             .select("id", { count: "exact", head: true })
             .eq("following_id", user.id);
-          user.followers = count || 0;
+          data[i] = { ...user, followers: count || 0 } as any;
         }
       }
       setUsers(data || []);
