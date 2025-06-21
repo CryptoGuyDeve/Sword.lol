@@ -9,7 +9,6 @@ import { FaUserEdit, FaEye, FaSignOutAlt, FaUsers, FaUserPlus, FaMedal, FaBolt, 
 import Link from "next/link";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Papa from 'papaparse';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -76,13 +75,6 @@ const AccountPage = () => {
     { id: 'returningVsNew', label: 'Returning vs. New Visitors' },
     { id: 'mostClickedLinks', label: 'Most Clicked Links' },
   ];
-  const [widgetOrder, setWidgetOrder] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = window.localStorage.getItem('analyticsWidgetOrder');
-      if (saved) return JSON.parse(saved);
-    }
-    return defaultWidgets.map(w => w.id);
-  });
   const [widgetVisibility, setWidgetVisibility] = useState<Record<string, boolean>>(() => {
     if (typeof window !== 'undefined') {
       const saved = window.localStorage.getItem('analyticsWidgetVisibility');
@@ -90,21 +82,14 @@ const AccountPage = () => {
     }
     return Object.fromEntries(defaultWidgets.map(w => [w.id, true]));
   });
-  // Persist widget order/visibility
+
+  // Persist widget visibility
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('analyticsWidgetOrder', JSON.stringify(widgetOrder));
       window.localStorage.setItem('analyticsWidgetVisibility', JSON.stringify(widgetVisibility));
     }
-  }, [widgetOrder, widgetVisibility]);
-  // Drag-and-drop handler
-  const onDragEnd = (result: any) => {
-    if (!result.destination) return;
-    const newOrder = Array.from(widgetOrder);
-    const [removed] = newOrder.splice(result.source.index, 1);
-    newOrder.splice(result.destination.index, 0, removed);
-    setWidgetOrder(newOrder);
-  };
+  }, [widgetVisibility]);
+
   // Widget picker
   const toggleWidget = (id: string) => {
     setWidgetVisibility(v => ({ ...v, [id]: !v[id] }));
@@ -585,142 +570,125 @@ const AccountPage = () => {
           ))}
         </div>
 
-        {/* Analytics Charts Grid with Drag-and-Drop */}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="analytics-widgets" direction="horizontal">
-            {(provided) => (
-              <div
-                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-12"
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-              >
-                {widgetOrder.filter(id => widgetVisibility[id]).map((id, idx) => (
-                  <Draggable key={id} draggableId={id} index={idx}>
-                    {(dragProvided) => (
-                      <motion.div
-                        ref={dragProvided.innerRef}
-                        {...dragProvided.draggableProps}
-                        {...dragProvided.dragHandleProps}
-                        className="bg-gradient-to-br from-black/40 to-purple-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
-                        whileHover={{ scale: 1.03 }}
-                      >
-                        {id === 'viewsOverTime' && (
-                          <>
-                            <h4 className="text-lg font-semibold mb-4">Views Over Time</h4>
-                            <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(viewsOverTime, null, 2)}</pre>
-                            <ResponsiveContainer width="100%" height={220}>
-                              {viewsOverTime.length === 0 ? (
-                                <div className="text-center text-gray-400">No data available</div>
-                              ) : (
-                                <LineChart data={viewsOverTime} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
-                                  <XAxis dataKey="date" stroke="#a78bfa" />
-                                  <YAxis stroke="#a78bfa" />
-                                  <Tooltip />
-                                  <Legend />
-                                  <Line type="monotone" dataKey="views" stroke="#a78bfa" strokeWidth={3} dot={false} />
-                                </LineChart>
-                              )}
-                            </ResponsiveContainer>
-                          </>
-                        )}
-                        {id === 'followersGrowth' && (
-                          <>
-                            <h4 className="text-lg font-semibold mb-4">Followers Growth</h4>
-                            <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(followersGrowth, null, 2)}</pre>
-                            <ResponsiveContainer width="100%" height={220}>
-                              {followersGrowth.length === 0 ? (
-                                <div className="text-center text-gray-400">No data available</div>
-                              ) : (
-                                <LineChart data={followersGrowth} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
-                                  <XAxis dataKey="date" stroke="#34d399" />
-                                  <YAxis stroke="#34d399" />
-                                  <Tooltip />
-                                  <Legend />
-                                  <Line type="monotone" dataKey="followers" stroke="#34d399" strokeWidth={3} dot={false} />
-                                </LineChart>
-                              )}
-                            </ResponsiveContainer>
-                          </>
-                        )}
-                        {id === 'topCountries' && (
-                          <>
-                            <h4 className="text-lg font-semibold mb-4">Top Countries</h4>
-                            <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(topCountries, null, 2)}</pre>
-                            <ResponsiveContainer width="100%" height={220}>
-                              {topCountries.length === 0 ? (
-                                <div className="text-center text-gray-400">No data available</div>
-                              ) : (
-                                <PieChart>
-                                  <Pie data={topCountries} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={80} fill="#f472b6" label />
-                                  <Tooltip />
-                                  <Legend />
-                                </PieChart>
-                              )}
-                            </ResponsiveContainer>
-                          </>
-                        )}
-                        {id === 'deviceBreakdown' && (
-                          <>
-                            <h4 className="text-lg font-semibold mb-4">Device Breakdown</h4>
-                            <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(deviceBreakdown, null, 2)}</pre>
-                            <ResponsiveContainer width="100%" height={220}>
-                              {deviceBreakdown.length === 0 ? (
-                                <div className="text-center text-gray-400">No data available</div>
-                              ) : (
-                                <PieChart>
-                                  <Pie data={deviceBreakdown} dataKey="count" nameKey="device" cx="50%" cy="50%" outerRadius={80} fill="#60a5fa" label />
-                                  <Tooltip />
-                                  <Legend />
-                                </PieChart>
-                              )}
-                            </ResponsiveContainer>
-                          </>
-                        )}
-                        {id === 'returningVsNew' && (
-                          <>
-                            <h4 className="text-lg font-semibold mb-4">Returning vs. New Visitors</h4>
-                            <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(returningVsNew, null, 2)}</pre>
-                            <ResponsiveContainer width="100%" height={220}>
-                              {returningVsNew.length === 0 ? (
-                                <div className="text-center text-gray-400">No data available</div>
-                              ) : (
-                                <PieChart>
-                                  <Pie data={returningVsNew} dataKey="value" nameKey="type" cx="50%" cy="50%" outerRadius={80} fill="#fbbf24" label />
-                                  <Tooltip />
-                                  <Legend />
-                                </PieChart>
-                              )}
-                            </ResponsiveContainer>
-                          </>
-                        )}
-                        {id === 'mostClickedLinks' && (
-                          <>
-                            <h4 className="text-lg font-semibold mb-4">Most Clicked Links</h4>
-                            <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(mostClickedLinks, null, 2)}</pre>
-                            <ResponsiveContainer width="100%" height={220}>
-                              {mostClickedLinks.length === 0 ? (
-                                <div className="text-center text-gray-400">No data available</div>
-                              ) : (
-                                <BarChart data={mostClickedLinks}>
-                                  <XAxis dataKey="link" stroke="#a3e635" />
-                                  <YAxis stroke="#a3e635" />
-                                  <Tooltip />
-                                  <Legend />
-                                  <Bar dataKey="clicks" fill="#a3e635" />
-                                </BarChart>
-                              )}
-                            </ResponsiveContainer>
-                          </>
-                        )}
-                      </motion.div>
+        {/* Analytics Charts Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-12">
+          {defaultWidgets.filter(w => widgetVisibility[w.id]).map(w => (
+            <motion.div
+              key={w.id}
+              className="bg-gradient-to-br from-black/40 to-purple-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
+              whileHover={{ scale: 1.03 }}
+            >
+              {w.id === 'viewsOverTime' && (
+                <>
+                  <h4 className="text-lg font-semibold mb-4">Views Over Time</h4>
+                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(viewsOverTime, null, 2)}</pre>
+                  <ResponsiveContainer width="100%" height={220}>
+                    {viewsOverTime.length === 0 ? (
+                      <div className="text-center text-gray-400">No data available</div>
+                    ) : (
+                      <LineChart data={viewsOverTime} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
+                        <XAxis dataKey="date" stroke="#a78bfa" />
+                        <YAxis stroke="#a78bfa" />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="views" stroke="#a78bfa" strokeWidth={3} dot={false} />
+                      </LineChart>
                     )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+                  </ResponsiveContainer>
+                </>
+              )}
+              {w.id === 'followersGrowth' && (
+                <>
+                  <h4 className="text-lg font-semibold mb-4">Followers Growth</h4>
+                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(followersGrowth, null, 2)}</pre>
+                  <ResponsiveContainer width="100%" height={220}>
+                    {followersGrowth.length === 0 ? (
+                      <div className="text-center text-gray-400">No data available</div>
+                    ) : (
+                      <LineChart data={followersGrowth} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
+                        <XAxis dataKey="date" stroke="#34d399" />
+                        <YAxis stroke="#34d399" />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="followers" stroke="#34d399" strokeWidth={3} dot={false} />
+                      </LineChart>
+                    )}
+                  </ResponsiveContainer>
+                </>
+              )}
+              {w.id === 'topCountries' && (
+                <>
+                  <h4 className="text-lg font-semibold mb-4">Top Countries</h4>
+                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(topCountries, null, 2)}</pre>
+                  <ResponsiveContainer width="100%" height={220}>
+                    {topCountries.length === 0 ? (
+                      <div className="text-center text-gray-400">No data available</div>
+                    ) : (
+                      <PieChart>
+                        <Pie data={topCountries} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={80} fill="#f472b6" label />
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    )}
+                  </ResponsiveContainer>
+                </>
+              )}
+              {w.id === 'deviceBreakdown' && (
+                <>
+                  <h4 className="text-lg font-semibold mb-4">Device Breakdown</h4>
+                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(deviceBreakdown, null, 2)}</pre>
+                  <ResponsiveContainer width="100%" height={220}>
+                    {deviceBreakdown.length === 0 ? (
+                      <div className="text-center text-gray-400">No data available</div>
+                    ) : (
+                      <PieChart>
+                        <Pie data={deviceBreakdown} dataKey="count" nameKey="device" cx="50%" cy="50%" outerRadius={80} fill="#60a5fa" label />
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    )}
+                  </ResponsiveContainer>
+                </>
+              )}
+              {w.id === 'returningVsNew' && (
+                <>
+                  <h4 className="text-lg font-semibold mb-4">Returning vs. New Visitors</h4>
+                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(returningVsNew, null, 2)}</pre>
+                  <ResponsiveContainer width="100%" height={220}>
+                    {returningVsNew.length === 0 ? (
+                      <div className="text-center text-gray-400">No data available</div>
+                    ) : (
+                      <PieChart>
+                        <Pie data={returningVsNew} dataKey="value" nameKey="type" cx="50%" cy="50%" outerRadius={80} fill="#fbbf24" label />
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    )}
+                  </ResponsiveContainer>
+                </>
+              )}
+              {w.id === 'mostClickedLinks' && (
+                <>
+                  <h4 className="text-lg font-semibold mb-4">Most Clicked Links</h4>
+                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(mostClickedLinks, null, 2)}</pre>
+                  <ResponsiveContainer width="100%" height={220}>
+                    {mostClickedLinks.length === 0 ? (
+                      <div className="text-center text-gray-400">No data available</div>
+                    ) : (
+                      <BarChart data={mostClickedLinks}>
+                        <XAxis dataKey="link" stroke="#a3e635" />
+                        <YAxis stroke="#a3e635" />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="clicks" fill="#a3e635" />
+                      </BarChart>
+                    )}
+                  </ResponsiveContainer>
+                </>
+              )}
+            </motion.div>
+          ))}
+        </div>
       </motion.main>
     </div>
   );
