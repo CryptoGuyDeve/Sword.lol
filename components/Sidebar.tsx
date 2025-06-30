@@ -59,42 +59,42 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
       href: `/account/${id}`,
       icon: Home,
       badge: null,
-      color: "from-blue-500 to-cyan-500"
+      color: "from-white to-gray-300"
     },
     {
       title: "Customize",
       href: `/account/${id}/customize`,
       icon: Palette,
       badge: null,
-      color: "from-purple-500 to-pink-500"
+      color: "from-gray-300 to-gray-400"
     },
     {
       title: "Links",
       href: `/account/${id}/links`,
       icon: LinkIcon,
       badge: null,
-      color: "from-green-500 to-emerald-500"
+      color: "from-gray-400 to-gray-500"
     },
     {
       title: "Explore",
       href: `/account/${id}/explore`,
       icon: Search,
       badge: null,
-      color: "from-orange-500 to-red-500"
+      color: "from-gray-500 to-gray-600"
     },
     {
       title: "Badges",
       href: `/account/${id}/badges`,
       icon: Trophy,
       badge: "New",
-      color: "from-yellow-500 to-orange-500"
+      color: "from-white to-gray-300"
     },
     {
       title: "Analytics",
       href: `/account/${id}/analytics`,
       icon: BarChart3,
       badge: null,
-      color: "from-indigo-500 to-purple-500"
+      color: "from-gray-300 to-gray-400"
     }
   ];
 
@@ -103,13 +103,13 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
       title: "Get Views",
       href: "/account/getviews",
       icon: Target,
-      color: "from-pink-500 to-rose-500"
+      color: "from-white to-gray-300"
     },
     {
       title: "Leaderboard",
       href: "/leaderboard",
       icon: Crown,
-      color: "from-yellow-500 to-orange-500"
+      color: "from-gray-300 to-gray-400"
     }
   ];
 
@@ -117,7 +117,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
     <div className="bg-gradient-to-b from-gray-900/80 to-black/80 backdrop-blur-xl text-white p-6 rounded-3xl h-full border border-gray-500/20 shadow-2xl relative overflow-hidden">
       {/* Animated Background - Fixed z-index and pointer-events */}
       <motion.div
-        className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 pointer-events-none"
+        className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-900/20 via-transparent to-gray-800/20 pointer-events-none"
         animate={{ opacity: [0.5, 0.8, 0.5] }}
         transition={{ duration: 8, repeat: Infinity }}
       />
@@ -132,11 +132,11 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
           className="mb-8"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl shadow-lg">
-              <Sparkles className="w-6 h-6 text-white" />
+            <div className="p-3 bg-gradient-to-r from-white to-gray-300 rounded-xl shadow-lg">
+              <Sparkles className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
+              <h2 className="text-xl font-bold bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
                 Sword.lol
               </h2>
               <p className="text-xs text-gray-400">Creator Dashboard</p>
@@ -153,9 +153,9 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center"
+                className="w-5 h-5 bg-gradient-to-r from-white to-gray-300 rounded-full flex items-center justify-center"
               >
-                <span className="text-xs text-white font-bold">{notifications}</span>
+                <span className="text-xs text-black font-bold">{notifications}</span>
               </motion.div>
             )}
           </div>
@@ -173,8 +173,8 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg group-hover:from-purple-500 group-hover:to-blue-500 transition-all duration-200">
-                  <User className="w-4 h-4 text-white" />
+                <div className="p-2 bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg group-hover:from-white group-hover:to-gray-300 transition-all duration-200">
+                  <User className="w-4 h-4 text-white group-hover:text-black" />
                 </div>
                 <span className="font-medium">Account</span>
               </div>
@@ -206,7 +206,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
                         href={item.href}
                         className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-200 group ${
                           currentPath === item.href
-                            ? 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-white'
+                            ? 'bg-gradient-to-r from-white/20 to-gray-400/20 border border-white/30 text-white'
                             : 'text-gray-300 hover:text-white hover:bg-white/5'
                         }`}
                       >
@@ -215,11 +215,11 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
                             ? `bg-gradient-to-r ${item.color}`
                             : 'bg-gray-600/50 group-hover:bg-gray-500/50'
                         }`}>
-                          <item.icon className="w-3.5 h-3.5 text-white" />
+                          <item.icon className={`w-3.5 h-3.5 ${currentPath === item.href ? 'text-black' : 'text-white'}`} />
                         </div>
                         <span className="text-sm font-medium">{item.title}</span>
                         {item.badge && (
-                          <span className="ml-auto px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 text-xs text-white rounded-full font-bold">
+                          <span className="ml-auto px-2 py-0.5 bg-gradient-to-r from-white to-gray-300 text-xs text-black rounded-full font-bold">
                             {item.badge}
                           </span>
                         )}
@@ -253,7 +253,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
                   className="flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-200 group hover:bg-white/5"
                 >
                   <div className={`p-2 rounded-lg bg-gradient-to-r ${item.color} shadow-lg group-hover:scale-110 transition-transform duration-200`}>
-                    <item.icon className="w-4 h-4 text-white" />
+                    <item.icon className="w-4 h-4 text-black" />
                   </div>
                   <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
                     {item.title}
@@ -273,7 +273,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
         >
           <Link
             href={`/${username}`}
-            className="flex items-center gap-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-purple-500/25 group"
+            className="flex items-center gap-3 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 text-black py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 group"
           >
             <ExternalLink className="w-4 h-4" />
             <span className="font-medium">View My Page</span>
@@ -282,7 +282,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
 
           <button
             onClick={handleCopyProfileLink}
-            className="flex items-center gap-3 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white py-3 px-4 rounded-xl transition-all duration-200 shadow-lg w-full group"
+            className="flex items-center gap-3 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 text-black py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 group"
           >
             <Share2 className="w-4 h-4" />
             <span className="font-medium">Share Profile</span>
@@ -300,7 +300,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="p-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-xl text-green-400 text-sm text-center"
+                className="p-3 bg-gradient-to-r from-white to-gray-300/20 border border-white/30 rounded-xl text-white text-sm text-center"
               >
                 ✨ Profile link copied to clipboard!
               </motion.div>
@@ -317,13 +317,13 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                <User className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-white to-gray-300 rounded-full flex items-center justify-center shadow-lg">
+                <User className="w-6 h-6 text-black" />
               </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-800"></div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full border-2 border-gray-800"></div>
             </div>
             <div className="flex-1">
-              <h3 className="font-bold text-white truncate">@{username}</h3>
+              <h3 className="font-bold text-black truncate">@{username}</h3>
               <p className="text-xs text-gray-400">UID: {id.slice(0, 8)}...</p>
             </div>
           </div>
@@ -331,15 +331,15 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-2 text-center">
             <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-lg font-bold text-white">1.2K</div>
+              <div className="text-lg font-bold text-black">1.2K</div>
               <div className="text-xs text-gray-400">Views</div>
             </div>
             <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-lg font-bold text-white">456</div>
+              <div className="text-lg font-bold text-black">456</div>
               <div className="text-xs text-gray-400">Followers</div>
             </div>
             <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-lg font-bold text-white">89</div>
+              <div className="text-lg font-bold text-black">89</div>
               <div className="text-xs text-gray-400">Links</div>
             </div>
           </div>
@@ -349,7 +349,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
             href="https://discord.gg/GwFKb9NPvY"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gradient-to-r from-[#5865F2] to-[#7289DA] hover:from-[#4752C4] hover:to-[#5865F2] text-white py-2 px-3 rounded-lg mt-4 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 group"
+            className="flex items-center gap-2 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 text-black py-2 px-3 rounded-lg mt-4 transition-all duration-200 shadow-lg hover:shadow-white/25 group"
           >
             <MessageCircle className="w-4 h-4" />
             <span className="text-sm font-medium">Join Discord</span>
@@ -368,7 +368,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsSidebarOpen(true)}
-          className="text-white bg-gradient-to-r from-purple-600 to-blue-600 p-3 rounded-xl shadow-lg border border-purple-500/30"
+          className="text-black bg-gradient-to-r from-white to-gray-300 p-3 rounded-xl shadow-lg border border-white/30"
         >
           <Menu className="w-6 h-6" />
         </motion.button>
@@ -394,7 +394,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsSidebarOpen(false)} 
-                className="text-white bg-gradient-to-r from-gray-700 to-gray-800 p-2 rounded-lg shadow-lg"
+                className="text-black bg-gradient-to-r from-gray-700 to-gray-800 p-2 rounded-lg shadow-lg"
               >
                 <X className="w-5 h-5" />
               </motion.button>

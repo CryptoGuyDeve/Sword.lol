@@ -7,8 +7,8 @@ const Privacy = () => {
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-[#090909] via-[#121212] to-[#1a1a1a] text-white flex items-center justify-center px-6 mt-15">
       {/* Background Glow Effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-purple-500 opacity-20 blur-[250px]" />
-      <div className="absolute bottom-0 right-0 w-[700px] h-[700px] bg-blue-500 opacity-15 blur-[200px]" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-white opacity-10 blur-[250px]" />
+      <div className="absolute bottom-0 right-0 w-[700px] h-[700px] bg-gray-400 opacity-8 blur-[200px]" />
 
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -21,7 +21,7 @@ const Privacy = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text text-center"
+          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text text-center"
         >
           Privacy Policy
         </motion.h1>
@@ -44,7 +44,7 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               1. Introduction
             </h2>
             <p>
@@ -60,7 +60,7 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               2. What Data We Collect
             </h2>
             <p>We may collect the following data:</p>
@@ -79,7 +79,7 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               3. How We Use Your Data
             </h2>
             <p>Your data is used to:</p>
@@ -97,7 +97,7 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               4. Cookies and Tracking
             </h2>
             <p>
@@ -113,7 +113,7 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               5. Third-Party Services
             </h2>
             <p>
@@ -129,7 +129,7 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               6. Data Protection & Security
             </h2>
             <p>
@@ -144,7 +144,7 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               7. Your Rights
             </h2>
             <p>You have the right to:</p>
@@ -161,13 +161,13 @@ const Privacy = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 1 }}
           >
-            <h2 className="text-lg font-semibold text-purple-400">
+            <h2 className="text-lg font-semibold text-white">
               8. Contact Us
             </h2>
             <p>
               If you have any privacy concerns, contact us at:
               <br />
-              📧 <span className="text-purple-300">m.faizurrehman.business@gmail.com</span>
+              📧 <span className="text-gray-300">m.faizurrehman.business@gmail.com</span>
             </p>
           </motion.div>
         </div>
@@ -180,7 +180,7 @@ const Privacy = () => {
           className="mt-8 flex justify-center"
         >
           <button
-            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-full font-semibold text-white transition-shadow shadow-md hover:shadow-purple-500/50"
+            className="px-6 py-3 bg-white hover:bg-gray-200 text-black rounded-full font-semibold transition-shadow shadow-md hover:shadow-white/50"
             onClick={() => window.history.back()}
           >
             Go Back

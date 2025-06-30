@@ -566,7 +566,7 @@ const UserPage = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleFollow}
                 className={`px-6 py-2 rounded-full font-semibold shadow-lg transition-all duration-300 
-                  ${isFollowing ? "bg-gradient-to-r from-green-400 to-blue-500 text-white" : "bg-gradient-to-r from-purple-500 to-pink-500 text-white"}
+                  ${isFollowing ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white" : "bg-gradient-to-r from-white to-gray-300 text-black"}
                   glassmorphism-btn border border-white/20 backdrop-blur-xl`}
                 disabled={followLoading}
               >
@@ -580,13 +580,13 @@ const UserPage = () => {
               </motion.button>
               <div className="flex gap-6 mt-3">
                 <button
-                  className="flex items-center gap-1 text-white/80 hover:text-white/100 transition text-sm"
+                  className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm"
                   onClick={() => { setFollowersModal(true); fetchFollowersList(); }}
                 >
                   <FaUsers className="mr-1" /> {followersCount} Followers
                 </button>
                 <button
-                  className="flex items-center gap-1 text-white/80 hover:text-white/100 transition text-sm"
+                  className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm"
                   onClick={() => { setFollowingModal(true); fetchFollowingList(); }}
                 >
                   <FaUsers className="mr-1" /> {followingCount} Following
@@ -607,12 +607,12 @@ const UserPage = () => {
                     followersList.map((user) => (
                       <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition">
                         <img src={user.profile_pic} alt={user.username} className="w-8 h-8 rounded-full" />
-                        <span className="text-blue-500 hover:underline">{user.username}</span>
+                        <span className="text-gray-300 hover:underline">{user.username}</span>
                       </Link>
                     ))
                   )}
                 </div>
-                <button onClick={() => setFollowersModal(false)} className="mt-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg">Close</button>
+                <button onClick={() => setFollowersModal(false)} className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg">Close</button>
               </AlertDialogContent>
             </AlertDialog>
           )}
@@ -628,12 +628,12 @@ const UserPage = () => {
                     followingList.map((user) => (
                       <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition">
                         <img src={user.profile_pic} alt={user.username} className="w-8 h-8 rounded-full" />
-                        <span className="text-blue-500 hover:underline">{user.username}</span>
+                        <span className="text-gray-300 hover:underline">{user.username}</span>
                       </Link>
                     ))
                   )}
                 </div>
-                <button onClick={() => setFollowingModal(false)} className="mt-4 w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg">Close</button>
+                <button onClick={() => setFollowingModal(false)} className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg">Close</button>
               </AlertDialogContent>
             </AlertDialog>
           )}
@@ -660,7 +660,7 @@ const UserPage = () => {
           {/* Location with Floating Glow Effect */}
           {userData?.location && (
             <div className="mt-5 flex items-center justify-center text-gray-300">
-              <FiMapPin className="mr-2 text-lg sm:text-xl md:text-2xl text-red-400 animate-bounce" />
+              <FiMapPin className="mr-2 text-lg sm:text-xl md:text-2xl text-white animate-bounce" />
               <span className="text-sm sm:text-lg md:text-xl font-medium">{userData.location}</span>
             </div>
           )}

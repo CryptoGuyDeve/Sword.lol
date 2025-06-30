@@ -1,119 +1,107 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-import Link from "next/link";
-import { FaCrown, FaEye, FaUsers, FaBolt } from "react-icons/fa";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import React, { useState, useEffect } from 'react';
+import { FaEye, FaUsers, FaBolt, FaCrown } from 'react-icons/fa';
+import Link from 'next/link';
 
 const tabs = [
-  { id: "views", label: "Top Views", icon: <FaEye className="text-purple-400" /> },
-  { id: "followers", label: "Top Followers", icon: <FaUsers className="text-green-400" /> },
-  { id: "engagement", label: "Top Engagement", icon: <FaBolt className="text-yellow-400" /> },
+  { id: "views", label: "Top Views", icon: <FaEye className="text-white" /> },
+  { id: "followers", label: "Top Followers", icon: <FaUsers className="text-gray-300" /> },
+  { id: "engagement", label: "Top Engagement", icon: <FaBolt className="text-gray-400" /> },
 ];
+
+const mockData = {
+  views: [
+    { id: 1, username: "alex_creator", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex", views: 15420, followers: 1200, badges: ["Verified", "Top Creator"] },
+    { id: 2, username: "sarah_artist", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah", views: 12850, followers: 980, badges: ["Artist"] },
+    { id: 3, username: "mike_tech", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike", views: 11230, followers: 850, badges: ["Tech", "Innovator"] },
+    { id: 4, username: "emma_design", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=emma", views: 9870, followers: 720, badges: ["Designer"] },
+    { id: 5, username: "john_gaming", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=john", views: 8650, followers: 650, badges: ["Gamer", "Streamer"] },
+  ],
+  followers: [
+    { id: 1, username: "alex_creator", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex", views: 15420, followers: 1200, badges: ["Verified", "Top Creator"] },
+    { id: 2, username: "sarah_artist", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah", views: 12850, followers: 980, badges: ["Artist"] },
+    { id: 3, username: "mike_tech", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike", views: 11230, followers: 850, badges: ["Tech", "Innovator"] },
+    { id: 4, username: "emma_design", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=emma", views: 9870, followers: 720, badges: ["Designer"] },
+    { id: 5, username: "john_gaming", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=john", views: 8650, followers: 650, badges: ["Gamer", "Streamer"] },
+  ],
+  engagement: [
+    { id: 1, username: "alex_creator", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex", views: 15420, followers: 1200, badges: ["Verified", "Top Creator"] },
+    { id: 2, username: "sarah_artist", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah", views: 12850, followers: 980, badges: ["Artist"] },
+    { id: 3, username: "mike_tech", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike", views: 11230, followers: 850, badges: ["Tech", "Innovator"] },
+    { id: 4, username: "emma_design", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=emma", views: 9870, followers: 720, badges: ["Designer"] },
+    { id: 5, username: "john_gaming", profile_pic: "https://api.dicebear.com/7.x/avataaars/svg?seed=john", views: 8650, followers: 650, badges: ["Gamer", "Streamer"] },
+  ],
+};
 
 export default function LeaderboardPage() {
   const [activeTab, setActiveTab] = useState("views");
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(mockData.views);
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      setLoading(true);
-      let { data } = await supabase
-        .from("users")
-        .select("id, username, profile_pic, profile_views, badges")
-        .order("profile_views", { ascending: false })
-        .limit(50);
-      // Fetch followers count for each user
-      if (data) {
-        for (let i = 0; i < data.length; i++) {
-          const user = data[i];
-          const { count } = await supabase
-            .from("follows")
-            .select("id", { count: "exact", head: true })
-            .eq("following_id", user.id);
-          data[i] = { ...user, followers: count || 0 } as any;
-        }
-      }
-      setUsers(data || []);
-      setLoading(false);
-    };
-    fetchLeaderboard();
-  }, []);
-
-  // Sort users for each tab
-  let sortedUsers = [...users];
-  if (activeTab === "views") {
-    sortedUsers.sort((a, b) => (b.profile_views || 0) - (a.profile_views || 0));
-  } else if (activeTab === "followers") {
-    sortedUsers.sort((a, b) => (b.followers || 0) - (a.followers || 0));
-  } else if (activeTab === "engagement") {
-    sortedUsers.sort((a, b) => ((b.profile_views || 0) + (b.followers || 0)) - ((a.profile_views || 0) + (a.followers || 0)));
-  }
+    setData(mockData[activeTab as keyof typeof mockData]);
+  }, [activeTab]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#18181b] to-[#23233a] text-white p-6">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
-          <FaCrown className="inline-block mr-2 text-yellow-400 animate-bounce" /> Leaderboard
-        </h1>
-        <div className="flex justify-center gap-4 mb-8">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              className={`px-5 py-2 rounded-full font-semibold flex items-center gap-2 transition ${activeTab === tab.id ? "bg-purple-600 text-white" : "bg-black/30 text-gray-300"}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
+    <div className="min-h-screen bg-black text-white p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
+            <FaCrown className="inline-block mr-2 text-white animate-bounce" /> Leaderboard
+          </h1>
+          <p className="text-gray-400 text-lg">Discover the top creators on sword.lol</p>
         </div>
-        <div className="bg-black/30 rounded-2xl shadow-lg p-6 overflow-x-auto">
-          <table className="w-full text-left">
+
+        {/* Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="flex space-x-2 bg-gray-900/50 p-2 rounded-2xl backdrop-blur-sm">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-5 py-2 rounded-full font-semibold flex items-center gap-2 transition ${activeTab === tab.id ? "bg-white text-black" : "bg-black/30 text-gray-300"}`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Leaderboard Table */}
+        <div className="bg-gray-900/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-800/50">
+          <table className="w-full">
             <thead>
-              <tr className="text-purple-300 text-sm">
-                <th className="py-2 px-3">#</th>
-                <th className="py-2 px-3">User</th>
-                <th className="py-2 px-3">Views</th>
-                <th className="py-2 px-3">Followers</th>
-                <th className="py-2 px-3">Badges</th>
+              <tr className="text-white text-sm">
+                <th className="text-left py-4 px-3">Rank</th>
+                <th className="text-left py-4 px-3">Creator</th>
+                <th className="text-right py-4 px-3">Views</th>
+                <th className="text-right py-4 px-3">Followers</th>
+                <th className="text-left py-4 px-3">Badges</th>
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr><td colSpan={5} className="text-center py-8">Loading...</td></tr>
-              ) : sortedUsers.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-8">No users found.</td></tr>
-              ) : (
-                sortedUsers.map((user, idx) => (
-                  <tr key={user.id} className="border-b border-gray-700 hover:bg-purple-900/10 transition">
-                    <td className="py-2 px-3 font-bold text-lg text-purple-400">{idx + 1}</td>
-                    <td className="py-2 px-3 flex items-center gap-3">
-                      <img src={user.profile_pic} alt={user.username} className="w-9 h-9 rounded-full border-2 border-purple-400" />
-                      <Link href={`/${user.username}`} className="hover:underline text-blue-400">{user.username}</Link>
-                    </td>
-                    <td className="py-2 px-3">{user.profile_views || 0}</td>
-                    <td className="py-2 px-3">{user.followers || 0}</td>
-                    <td className="py-2 px-3">
-                      {user.badges && user.badges.length > 0 ? (
-                        <div className="flex flex-wrap gap-1">
-                          {user.badges.slice(0, 3).map((badge: string, i: number) => (
-                            <span key={i} className="bg-purple-700 text-xs px-2 py-1 rounded-full text-white font-semibold">{badge}</span>
-                          ))}
-                          {user.badges.length > 3 && <span className="text-xs text-gray-400">+{user.badges.length - 3} more</span>}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-gray-400">-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
+              {data.map((user, idx) => (
+                <tr key={user.id} className="border-b border-gray-700 hover:bg-white/5 transition">
+                  <td className="py-2 px-3 font-bold text-lg text-white">{idx + 1}</td>
+                  <td className="py-2 px-3">
+                    <div className="flex items-center gap-3">
+                      <img src={user.profile_pic} alt={user.username} className="w-9 h-9 rounded-full border-2 border-white" />
+                      <Link href={`/${user.username}`} className="hover:underline text-gray-300">{user.username}</Link>
+                    </div>
+                  </td>
+                  <td className="py-2 px-3 text-right text-gray-300">{user.views.toLocaleString()}</td>
+                  <td className="py-2 px-3 text-right text-gray-300">{user.followers.toLocaleString()}</td>
+                  <td className="py-2 px-3">
+                    <div className="flex gap-1 flex-wrap">
+                      {user.badges.map((badge, i) => (
+                        <span key={i} className="bg-white text-black text-xs px-2 py-1 rounded-full font-semibold">{badge}</span>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

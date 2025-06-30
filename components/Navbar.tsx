@@ -71,12 +71,12 @@ const Navbar = () => {
             className="flex items-center space-x-2"
           >
             <div className="relative">
-              <Sparkles className="w-8 h-8 text-purple-400 animate-pulse" />
-              <div className="absolute inset-0 bg-purple-400/20 rounded-full blur-lg animate-ping" />
+              <Sparkles className="w-8 h-8 text-white animate-pulse" />
+              <div className="absolute inset-0 bg-white/20 rounded-full blur-lg animate-ping" />
             </div>
             <Link
               href="/"
-              className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500"
+              className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500"
             >
               sword.lol
             </Link>
@@ -88,23 +88,23 @@ const Navbar = () => {
               <Link 
                 href="https://discord.gg/pwQaFQuRpN" 
                 target="_blank" 
-                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-purple-400"
+                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-white"
               >
                 <Zap className="w-4 h-4" />
                 <span className="font-medium">Discord</span>
               </Link>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-300 group-hover:w-full" />
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-white to-gray-400 transition-all duration-300 group-hover:w-full" />
             </motion.div>
             
             <motion.div whileHover={{ scale: 1.05 }} className="relative group">
               <Link 
                 href="/pricing" 
-                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-purple-400"
+                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-white"
               >
                 <Crown className="w-4 h-4" />
                 <span className="font-medium">Pricing</span>
               </Link>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 transition-all duration-300 group-hover:w-full" />
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-white to-gray-400 transition-all duration-300 group-hover:w-full" />
             </motion.div>
           </div>
 
@@ -122,7 +122,7 @@ const Navbar = () => {
                 </motion.div>
                 <motion.button
                   onClick={handleLogout}
-                  className="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-red-500/25"
+                  className="px-6 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-gray-500/25"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -142,10 +142,10 @@ const Navbar = () => {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     href="/signup"
-                    className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-purple-500/25 relative overflow-hidden group"
+                    className="px-6 py-2.5 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-full font-medium text-black transition-all duration-300 shadow-lg hover:shadow-white/25 relative overflow-hidden group"
                   >
                     <span className="relative z-10">Get Started Free</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </Link>
                 </motion.div>
               </>
@@ -204,7 +204,7 @@ const Navbar = () => {
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="block w-full px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 rounded-lg font-medium text-white transition-all duration-300"
+                      className="block w-full px-4 py-3 bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg font-medium text-white transition-all duration-300"
                     >
                       Logout
                     </button>
@@ -219,7 +219,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       href="/signup"
-                      className="block w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg font-medium text-white text-center transition-all duration-300"
+                      className="block w-full px-4 py-3 bg-gradient-to-r from-white to-gray-300 rounded-lg font-medium text-black text-center transition-all duration-300"
                     >
                       Get Started Free
                     </Link>

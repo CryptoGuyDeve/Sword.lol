@@ -43,9 +43,9 @@ const Footer = () => {
   return (
     <footer className="relative bg-black text-white overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/5 via-black to-blue-900/5" />
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/5 via-black to-gray-800/5" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gray-400/10 rounded-full blur-3xl" />
       
       {/* Main Footer Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -60,10 +60,10 @@ const Footer = () => {
               className="flex items-center space-x-3 mb-6"
             >
               <div className="relative">
-                <Sparkles className="w-8 h-8 text-purple-400 animate-pulse" />
-                <div className="absolute inset-0 bg-purple-400/20 rounded-full blur-lg animate-ping" />
+                <Sparkles className="w-8 h-8 text-white animate-pulse" />
+                <div className="absolute inset-0 bg-white/20 rounded-full blur-lg animate-ping" />
               </div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-gray-300 to-gray-500 text-transparent bg-clip-text">
                 sword.lol
               </h2>
             </motion.div>
@@ -140,7 +140,7 @@ const Footer = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-8 mb-12 backdrop-blur-sm"
+          className="bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-2xl p-8 mb-12 backdrop-blur-sm"
         >
           <div className="text-center">
             <h3 className="text-2xl font-bold text-white mb-2">
@@ -153,12 +153,12 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+                className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-white transition-colors"
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-lg font-medium text-white transition-all duration-300"
+                className="px-6 py-3 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-lg font-medium text-black transition-all duration-300"
               >
                 Subscribe
               </motion.button>
@@ -176,7 +176,7 @@ const Footer = () => {
               className="flex items-center space-x-2 text-gray-400 text-sm mb-4 md:mb-0"
             >
               <span>© 2025 sword.lol. Made with</span>
-              <Heart className="w-4 h-4 text-red-400 animate-pulse" />
+              <Heart className="w-4 h-4 text-white animate-pulse" />
               <span>for creators worldwide.</span>
             </motion.div>
 

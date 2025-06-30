@@ -18,10 +18,10 @@ const supabase = createClient(
 type User = { id: string; username: string; profile_pic: string };
 
 const milestoneList = [
-  { key: "views", value: 1000, label: "1,000 Views", icon: <FaEye className="text-purple-400" /> },
-  { key: "followers", value: 100, label: "100 Followers", icon: <FaUsers className="text-green-400" /> },
-  { key: "followers", value: 1000, label: "1,000 Followers", icon: <FaCrown className="text-yellow-400" /> },
-  { key: "views", value: 10000, label: "10,000 Views", icon: <FaFire className="text-pink-400" /> },
+  { key: "views", value: 1000, label: "1,000 Views", icon: <FaEye className="text-white" /> },
+  { key: "followers", value: 100, label: "100 Followers", icon: <FaUsers className="text-gray-300" /> },
+  { key: "followers", value: 1000, label: "1,000 Followers", icon: <FaCrown className="text-gray-400" /> },
+  { key: "views", value: 10000, label: "10,000 Views", icon: <FaFire className="text-gray-500" /> },
 ];
 
 function getHealthScore(analytics: any) {

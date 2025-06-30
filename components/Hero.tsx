@@ -35,21 +35,21 @@ const Hero = () => {
   };
 
   const features = [
-    { icon: Sparkles, text: "Custom Bio Links", color: "text-purple-400" },
-    { icon: Zap, text: "Lightning Fast", color: "text-blue-400" },
-    { icon: Crown, text: "Premium Features", color: "text-yellow-400" },
+    { icon: Sparkles, text: "Custom Bio Links", color: "text-white" },
+    { icon: Zap, text: "Lightning Fast", color: "text-gray-300" },
+    { icon: Crown, text: "Premium Features", color: "text-gray-400" },
   ];
 
   return (
     <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center text-white text-center overflow-hidden">
       {/* Animated Background */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20"
+        className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-black to-gray-800/20"
         animate={{ 
           background: [
-            "linear-gradient(45deg, rgba(147, 51, 234, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(59, 130, 246, 0.1) 100%)",
-            "linear-gradient(45deg, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(147, 51, 234, 0.1) 100%)",
-            "linear-gradient(45deg, rgba(147, 51, 234, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(59, 130, 246, 0.1) 100%)",
+            "linear-gradient(45deg, rgba(75, 75, 75, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.1) 100%)",
+            "linear-gradient(45deg, rgba(100, 100, 100, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(75, 75, 75, 0.1) 100%)",
+            "linear-gradient(45deg, rgba(75, 75, 75, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.1) 100%)",
           ]
         }}
         transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
@@ -60,7 +60,7 @@ const Hero = () => {
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-purple-400/30 rounded-full"
+            className="absolute w-2 h-2 bg-white/30 rounded-full"
             animate={{
               x: [0, Math.random() * 1000 - 500],
               y: [0, Math.random() * 1000 - 500],
@@ -80,9 +80,9 @@ const Hero = () => {
       </div>
 
       {/* Glowing Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-500/15 rounded-full blur-2xl animate-pulse delay-500" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-400/10 rounded-full blur-3xl animate-pulse delay-1000" />
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/8 rounded-full blur-2xl animate-pulse delay-500" />
 
       {/* Main Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -91,9 +91,9 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
+          className="inline-flex items-center space-x-2 bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
         >
-          <Star className="w-5 h-5 text-yellow-400 animate-spin" />
+          <Star className="w-5 h-5 text-white animate-spin" />
           <span className="text-sm font-medium text-gray-300">
             Trusted by 1,000+ creators worldwide
           </span>
@@ -106,11 +106,11 @@ const Hero = () => {
           transition={{ duration: 1, ease: "easeOut" }}
           className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-6"
         >
-          <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text">
+          <span className="bg-gradient-to-r from-white via-gray-300 to-gray-500 text-transparent bg-clip-text">
             Own Your
           </span>
           <br />
-          <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+          <span className="bg-gradient-to-r from-gray-400 via-white to-gray-300 text-transparent bg-clip-text">
             Digital Identity
           </span>
         </motion.h1>
@@ -157,13 +157,13 @@ const Hero = () => {
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/signup")}
-            className="group relative px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-full font-semibold text-white transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 overflow-hidden"
+            className="group relative px-8 py-4 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-full font-semibold text-black transition-all duration-300 shadow-2xl hover:shadow-white/25 overflow-hidden"
           >
             <span className="relative z-10 flex items-center space-x-2">
               <span>Get Started Free</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </motion.button>
 
           <motion.button
@@ -194,7 +194,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               className="text-center"
             >
-              <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
+              <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
                 {stat.value}
               </div>
               <div className="text-sm text-gray-400 mt-1">{stat.label}</div>

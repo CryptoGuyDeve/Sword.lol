@@ -2,140 +2,158 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaCheckCircle } from "react-icons/fa";
 
-const sections = [
-  {
-    title: "Introduction",
-    id: "introduction",
-    content: `
-      This website is built with Next.js, TailwindCSS, Supabase, and Framer Motion. 
-      It aims to deliver a modern, aesthetic UI/UX experience with smooth animations, Discord API integration, and advanced customization features.
-    `,
-  },
-  {
-    title: "Setup & Installation",
-    id: "setup",
-    content: `
-      1. Install Node.js and npm/yarn.
-      2. Run \`npx create-next-app@latest\`.
-      3. Install dependencies: \`npm install tailwindcss framer-motion @supabase/supabase-js\`.
-      4. Configure TailwindCSS: \`npx tailwindcss init -p\`.
-      5. Set up Supabase project and get your API keys.
-    `,
-  },
-  {
-    title: "Authentication",
-    id: "authentication",
-    content: `
-      We're using Supabase OAuth for Discord authentication:
-      1. Create an OAuth app on Discord Developer Portal.
-      2. Add the client ID and secret to your Supabase dashboard.
-      3. Use Supabase's built-in auth functions for login and sign-out.
-      4. Store user data (e.g., bio, profile picture, and YouTube URL) directly in the \`users\` table.
-    `,
-  },
-  {
-    title: "UI/UX Design",
-    id: "uiux",
-    content: `
-      - TailwindCSS for rapid styling.
-      - Framer Motion for smooth animations and hover effects.
-      - React Icons for modern iconography.
-      - Custom sidebar and modern design inspired by guns.lol.
-    `,
-  },
-  {
-    title: "API Integration",
-    id: "api",
-    content: `
-      - Fetch Discord live game status via Discord's API.
-      - Supabase REST API for user data.
-      - YouTube API for background video support.
-      - Real-time updates with Supabase's \`onSnapshot\` feature.
-    `,
-  },
-  {
-    title: "Database Structure",
-    id: "database",
-    content: `
-      - Supabase Database Schema:
-      - Users Table: Store user ID, bio, profile picture, theme, and YouTube URL.
-      - Links Table: Social media links for each user.
-      - OAuth Table: Store Discord tokens for authentication.
-    `,
-  },
-  {
-    title: "Deployment",
-    id: "deployment",
-    content: `
-      1. Connect your GitHub repo to Vercel.
-      2. Add environment variables (Supabase API URL and anon key).
-      3. Deploy with one click.
-      4. Automatic CI/CD for future updates.
-    `,
-  },
-];
+const Docs = () => {
+  const [activeSection, setActiveSection] = useState("getting-started");
 
-const Page = () => {
-  const [activeSection, setActiveSection] = useState(sections[0].id);
+  const sections = [
+    {
+      id: "getting-started",
+      title: "Getting Started",
+      content: `
+        Welcome to sword.lol! This guide will help you get started with creating your personalized bio link page.
 
-  const handleScrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-      setActiveSection(id);
+        ## Quick Start
+        1. Sign up for a free account
+        2. Choose your username
+        3. Customize your profile
+        4. Add your social media links
+        5. Share your sword.lol URL
+
+        ## Features Overview
+        - Custom Bio Links
+        - File Hosting
+        - Analytics Dashboard
+        - Social Media Integration
+        - Custom Domain Support
+        - Priority Support
+      `
+    },
+    {
+      id: "customization",
+      title: "Customization",
+      content: `
+        Learn how to customize your sword.lol profile to match your brand and style.
+
+        ## Profile Settings
+        - Profile Picture: Upload a high-quality image (recommended: 400x400px)
+        - Bio: Write a compelling description about yourself
+        - Theme: Choose from various color schemes and layouts
+        - Background: Add custom backgrounds or videos
+
+        ## Link Management
+        - Add unlimited social media links
+        - Customize link titles and icons
+        - Set link priorities
+        - Enable/disable specific links
+      `
+    },
+    {
+      id: "analytics",
+      title: "Analytics",
+      content: `
+        Track your profile performance with our comprehensive analytics dashboard.
+
+        ## Available Metrics
+        - Profile Views
+        - Link Clicks
+        - Visitor Demographics
+        - Traffic Sources
+        - Peak Activity Times
+
+        ## Understanding Your Data
+        - Views: Total number of profile visits
+        - Clicks: Number of link interactions
+        - Conversion Rate: Percentage of visitors who click links
+        - Geographic Data: Where your visitors are located
+      `
+    },
+    {
+      id: "file-hosting",
+      title: "File Hosting",
+      content: `
+        Host and share files securely with sword.lol's file hosting service.
+
+        ## Supported File Types
+        - Images (JPG, PNG, GIF, WebP)
+        - Videos (MP4, WebM, MOV)
+        - Documents (PDF, DOC, TXT)
+        - Audio (MP3, WAV, OGG)
+        - Archives (ZIP, RAR)
+
+        ## File Limits
+        - Free Plan: 100MB per file
+        - Premium Plan: Unlimited file size
+        - Total Storage: Varies by plan
+
+        ## Sharing Options
+        - Direct download links
+        - Embed codes for websites
+        - Password protection
+        - Expiration dates
+      `
     }
-  };
+  ];
 
   return (
-    <div className="flex min-h-screen bg-[#0e0e0e] text-white">
-      {/* Sidebar */}
-      <aside className="w-64 p-6 border-r border-gray-700 fixed h-full">
-        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-10">
-          Documentation
-        </h1>
-        <ul className="space-y-6">
-          {sections.map((section) => (
-            <li
-              key={section.id}
-              className={`cursor-pointer flex items-center gap-3 ${
-                activeSection === section.id
-                  ? "text-purple-500 font-semibold"
-                  : "text-gray-400"
-              } hover:text-white transition`}
-              onClick={() => handleScrollTo(section.id)}
-            >
-              <FaCheckCircle size={18} />
-              {section.title}
-            </li>
-          ))}
-        </ul>
-      </aside>
+    <div className="min-h-screen bg-black text-white p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-10">
+            Documentation
+          </h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Everything you need to know about using sword.lol to create your perfect bio link page.
+          </p>
+        </div>
 
-      {/* Main Content */}
-      <main className="ml-64 flex-1 p-12 space-y-24 mt-17">
-        {sections.map((section) => (
-          <motion.section
-            key={section.id}
-            id={section.id}
-            className="space-y-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold text-purple-400">
-              {section.title}
-            </h2>
-            <p className="text-gray-300 leading-7 whitespace-pre-line">
-              {section.content}
-            </p>
-          </motion.section>
-        ))}
-      </main>
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-gray-800/50 sticky top-6">
+              <h2 className="text-lg font-semibold mb-4">Contents</h2>
+              <nav className="space-y-2">
+                {sections.map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                      activeSection === section.id 
+                        ? "text-white font-semibold" 
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {section.title}
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-8 border border-gray-800/50"
+            >
+              <h2 className="text-2xl font-bold mb-6">
+                {sections.find(s => s.id === activeSection)?.title}
+              </h2>
+              <div className="prose prose-invert max-w-none">
+                <pre className="whitespace-pre-wrap text-gray-300 leading-relaxed">
+                  {sections.find(s => s.id === activeSection)?.content}
+                </pre>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Page;
+export default Docs;

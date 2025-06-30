@@ -56,9 +56,9 @@ const FAQ = () => {
   return (
     <div className="relative bg-black text-white py-20 px-6 overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-purple-900/5 via-black to-blue-900/5" />
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/5 via-black to-gray-800/5" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gray-400/10 rounded-full blur-3xl" />
 
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Header */}
@@ -72,9 +72,9 @@ const FAQ = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
+            className="inline-flex items-center space-x-2 bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
           >
-            <HelpCircle className="w-5 h-5 text-purple-400" />
+            <HelpCircle className="w-5 h-5 text-white" />
             <span className="text-sm font-medium text-gray-300">
               Got Questions?
             </span>
@@ -86,7 +86,7 @@ const FAQ = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-4xl md:text-5xl font-bold mb-6"
           >
-            Frequently Asked <span className="bg-gradient-to-r from-purple-400 to-blue-500 text-transparent bg-clip-text">Questions</span>
+            Frequently Asked <span className="bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">Questions</span>
           </motion.h2>
 
           <motion.p
@@ -111,7 +111,7 @@ const FAQ = () => {
               whileHover={{ scale: 1.01 }}
               className={`rounded-2xl overflow-hidden backdrop-blur-sm transition-all duration-300 ${
                 openIndex === index 
-                  ? 'bg-white/10 border border-purple-500/30 shadow-lg shadow-purple-500/10' 
+                  ? 'bg-white/10 border border-white/30 shadow-lg shadow-white/10' 
                   : 'bg-white/5 border border-white/10 hover:bg-white/8'
               }`}
             >
@@ -122,19 +122,19 @@ const FAQ = () => {
               >
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full" />
-                    <span className="text-xs font-medium text-purple-400 uppercase tracking-wide">
+                    <div className="w-2 h-2 bg-white rounded-full" />
+                    <span className="text-xs font-medium text-white uppercase tracking-wide">
                       {faq.category}
                     </span>
                   </div>
-                  <h3 className="text-lg font-semibold text-white group-hover:text-purple-300 transition-colors">
+                  <h3 className="text-lg font-semibold text-white group-hover:text-gray-300 transition-colors">
                     {faq.question}
                   </h3>
                 </div>
                 <motion.div
                   animate={{ rotate: openIndex === index ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
-                  className="ml-4 text-gray-400 group-hover:text-purple-400 transition-colors"
+                  className="ml-4 text-gray-400 group-hover:text-white transition-colors"
                 >
                   <ChevronDown className="w-5 h-5" />
                 </motion.div>
@@ -170,9 +170,9 @@ const FAQ = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-8 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-2xl p-8 backdrop-blur-sm">
             <div className="flex items-center justify-center space-x-3 mb-4">
-              <Sparkles className="w-6 h-6 text-purple-400" />
+              <Sparkles className="w-6 h-6 text-white" />
               <h3 className="text-2xl font-bold text-white">
                 Still Have Questions?
               </h3>
@@ -186,7 +186,7 @@ const FAQ = () => {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 rounded-xl font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+              className="inline-flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-xl font-semibold text-black transition-all duration-300 shadow-lg hover:shadow-white/25"
             >
               <span>Join Discord Community</span>
               <ChevronDown className="w-5 h-5 rotate-[-90deg]" />
