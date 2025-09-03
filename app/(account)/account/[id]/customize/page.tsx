@@ -38,6 +38,9 @@ const Customize = () => {
   const [username, setUsername] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [newUsername, setNewUsername] = useState<string>("");
+  const [usernameError, setUsernameError] = useState<string>("");
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -56,6 +59,7 @@ const Customize = () => {
         setVideoUrl(data.background_video || "");
         setLocation(data.location || "");
         setUsername(data.username || "");
+        setNewUsername(data.username || "");
       }
     };
 
@@ -74,6 +78,7 @@ const Customize = () => {
         theme,
         background_video: videoUrl,
         location,
+        username: newUsername,
       })
       .eq("id", id);
 
@@ -82,9 +87,52 @@ const Customize = () => {
     if (error) {
       alert("Failed to update profile.");
     } else {
+      setUsername(newUsername);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     }
+  };
+
+  const checkUsernameAvailability = async (username: string) => {
+    if (!username.trim()) {
+      setUsernameError("");
+      return;
+    }
+
+    setIsCheckingUsername(true);
+    setUsernameError("");
+
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("username")
+        .eq("username", username)
+        .neq("id", id)
+        .single();
+
+      if (data) {
+        setUsernameError("Username is already taken");
+      } else if (error && error.code === "PGRST116") {
+        // No rows returned, username is available
+        setUsernameError("");
+      } else {
+        setUsernameError("Error checking username availability");
+      }
+    } catch (err) {
+      setUsernameError("Error checking username availability");
+    } finally {
+      setIsCheckingUsername(false);
+    }
+  };
+
+  const handleUsernameChange = (value: string) => {
+    setNewUsername(value);
+    // Debounce username availability check
+    const timeoutId = setTimeout(() => {
+      checkUsernameAvailability(value);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
   };
 
   const formatPinterestURL = (url: string) => {
@@ -113,7 +161,7 @@ const Customize = () => {
       <Sidebar id={id} username={username || "Loading..."} />
 
       <motion.main
-        className="flex-1 p-8 md:p-12 relative z-10"
+        className="flex-1 p-8 md:p-12 relative z-10 min-h-screen overflow-y-auto"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -187,6 +235,71 @@ const Customize = () => {
                     </div>
                   </motion.div>
                 )}
+              </div>
+            </motion.div>
+
+            {/* Username Section */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 backdrop-blur-xl rounded-3xl p-8 border border-indigo-500/20 shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-indigo-500/20 rounded-xl">
+                  <User className="w-6 h-6 text-indigo-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Username</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Choose your username
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={newUsername}
+                      onChange={(e) => handleUsernameChange(e.target.value)}
+                      className={`w-full p-4 bg-white/5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent text-white placeholder-gray-400 transition-all ${
+                        usernameError 
+                          ? 'border-red-500/50 focus:ring-red-500' 
+                          : 'border-indigo-500/30 focus:ring-indigo-500'
+                      }`}
+                      placeholder="Enter your username..."
+                    />
+                    {isCheckingUsername && (
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        <div className="w-5 h-5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
+                  {usernameError && (
+                    <p className="text-red-400 text-sm mt-2 flex items-center gap-2">
+                      <span>⚠️</span>
+                      {usernameError}
+                    </p>
+                  )}
+                  {!usernameError && newUsername && (
+                    <p className="text-green-400 text-sm mt-2 flex items-center gap-2">
+                      <span>✅</span>
+                      Username is available
+                    </p>
+                  )}
+                </div>
+                
+                <div className="bg-indigo-500/10 rounded-xl p-4 border border-indigo-500/20">
+                  <p className="text-sm text-indigo-300 mb-2">
+                    <strong>Username Guidelines:</strong>
+                  </p>
+                  <ul className="text-xs text-indigo-200 space-y-1">
+                    <li>• 3-20 characters long</li>
+                    <li>• Letters, numbers, and underscores only</li>
+                    <li>• Must be unique across all users</li>
+                    <li>• Cannot be changed frequently</li>
+                  </ul>
+                </div>
               </div>
             </motion.div>
 
@@ -335,7 +448,7 @@ const Customize = () => {
                     )}
                     
                     <h4 className="text-xl font-bold text-white mb-2">
-                      @{username || "username"}
+                      @{newUsername || username || "username"}
                     </h4>
                     
                     {bio && (
@@ -367,13 +480,20 @@ const Customize = () => {
                   className={`w-full mt-6 p-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 ${
                     isSaving
                       ? 'bg-gray-600 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg hover:shadow-purple-500/25'
+                      : usernameError || !newUsername.trim()
+                        ? 'bg-gray-600 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg hover:shadow-purple-500/25'
                   }`}
                 >
                   {isSaving ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       Saving...
+                    </>
+                  ) : usernameError || !newUsername.trim() ? (
+                    <>
+                      <span>⚠️</span>
+                      Fix Username Issues
                     </>
                   ) : (
                     <>

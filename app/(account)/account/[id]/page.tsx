@@ -113,8 +113,35 @@ const AccountPage = () => {
         .eq("id", id)
         .single();
 
-      if (userError) {
-        setError("Error fetching user data");
+      if (userError || !userData) {
+        // Create a minimal user profile row if missing, then refetch
+        try {
+          const authUser = data.user;
+          const fallbackUsername = (authUser.user_metadata?.username as string) || (authUser.email?.split("@")[0] ?? `user_${authUser.id.slice(0, 8)}`);
+          const { error: upsertErr } = await supabase.from("users").upsert({
+            id: authUser.id,
+            username: fallbackUsername,
+            profile_pic: "",
+            bio: "",
+            theme: "dark",
+            background_video: "",
+            location: "",
+            social_links: {},
+            badges: [],
+          }, { onConflict: "id" });
+          if (upsertErr) {
+            setError("Error initializing user profile");
+          } else {
+            const { data: refetched } = await supabase
+              .from("users")
+              .select("username, id, profile_views, profile_pic")
+              .eq("id", id)
+              .single();
+            if (refetched) setUserData(refetched);
+          }
+        } catch {
+          setError("Error fetching user data");
+        }
       } else {
         setUserData(userData);
       }
@@ -447,7 +474,7 @@ const AccountPage = () => {
 
       {/* Main Content */}
       <motion.main
-        className="flex-1 p-8 md:p-14 relative z-10"
+        className="flex-1 p-8 md:p-14 relative z-10 min-h-screen overflow-y-auto"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}

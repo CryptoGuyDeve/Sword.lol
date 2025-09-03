@@ -47,8 +47,38 @@ const Signup = () => {
       if (error) {
         setError(error.message);
       } else if (data.user) {
+        // Create or update corresponding profile row in users table
+        try {
+          const { error: upsertError } = await supabase.from("users").upsert(
+            {
+              id: data.user.id,
+              username: username,
+              profile_pic: null,
+              bio: null,
+              theme: null,
+              background_video: null,
+              location: null,
+              social_links: {},
+              badges: [],
+            },
+            { onConflict: "id" }
+          );
+
+          if (upsertError) {
+            // Surface a readable error but still allow navigation if auth succeeded
+            console.error("Failed to create user profile row:", upsertError);
+          }
+        } catch (e) {
+          console.error("Unexpected error creating user profile row:", e);
+        }
+
         // Redirect to the user's account page after successful signup
         router.push(`/account/${data.user.id}`);
+      } else {
+        // If email confirmation is required and no session/user returned
+        setError(
+          "Signup successful. Please check your email to confirm your account before logging in."
+        );
       }
     } catch (error) {
       setError("An unexpected error occurred");

@@ -22,10 +22,29 @@ import {
   FaSpotify,
   FaSoundcloud,
   FaFacebook,
-  FaUserShield, FaBolt, FaTrophy, FaMedal, FaBug, FaServer,
-  FaTree, FaMoon, FaCrown, FaUserSecret, FaGavel, FaLaptopCode,
-  FaShieldAlt, FaGamepad, FaUserTie, FaSkullCrossbones, FaHeart,
-  FaFire, FaChessQueen, FaGhost, FaRocket, FaCrosshairs, FaStar,
+  FaUserShield,
+  FaBolt,
+  FaTrophy,
+  FaMedal,
+  FaBug,
+  FaServer,
+  FaTree,
+  FaMoon,
+  FaCrown,
+  FaUserSecret,
+  FaGavel,
+  FaLaptopCode,
+  FaShieldAlt,
+  FaGamepad,
+  FaUserTie,
+  FaSkullCrossbones,
+  FaHeart,
+  FaFire,
+  FaChessQueen,
+  FaGhost,
+  FaRocket,
+  FaCrosshairs,
+  FaStar,
   FaKickstarter,
   FaTwitch,
   FaLinkedin,
@@ -35,10 +54,9 @@ import {
   FaBitcoin,
   FaEthereum,
   FaMonero,
-  FaAddressCard
+  FaAddressCard,
 } from "react-icons/fa";
 import Views from "@/components/views";
-
 
 declare global {
   interface Window {
@@ -49,26 +67,26 @@ declare global {
 
 const badgeIcons: Record<string, JSX.Element> = {
   // Staff Roles
-  "Owner": <FaCrown />,
+  Owner: <FaCrown />,
   "Co-Owner": <FaStar />, // Replaced with a star icon
-  "Admin": <FaGavel />, // Using gavel as admin authority
-  "Moderator": <FaUserShield />,
+  Admin: <FaGavel />, // Using gavel as admin authority
+  Moderator: <FaUserShield />,
   "Support Team": <FaLaptopCode />,
   "Bug Hunter": <FaBug />,
-  "Helper": <FaUserTie />,
+  Helper: <FaUserTie />,
 
   // Rank Roles
-  "OG": <FaBolt />,
-  "Legendary": <FaFire />,
-  "Elite": <FaChessQueen />,
-  "Veteran": <FaSkullCrossbones />,
+  OG: <FaBolt />,
+  Legendary: <FaFire />,
+  Elite: <FaChessQueen />,
+  Veteran: <FaSkullCrossbones />,
   "Server Booster": <FaServer />,
   "Top Contributor": <FaGavel />,
 
   // Gaming Roles
   "Pro Gamer": <FaGamepad />,
   "Esports Champion": <FaTrophy />,
-  "Speedrunner": <FaRocket />, // Replaced with rocket icon
+  Speedrunner: <FaRocket />, // Replaced with rocket icon
   "Top Fragger": <FaCrosshairs />, // Now using the correct icon from Fa
 
   // Event-Specific Badges
@@ -78,13 +96,12 @@ const badgeIcons: Record<string, JSX.Element> = {
   "Valentine's 2025": <FaHeart />,
 
   // Achievement Badges
-  "Winner": <FaTrophy />,
+  Winner: <FaTrophy />,
   "Second Place": <FaMedal />,
   "Third Place": <FaMedal />,
   "Beta Tester": <FaShieldAlt />,
   "Server OG": <FaUserSecret />,
 };
-
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -137,7 +154,6 @@ const UserPage = () => {
     monero: <FaMonero />,
     customurl: <FaAddressCard />,
   };
-
 
   useEffect(() => {
     if (!username) return;
@@ -403,7 +419,8 @@ const UserPage = () => {
         const { error } = await supabase
           .from("follows")
           .insert({ follower_id: currentUser.id, following_id: userData.id });
-        if (error && error.code !== "23505") { // 23505: unique violation
+        if (error && error.code !== "23505") {
+          // 23505: unique violation
           alert("Error following user: " + error.message);
         } else {
           setIsFollowing(true);
@@ -460,8 +477,11 @@ const UserPage = () => {
 
   return (
     <div
-      className={`relative w-full min-h-screen flex items-center justify-center ${userData?.theme === "light" ? "bg-white text-black" : "bg-black text-white"
-        }`}
+      className={`relative w-full min-h-screen flex items-center justify-center ${
+        userData?.theme === "light"
+          ? "bg-white text-black"
+          : "bg-black text-white"
+      }`}
       onClick={handleScreenClick}
     >
       {userData?.background_video && (
@@ -513,7 +533,10 @@ const UserPage = () => {
         </button>
       </motion.div>
 
-      <div className="relative w-full min-h-screen flex items-center justify-center" style={{ perspective: "1000px" }}>
+      <div
+        className="relative w-full min-h-screen flex items-center justify-center"
+        style={{ perspective: "1000px" }}
+      >
         {/* Background Video */}
         {userData?.background_video && (
           <div className="absolute top-0 left-0 w-full h-full z-0">
@@ -553,8 +576,10 @@ const UserPage = () => {
           </div>
 
           {/* Username with Elegant Glow */}
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mt-5 bg-gradient-to-r from-white to-gray-300 
-                 text-transparent bg-clip-text tracking-wide drop-shadow-2xl leading-tight">
+          <h2
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold mt-5 bg-gradient-to-r from-white to-gray-300 
+                 text-transparent bg-clip-text tracking-wide drop-shadow-2xl leading-tight"
+          >
             {userData?.username}
           </h2>
 
@@ -566,28 +591,44 @@ const UserPage = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleFollow}
                 className={`px-6 py-2 rounded-full font-semibold shadow-lg transition-all duration-300 
-                  ${isFollowing ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white" : "bg-gradient-to-r from-white to-gray-300 text-black"}
+                  ${
+                    isFollowing
+                      ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white"
+                      : "bg-gradient-to-r from-white to-gray-300 text-black"
+                  }
                   glassmorphism-btn border border-white/20 backdrop-blur-xl`}
                 disabled={followLoading}
               >
                 {followLoading ? (
-                  <span className="flex items-center gap-2 animate-pulse">Processing...</span>
+                  <span className="flex items-center gap-2 animate-pulse">
+                    Processing...
+                  </span>
                 ) : isFollowing ? (
-                  <span className="flex items-center gap-2"><FaUserCheck /> Following</span>
+                  <span className="flex items-center gap-2">
+                    <FaUserCheck /> Following
+                  </span>
                 ) : (
-                  <span className="flex items-center gap-2"><FaUserPlus /> Follow</span>
+                  <span className="flex items-center gap-2">
+                    <FaUserPlus /> Follow
+                  </span>
                 )}
               </motion.button>
               <div className="flex gap-6 mt-3">
                 <button
                   className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm"
-                  onClick={() => { setFollowersModal(true); fetchFollowersList(); }}
+                  onClick={() => {
+                    setFollowersModal(true);
+                    fetchFollowersList();
+                  }}
                 >
                   <FaUsers className="mr-1" /> {followersCount} Followers
                 </button>
                 <button
                   className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm"
-                  onClick={() => { setFollowingModal(true); fetchFollowingList(); }}
+                  onClick={() => {
+                    setFollowingModal(true);
+                    fetchFollowingList();
+                  }}
                 >
                   <FaUsers className="mr-1" /> {followingCount} Following
                 </button>
@@ -599,20 +640,40 @@ const UserPage = () => {
           {followersModal && (
             <AlertDialog open={followersModal} onOpenChange={setFollowersModal}>
               <AlertDialogContent className="bg-white dark:bg-[#18181b] rounded-2xl p-6 w-full max-w-md shadow-2xl">
-                <h3 className="text-lg font-bold mb-4 text-center">Followers</h3>
+                <h3 className="text-lg font-bold mb-4 text-center">
+                  Followers
+                </h3>
                 <div className="max-h-60 overflow-y-auto">
                   {followersList.length === 0 ? (
-                    <p className="text-center text-gray-400">No followers yet.</p>
+                    <p className="text-center text-gray-400">
+                      No followers yet.
+                    </p>
                   ) : (
                     followersList.map((user) => (
-                      <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition">
-                        <img src={user.profile_pic} alt={user.username} className="w-8 h-8 rounded-full" />
-                        <span className="text-gray-300 hover:underline">{user.username}</span>
+                      <Link
+                        key={user.id}
+                        href={`/${user.username}`}
+                        target="_blank"
+                        className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition"
+                      >
+                        <img
+                          src={user.profile_pic}
+                          alt={user.username}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <span className="text-gray-300 hover:underline">
+                          {user.username}
+                        </span>
                       </Link>
                     ))
                   )}
                 </div>
-                <button onClick={() => setFollowersModal(false)} className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg">Close</button>
+                <button
+                  onClick={() => setFollowersModal(false)}
+                  className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg"
+                >
+                  Close
+                </button>
               </AlertDialogContent>
             </AlertDialog>
           )}
@@ -620,20 +681,40 @@ const UserPage = () => {
           {followingModal && (
             <AlertDialog open={followingModal} onOpenChange={setFollowingModal}>
               <AlertDialogContent className="bg-white dark:bg-[#18181b] rounded-2xl p-6 w-full max-w-md shadow-2xl">
-                <h3 className="text-lg font-bold mb-4 text-center">Following</h3>
+                <h3 className="text-lg font-bold mb-4 text-center">
+                  Following
+                </h3>
                 <div className="max-h-60 overflow-y-auto">
                   {followingList.length === 0 ? (
-                    <p className="text-center text-gray-400">Not following anyone yet.</p>
+                    <p className="text-center text-gray-400">
+                      Not following anyone yet.
+                    </p>
                   ) : (
                     followingList.map((user) => (
-                      <Link key={user.id} href={`/${user.username}`} target="_blank" className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition">
-                        <img src={user.profile_pic} alt={user.username} className="w-8 h-8 rounded-full" />
-                        <span className="text-gray-300 hover:underline">{user.username}</span>
+                      <Link
+                        key={user.id}
+                        href={`/${user.username}`}
+                        target="_blank"
+                        className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition"
+                      >
+                        <img
+                          src={user.profile_pic}
+                          alt={user.username}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <span className="text-gray-300 hover:underline">
+                          {user.username}
+                        </span>
                       </Link>
                     ))
                   )}
                 </div>
-                <button onClick={() => setFollowingModal(false)} className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg">Close</button>
+                <button
+                  onClick={() => setFollowingModal(false)}
+                  className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg"
+                >
+                  Close
+                </button>
               </AlertDialogContent>
             </AlertDialog>
           )}
@@ -661,7 +742,9 @@ const UserPage = () => {
           {userData?.location && (
             <div className="mt-5 flex items-center justify-center text-gray-300">
               <FiMapPin className="mr-2 text-lg sm:text-xl md:text-2xl text-white animate-bounce" />
-              <span className="text-sm sm:text-lg md:text-xl font-medium">{userData.location}</span>
+              <span className="text-sm sm:text-lg md:text-xl font-medium">
+                {userData.location}
+              </span>
             </div>
           )}
 

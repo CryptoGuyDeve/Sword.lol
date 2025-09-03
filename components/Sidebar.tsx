@@ -38,7 +38,6 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [notifications, setNotifications] = useState(3);
   const [currentPath, setCurrentPath] = useState("");
 
   useEffect(() => {
@@ -114,7 +113,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
   ];
 
   const SidebarContent = () => (
-    <div className="bg-gradient-to-b from-gray-900/80 to-black/80 backdrop-blur-xl text-white p-6 rounded-3xl h-full border border-gray-500/20 shadow-2xl relative overflow-hidden">
+    <div className="bg-gradient-to-b from-gray-900/80 to-black/80 backdrop-blur-xl text-white p-6 rounded-3xl h-screen border border-gray-500/20 shadow-2xl relative overflow-hidden">
       {/* Animated Background - Fixed z-index and pointer-events */}
       <motion.div
         className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-900/20 via-transparent to-gray-800/20 pointer-events-none"
@@ -143,22 +142,6 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
             </div>
           </div>
 
-          {/* Notifications */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-300">Notifications</span>
-            </div>
-            {notifications > 0 && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="w-5 h-5 bg-gradient-to-r from-white to-gray-300 rounded-full flex items-center justify-center"
-              >
-                <span className="text-xs text-black font-bold">{notifications}</span>
-              </motion.div>
-            )}
-          </div>
         </motion.div>
 
         {/* Navigation */}
@@ -375,7 +358,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:block w-80 p-4 relative z-30">
+      <div className="hidden md:block w-80 p-4 relative z-30 h-screen">
         <SidebarContent />
       </div>
 
@@ -387,7 +370,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed top-0 left-0 w-80 h-full z-50 md:hidden p-4"
+            className="fixed top-0 left-0 w-80 h-screen z-50 md:hidden p-4"
           >
             <div className="flex justify-end mb-4">
               <motion.button 
