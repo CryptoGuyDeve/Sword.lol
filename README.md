@@ -208,7 +208,20 @@ graph TB
 ## Contributing
 
 1. Fork & clone
-2. Create feature branch: git checkout -b feature/name
+2. Create feature branch: git checkout -b feature/name// ...existing code...
+
+## 🧭 Architecture Diagram
+
+```mermaid
+graph TB
+  Browser --> NextApp[Next.js App]
+  NextApp --> Supabase["Supabase (Postgres + Auth)"]
+  NextApp --> LemonSqueezy["Lemon Squeezy API"]
+  NextApp --> DiscordAPI[Discord OAuth]
+  Supabase --> Storage["Storage (avatars, assets)"]
+```
+
+// ...existing code...
 3. Add tests, follow code style
 4. Open PR with clear description
 
