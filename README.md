@@ -194,17 +194,6 @@ Open http://localhost:3000
 - Do not expose server secrets in client code or public repos.
 - Add OAuth state parameter and proper CSRF safeguards for the Discord flow.
 
-## 🧭 Architecture Diagram
-
-```mermaid
-graph TB
-  Browser --> NextApp[Next.js App]
-  NextApp --> Supabase(Postgres + Auth)
-  NextApp --> LemonSqueezy(Lemon Squeezy API)
-  NextApp --> DiscordAPI(Discord OAuth)
-  Supabase --> Storage[Storage (avatars, assets)]
-```
-
 ## Contributing
 
 1. Fork & clone
@@ -221,12 +210,9 @@ graph TB
   Supabase --> Storage["Storage (avatars, assets)"]
 ```
 
-// ...existing code...
 3. Add tests, follow code style
 4. Open PR with clear description
 
 ## License
 
 MIT
-
-// ...existing code...
