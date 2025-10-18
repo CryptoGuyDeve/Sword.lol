@@ -265,39 +265,41 @@ const UserPage = () => {
       // Prevent self-views
       if (viewerId === userData.id) return;
 
-      // Only one view per day per user
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const { data: existing } = await supabase
-        .from("profile_views")
-        .select("id")
-        .eq("user_id", userData.id)
-        .eq("viewer_id", viewerId)
-        .gte("viewed_at", today.toISOString())
-        .single();
+      // Get country via geo-IP API
+      let country = "Unknown";
+      try {
+        const res = await fetch("https://ipapi.co/json/");
+        const geo = await res.json();
+        country = geo.country_name || geo.country || "Unknown";
+      } catch {}
+      
+      // Parse device/browser
+      const browser = Bowser.getParser(window.navigator.userAgent);
+      const device = browser.getPlatformType(true) || "Unknown";
+      const browserName = browser.getBrowserName() || "Unknown";
 
-      if (!existing) {
-        // Get country via geo-IP API
-        let country = "Unknown";
-        try {
-          const res = await fetch("https://ipapi.co/json/");
-          const geo = await res.json();
-          country = geo.country_name || geo.country || "Unknown";
-        } catch {}
-        // Parse device/browser
-        const browser = Bowser.getParser(window.navigator.userAgent);
-        const device = browser.getPlatformType(true) || "Unknown";
-        const browserName = browser.getBrowserName() || "Unknown";
-        // Insert view (session_duration will be updated on unmount)
-        await supabase.from("profile_views").insert({
-          user_id: userData.id,
-          viewer_id: viewerId,
-          country,
-          device,
-          browser: browserName,
-          session_duration: 0,
+      // Log view via API
+      try {
+        const response = await fetch('/api/profile-view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: userData.id,
+            viewerId,
+            country,
+            device,
+            browser: browserName,
+          }),
         });
-        didLogView = true;
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.message !== 'View already logged today') {
+            didLogView = true;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to log profile view:', error);
       }
 
       // Fetch total views
@@ -315,20 +317,29 @@ const UserPage = () => {
       if (!didLogView || !userData?.id) return;
       const sessionEnd = Date.now();
       const duration = Math.floor((sessionEnd - sessionStart) / 1000); // seconds
-      // TODO: Create the update_last_profile_view_duration function in Supabase
-      // Temporarily disabled to fix build issue
-      // if (supabase.rpc) {
-      //   // Create async function and call it without await since cleanup cannot be async
-      //   const updateDuration = async () => {
-      //     const { error } = await supabase.rpc("update_last_profile_view_duration", {
-      //       user_id: userData.id,
-      //       viewer_id: currentUser?.id || null,
-      //       duration,
-      //     });
-      //     // Silently ignore errors for this analytics call
-      //   };
-      //   updateDuration();
-      // }
+      
+      // Update session duration via API
+      const updateDuration = async () => {
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const viewerId = sessionData.session?.user?.id || null;
+          
+          if (viewerId) {
+            await fetch('/api/profile-view', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userData.id,
+                viewerId,
+                duration,
+              }),
+            });
+          }
+        } catch (error) {
+          console.error('Failed to update session duration:', error);
+        }
+      };
+      updateDuration();
     };
   }, [userData?.id]);
 
@@ -378,18 +389,27 @@ const UserPage = () => {
 
   // Fetch followers/following lists for modals
   const fetchFollowersList = async () => {
-    const { data } = await supabase
-      .from("follows")
-      .select("follower_id, users:follower_id(id, username, profile_pic)")
-      .eq("following_id", userData.id);
-    setFollowersList((data || []).map((f: any) => f.users));
+    try {
+      const response = await fetch(`/api/follow?userId=${userData.id}&type=followers`);
+      if (response.ok) {
+        const result = await response.json();
+        setFollowersList(result.users || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch followers:', error);
+    }
   };
+  
   const fetchFollowingList = async () => {
-    const { data } = await supabase
-      .from("follows")
-      .select("following_id, users:following_id(id, username, profile_pic)")
-      .eq("follower_id", userData.id);
-    setFollowingList((data || []).map((f: any) => f.users));
+    try {
+      const response = await fetch(`/api/follow?userId=${userData.id}&type=following`);
+      if (response.ok) {
+        const result = await response.json();
+        setFollowingList(result.users || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch following:', error);
+    }
   };
 
   // Follow/Unfollow logic
@@ -405,28 +425,33 @@ const UserPage = () => {
     }
     setFollowLoading(true);
     try {
-      if (isFollowing) {
-        // Unfollow
-        await supabase
-          .from("follows")
-          .delete()
-          .eq("follower_id", currentUser.id)
-          .eq("following_id", userData.id);
-        setIsFollowing(false);
-        setFollowersCount((c) => c - 1);
-      } else {
-        // Follow
-        const { error } = await supabase
-          .from("follows")
-          .insert({ follower_id: currentUser.id, following_id: userData.id });
-        if (error && error.code !== "23505") {
-          // 23505: unique violation
-          alert("Error following user: " + error.message);
-        } else {
-          setIsFollowing(true);
-          setFollowersCount((c) => c + 1);
+      const response = await fetch('/api/follow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          followerId: currentUser.id,
+          followingId: userData.id,
+          action: isFollowing ? 'unfollow' : 'follow'
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          if (result.action === 'followed') {
+            setIsFollowing(true);
+            setFollowersCount((c) => c + 1);
+          } else {
+            setIsFollowing(false);
+            setFollowersCount((c) => c - 1);
+          }
         }
+      } else {
+        const error = await response.json();
+        alert("Error: " + (error.error || "Failed to process follow action"));
       }
+    } catch (error) {
+      alert("Error: " + error);
     } finally {
       setFollowLoading(false);
     }
@@ -464,6 +489,21 @@ const UserPage = () => {
         style={{
           color: "white",
           textShadow: "0 0 15px rgba(255, 255, 255, 0.8)",
+        }}
+        onClick={async () => {
+          // Track link click
+          try {
+            await fetch('/api/link-click', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userData.id,
+                link: url,
+              }),
+            });
+          } catch (error) {
+            console.error('Failed to track link click:', error);
+          }
         }}
       >
         {socialIcons[platform as SocialPlatform]}

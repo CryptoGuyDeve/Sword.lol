@@ -33,6 +33,10 @@ Notes:
 
 ## API Routes (Next.js)
 
+- `/api/analytics` (GET): Fetch comprehensive analytics data (views, followers, countries, devices)
+- `/api/follow` (POST): Follow/unfollow users, GET: Fetch followers/following lists
+- `/api/profile-view` (POST): Log profile views, PUT: Update session duration
+- `/api/link-click` (POST): Track social link clicks
 - `/api/verify-lemonsqueezy` (GET): Verifies Lemon Squeezy configuration via REST API using `LEMON_SQUEEZY_API_KEY` and public IDs.
 - `/api/test-subscription` (GET): Returns computed checkout URLs for premium/basic variants from env variables.
 - `/api/discord/callback` (GET): Handles Discord OAuth code exchange, fetches user info, and upserts Discord fields into `users`.
@@ -45,14 +49,22 @@ Notes:
 - `/premium`, `/get-started`, `/docs`, `/privacy`, `/terms`, `/copyright`
 - `/leaderboard` (UI placeholder if not wired to data)
 - `/:username` public profile under `app/(userview)/[username]/`
-- `/account/:id` and subpages (badges, customize, explore, links) under `app/(account)/account/[id]/`
+- `/account/:id` and subpages (badges, customize, explore, links, analytics) under `app/(account)/account/[id]/`
 
 ## Database Schema (Supabase SQL)
 
 ```sql
--- Users table
-create table users (
-  id uuid primary key default gen_random_uuid(),
+-- Enable extensions you may need
+create extension if not exists "uuid-ossp";
+create extension if not exists "pgcrypto";
+
+-- =========================
+-- Tables
+-- =========================
+
+-- 1) users
+create table if not exists public.users (
+  id uuid primary key,
   username text unique not null,
   profile_pic text,
   bio text,
@@ -60,8 +72,8 @@ create table users (
   background_video text,
   location text,
   profile_views integer default 0,
-  social_links jsonb,
-  badges text[],
+  social_links jsonb default '{}'::jsonb,
+  badges text[] default '{}',
   -- Discord fields referenced by the app
   discord_id text,
   discord_username text,
@@ -69,8 +81,8 @@ create table users (
   created_at timestamp with time zone default now()
 );
 
--- Follows table (followers/following)
-create table follows (
+-- 2) follows table (followers/following)
+create table if not exists public.follows (
   id uuid primary key default gen_random_uuid(),
   follower_id uuid references users(id) on delete cascade,
   following_id uuid references users(id) on delete cascade,
@@ -78,8 +90,8 @@ create table follows (
   unique (follower_id, following_id)
 );
 
--- Profile views analytics
-create table profile_views (
+-- 3) profile_views analytics
+create table if not exists public.profile_views (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references users(id) on delete cascade,
   viewer_id uuid references users(id),
@@ -89,11 +101,87 @@ create table profile_views (
   session_duration integer default 0,
   viewed_at timestamp with time zone default now()
 );
-```
 
-Optional RPC used for analytics cleanup (commented in code):
-```sql
--- create function update_last_profile_view_duration(user_id uuid, viewer_id uuid, duration integer) ...
+-- 4) clicked_links tracking
+create table if not exists public.clicked_links (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references users(id) on delete cascade,
+  link text not null,
+  clicked_at timestamp with time zone default now()
+);
+
+-- =========================
+-- Indexes for Performance
+-- =========================
+
+-- Profile views indexes
+create index if not exists idx_profile_views_user_id on profile_views(user_id);
+create index if not exists idx_profile_views_viewed_at on profile_views(viewed_at);
+create index if not exists idx_profile_views_viewer_id on profile_views(viewer_id);
+
+-- Follows indexes
+create index if not exists idx_follows_follower_id on follows(follower_id);
+create index if not exists idx_follows_following_id on follows(following_id);
+create index if not exists idx_follows_created_at on follows(created_at);
+
+-- Clicked links indexes
+create index if not exists idx_clicked_links_user_id on clicked_links(user_id);
+create index if not exists idx_clicked_links_clicked_at on clicked_links(clicked_at);
+
+-- Users indexes
+create index if not exists idx_users_username on users(username);
+create index if not exists idx_users_discord_id on users(discord_id);
+
+-- =========================
+-- Row Level Security (RLS)
+-- =========================
+
+-- Enable RLS on all tables
+alter table users enable row level security;
+alter table follows enable row level security;
+alter table profile_views enable row level security;
+alter table clicked_links enable row level security;
+
+-- Users policies
+create policy "Users can view all profiles" on users for select using (true);
+create policy "Users can update own profile" on users for update using (auth.uid() = id);
+create policy "Users can insert own profile" on users for insert with check (auth.uid() = id);
+
+-- Follows policies
+create policy "Anyone can view follows" on follows for select using (true);
+create policy "Users can manage their own follows" on follows for all using (auth.uid() = follower_id);
+
+-- Profile views policies
+create policy "Anyone can view profile analytics" on profile_views for select using (true);
+create policy "System can insert profile views" on profile_views for insert with check (true);
+create policy "System can update profile views" on profile_views for update using (true);
+
+-- Clicked links policies
+create policy "Anyone can view link clicks" on clicked_links for select using (true);
+create policy "System can insert link clicks" on clicked_links for insert with check (true);
+
+-- =========================
+-- Optional RPC Functions
+-- =========================
+
+-- Function to update session duration (optional)
+create or replace function update_last_profile_view_duration(
+  p_user_id uuid,
+  p_viewer_id uuid,
+  p_duration integer
+) returns void as $$
+begin
+  update profile_views 
+  set session_duration = p_duration
+  where user_id = p_user_id 
+    and viewer_id = p_viewer_id
+    and viewed_at = (
+      select max(viewed_at) 
+      from profile_views 
+      where user_id = p_user_id and viewer_id = p_viewer_id
+    );
+end;
+$$ language plpgsql security definer;
 ```
 
 ## Main Features
@@ -140,7 +228,7 @@ Optional RPC used for analytics cleanup (commented in code):
 ## Technologies
 
 - Next.js (App Router, React, client components)
-- Supabase (Auth, PostgreSQL, JS client)
+- Supabase (Auth, PostgreSQL, JS client, SSR helpers)
 - Lemon Squeezy (checkout and API verification)
 - Discord OAuth (axios-based token/user fetch)
 - UI/UX: Framer Motion, Radix UI, Tailwind CSS, React Icons, Bowser (UA parsing)

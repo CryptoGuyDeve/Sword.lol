@@ -153,242 +153,63 @@ const AccountPage = () => {
 
   useEffect(() => {
     const fetchAnalytics = async () => {
-      // Total profile views
-      const { count: totalViews } = await supabase
-        .from("profile_views")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", id);
-      // Unique visitors
-      const { data: uniqueVisitorsData } = await supabase
-        .from("profile_views")
-        .select("viewer_id")
-        .eq("user_id", id);
-      const uniqueVisitors = new Set((uniqueVisitorsData || []).map((v) => v.viewer_id)).size;
-      // Followers count
-      const { count: followers } = await supabase
-        .from("follows")
-        .select("id", { count: "exact", head: true })
-        .eq("following_id", id);
-      // Following count
-      const { count: following } = await supabase
-        .from("follows")
-        .select("id", { count: "exact", head: true })
-        .eq("follower_id", id);
-      // Recent followers (last 5)
-      const { data: recentFollowersData } = await supabase
-        .from("follows")
-        .select("follower_id, users:follower_id(id, username, profile_pic)")
-        .eq("following_id", id)
-        .order("created_at", { ascending: false })
-        .limit(5);
-      const recentFollowers = ((recentFollowersData || []).flatMap((f) => Array.isArray(f.users) ? f.users : [f.users]) as User[]).filter(Boolean);
-      // Recent viewers (last 5, skip null viewers)
-      const { data: recentViewersData } = await supabase
-        .from("profile_views")
-        .select("viewer_id, users:viewer_id(id, username, profile_pic)")
-        .eq("user_id", id)
-        .order("viewed_at", { ascending: false })
-        .limit(10);
-      const recentViewers = ((recentViewersData || [])
-        .flatMap((v) => Array.isArray(v.users) ? v.users : [v.users]) as User[])
-        .filter((u) => u && u.id)
-        .slice(0, 5);
-      setAnalytics({
-        totalViews: totalViews || 0,
-        uniqueVisitors: uniqueVisitors || 0,
-        followers: followers || 0,
-        following: following || 0,
-        recentFollowers,
-        recentViewers,
-      });
+      try {
+        const response = await fetch(`/api/analytics?userId=${id}&dateRange=${dateRange}`);
+        if (response.ok) {
+          const data = await response.json();
+          setAnalytics(data.analytics);
+          setViewsOverTime(data.viewsOverTime);
+          setFollowersGrowth(data.followersGrowth);
+          setTopCountries(data.topCountries);
+          setDeviceBreakdown(data.deviceBreakdown);
+        }
+      } catch (error) {
+        console.error('Failed to fetch analytics:', error);
+      }
     };
     fetchAnalytics();
-  }, [id]);
-
-  useEffect(() => {
-    // Helper to get since date
-    const getSince = () => {
-      if (dateRange === 'all') return null;
-      const since = new Date();
-      since.setDate(since.getDate() - (dateRange === '7' ? 6 : 29));
-      since.setHours(0, 0, 0, 0);
-      return since;
-    };
-    // Fetch views over time
-    const fetchViewsOverTime = async () => {
-      const since = getSince();
-      let query = supabase
-        .from("profile_views")
-        .select("viewed_at")
-        .eq("user_id", id);
-      if (since) query = query.gte("viewed_at", since.toISOString());
-      const { data } = await query;
-      // Group by date
-      const days = dateRange === '7' ? 7 : 30;
-      const counts: Record<string, number> = {};
-      for (let i = 0; i < days; i++) {
-        const d = since ? new Date(since) : new Date();
-        if (since) d.setDate(since.getDate() + i);
-        else d.setDate(d.getDate() - (days - 1 - i));
-        const key = d.toISOString().slice(0, 10);
-        counts[key] = 0;
-      }
-      (data || []).forEach((row: any) => {
-        const key = row.viewed_at.slice(0, 10);
-        if (counts[key] !== undefined) counts[key]++;
-      });
-      setViewsOverTime(Object.entries(counts).map(([date, views]) => ({ date, views })));
-    };
-    // Fetch followers growth
-    const fetchFollowersGrowth = async () => {
-      const since = getSince();
-      let query = supabase
-        .from("follows")
-        .select("created_at")
-        .eq("following_id", id);
-      if (since) query = query.gte("created_at", since.toISOString());
-      const { data } = await query;
-      const days = dateRange === '7' ? 7 : 30;
-      const counts: Record<string, number> = {};
-      for (let i = 0; i < days; i++) {
-        const d = since ? new Date(since) : new Date();
-        if (since) d.setDate(since.getDate() + i);
-        else d.setDate(d.getDate() - (days - 1 - i));
-        const key = d.toISOString().slice(0, 10);
-        counts[key] = 0;
-      }
-      (data || []).forEach((row: any) => {
-        const key = row.created_at.slice(0, 10);
-        if (counts[key] !== undefined) counts[key]++;
-      });
-      // Cumulative sum for growth
-      let total = 0;
-      const growth = Object.entries(counts).map(([date, followers]) => {
-        total += followers as number;
-        return { date, followers: total };
-      });
-      setFollowersGrowth(growth);
-    };
-    // Fetch top countries
-    const fetchTopCountries = async () => {
-      const since = getSince();
-      let query = supabase
-        .from("profile_views")
-        .select("country")
-        .eq("user_id", id);
-      if (since) query = query.gte("viewed_at", since.toISOString());
-      const { data } = await query;
-      const counts: Record<string, number> = {};
-      (data || []).forEach((row: any) => {
-        const country = row.country || "Unknown";
-        counts[country] = (counts[country] || 0) + 1;
-      });
-      const arr = Object.entries(counts)
-        .map(([country, count]) => ({ country, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 8);
-      setTopCountries(arr);
-    };
-    // Fetch device breakdown
-    const fetchDeviceBreakdown = async () => {
-      const since = getSince();
-      let query = supabase
-        .from("profile_views")
-        .select("device")
-        .eq("user_id", id);
-      if (since) query = query.gte("viewed_at", since.toISOString());
-      const { data } = await query;
-      const counts: Record<string, number> = {};
-      (data || []).forEach((row: any) => {
-        const device = row.device || "Unknown";
-        counts[device] = (counts[device] || 0) + 1;
-      });
-      const arr = Object.entries(counts)
-        .map(([device, count]) => ({ device, count }))
-        .sort((a, b) => b.count - a.count);
-      setDeviceBreakdown(arr);
-    };
-    // Fetch returning vs new visitors
-    const fetchReturningVsNew = async () => {
-      const since = getSince();
-      let query = supabase
-        .from("profile_views")
-        .select("viewer_id, viewed_at")
-        .eq("user_id", id);
-      if (since) query = query.gte("viewed_at", since.toISOString());
-      const { data } = await query;
-      const seen: Record<string, number> = {};
-      let returning = 0, fresh = 0;
-      (data || []).forEach((row: any) => {
-        if (!row.viewer_id) return;
-        if (seen[row.viewer_id]) returning++;
-        else {
-          seen[row.viewer_id] = 1;
-          fresh++;
-        }
-      });
-      setReturningVsNew([
-        { type: "Returning", value: returning },
-        { type: "New", value: fresh },
-      ]);
-    };
-    // Fetch most clicked links
-    const fetchMostClickedLinks = async () => {
-      const since = getSince();
-      let query = supabase
-        .from("clicked_links")
-        .select("link, clicked_at")
-        .eq("user_id", id);
-      if (since) query = query.gte("clicked_at", since.toISOString());
-      const { data } = await query;
-      const counts: Record<string, number> = {};
-      (data || []).forEach((row: any) => {
-        const link = row.link || "Unknown";
-        counts[link] = (counts[link] || 0) + 1;
-      });
-      const arr = Object.entries(counts)
-        .map(([link, clicks]) => ({ link, clicks }))
-        .sort((a, b) => b.clicks - a.clicks)
-        .slice(0, 8);
-      setMostClickedLinks(arr);
-    };
-    // Save fetch function for real-time use
-    analyticsRef.current = () => {
-      fetchViewsOverTime();
-      fetchFollowersGrowth();
-      fetchTopCountries();
-      fetchDeviceBreakdown();
-      fetchReturningVsNew();
-      fetchMostClickedLinks();
-    };
   }, [id, dateRange]);
 
-  // Real-time subscriptions for analytics
+    // Real-time subscriptions for analytics
   useEffect(() => {
     if (!id) return;
-    // Helper to refetch all analytics
-    const refetch = () => {
-      if (analyticsRef.current) analyticsRef.current();
-    };
+    
     // Subscribe to profile_views
     const profileViewsSub = supabase
       .channel('profile_views-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profile_views', filter: `user_id=eq.${id}` }, refetch)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profile_views', filter: `user_id=eq.${id}` }, () => {
+        // Refetch analytics when views change
+        fetch(`/api/analytics?userId=${id}&dateRange=${dateRange}`)
+          .then(res => res.json())
+          .then(data => {
+            setAnalytics(data.analytics);
+            setViewsOverTime(data.viewsOverTime);
+            setFollowersGrowth(data.followersGrowth);
+            setTopCountries(data.topCountries);
+            setDeviceBreakdown(data.deviceBreakdown);
+          })
+          .catch(console.error);
+      })
       .subscribe();
+    
     // Subscribe to follows
     const followsSub = supabase
       .channel('follows-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'follows', filter: `following_id=eq.${id}` }, refetch)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'follows', filter: `following_id=eq.${id}` }, () => {
+        // Refetch analytics when follows change
+        fetch(`/api/analytics?userId=${id}&dateRange=${dateRange}`)
+          .then(res => res.json())
+          .then(data => {
+            setAnalytics(data.analytics);
+            setFollowersGrowth(data.followersGrowth);
+          })
+          .catch(console.error);
+      })
       .subscribe();
-    // Subscribe to clicked_links
-    const clickedLinksSub = supabase
-      .channel('clicked_links-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'clicked_links', filter: `user_id=eq.${id}` }, refetch)
-      .subscribe();
+
     return () => {
-      supabase.removeChannel(profileViewsSub);
-      supabase.removeChannel(followsSub);
-      supabase.removeChannel(clickedLinksSub);
+      profileViewsSub.unsubscribe();
+      followsSub.unsubscribe();
     };
   }, [id, dateRange]);
 
