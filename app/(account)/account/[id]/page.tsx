@@ -209,271 +209,203 @@ const AccountPage = () => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className={`flex min-h-screen text-white relative overflow-x-hidden ${theme === 'dark' ? 'bg-[#0e0e0e]' : 'bg-white text-black'}`}>
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-900/30 via-black to-blue-900/30 blur-2xl opacity-80 animate-pulse"
-        animate={{ opacity: [0.7, 1, 0.7] }}
-        transition={{ duration: 10, repeat: Infinity }}
-      />
+    <div className={`flex h-screen overflow-hidden ${theme === 'dark' ? 'bg-[#0e0e0e] text-white' : 'bg-white text-black'}`}>
       <Sidebar username={userData.username} id={userData.id} />
 
-      {/* Floating Action Button */}
-      <motion.button
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.95 }}
-        className="fixed bottom-8 right-8 z-40 bg-gradient-to-r from-purple-500 to-blue-500 text-white p-5 rounded-full shadow-2xl hover:shadow-purple-500/30 transition-all flex items-center gap-2 text-lg font-bold"
-        onClick={() => router.push(`/account/${userData.id}/customize`)}
-        title="Quick Customize"
-      >
-        <FaUserEdit className="text-white text-2xl" />
-      </motion.button>
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-8">
 
-      {/* Main Content */}
-      <motion.main
-        className="flex-1 p-8 md:p-14 relative z-10 min-h-screen overflow-y-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-10 bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text drop-shadow-lg">
-          Dashboard Overview
-        </h2>
-
-        {/* Filter Controls & Dark/Light Toggle */}
-        <div className="flex flex-wrap gap-4 mb-10 items-center">
-          <select className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition" value={dateRange} onChange={e => setDateRange(e.target.value as any)}>
-            <option value="7">Last 7 Days</option>
-            <option value="30">Last 30 Days</option>
-            <option value="all">All Time</option>
-          </select>
-          <select className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition">
-            <option>All Devices</option>
-            <option>Desktop</option>
-            <option>Mobile</option>
-          </select>
-          <select className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition">
-            <option>All Countries</option>
-          </select>
-          <button className="ml-auto bg-gradient-to-r from-purple-500 to-blue-500 px-5 py-2 rounded-full text-white font-semibold shadow-lg hover:from-purple-600 hover:to-blue-600 transition" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-            Toggle {theme === 'dark' ? 'Light' : 'Dark'}
-          </button>
-          <button className="bg-gradient-to-r from-pink-500 to-purple-500 px-5 py-2 rounded-full text-white font-semibold shadow-lg hover:from-pink-600 hover:to-purple-600 transition" onClick={() => {/* CSV Export logic */ }}>Export CSV</button>
-        </div>
-
-        {/* Profile Card */}
-        <motion.div
-          className="w-full max-w-3xl mx-auto mb-12 p-8 rounded-3xl bg-gradient-to-br from-purple-900/60 via-black/60 to-blue-900/60 shadow-2xl flex flex-col md:flex-row items-center gap-8 backdrop-blur-xl border border-purple-500/20"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <img src={userData.profile_pic} alt={userData.username} className="w-28 h-28 rounded-full border-4 border-purple-500 shadow-lg object-cover" />
-          <div className="flex-1 text-center md:text-left">
-            <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text mb-2">
-              @{userData.username}
-            </h3>
-            <div className="flex flex-wrap gap-4 justify-center md:justify-start mb-2">
-              <span className="px-4 py-2 rounded-full bg-white/10 text-purple-300 font-semibold text-sm shadow">{analytics.followers} Followers</span>
-              <span className="px-4 py-2 rounded-full bg-white/10 text-blue-300 font-semibold text-sm shadow">{analytics.totalViews} Views</span>
-              <span className="px-4 py-2 rounded-full bg-white/10 text-pink-300 font-semibold text-sm shadow">{analytics.uniqueVisitors} Unique</span>
+          {/* Header */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
+              <p className="text-sm text-gray-500 mt-1">Welcome back, @{userData.username}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="mt-4 px-6 py-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold shadow hover:from-red-600 hover:to-pink-600 transition"
-            >
-              <FaSignOutAlt className="inline-block mr-2" /> Logout
-            </button>
-          </div>
-        </motion.div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-12">
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-purple-700/40 to-purple-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaEye className="text-3xl text-purple-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-purple-200">{analytics.totalViews}</span>
-            <span className="text-xs text-gray-300">Total Views</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-blue-700/40 to-blue-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaUsers className="text-3xl text-blue-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-blue-200">{analytics.uniqueVisitors}</span>
-            <span className="text-xs text-gray-300">Unique Visitors</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-green-700/40 to-green-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaUserPlus className="text-3xl text-green-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-green-200">{analytics.followers}</span>
-            <span className="text-xs text-gray-300">Followers</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-pink-700/40 to-pink-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaFire className="text-3xl text-pink-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-pink-200">{analytics.following}</span>
-            <span className="text-xs text-gray-300">Following</span>
-          </motion.div>
-        </div>
-
-        {/* Milestone Badges */}
-        <div className="flex flex-wrap gap-3 items-center mb-12">
-          {milestoneList.map(milestone => {
-            const achieved = (milestone.key === 'views' && analytics.totalViews >= milestone.value) || (milestone.key === 'followers' && analytics.followers >= milestone.value);
-            return (
-              <motion.span
-                key={milestone.label}
-                whileHover={{ scale: 1.08 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border shadow transition-all ${achieved ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none shadow-lg' : 'bg-black/20 text-gray-400 border-gray-600'}`}
+            <div className="flex items-center gap-3">
+              <select
+                className="bg-[#121212] border border-white/10 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-white/20 outline-none transition-all"
+                value={dateRange}
+                onChange={e => setDateRange(e.target.value as any)}
               >
-                {milestone.icon} {milestone.label}
-                {achieved && (
-                  <>
-                    <FaMedal className="ml-1 text-yellow-400 animate-bounce" />
-                    <button
-                      className="ml-2 px-2 py-1 rounded-full bg-purple-700 hover:bg-purple-800 text-white text-xs flex items-center gap-1 shadow"
-                      onClick={() => handleShareBadge(milestone)}
-                    >
-                      <FaShareAlt /> Share
-                    </button>
-                    {shareSuccess === milestone.label && (
-                      <span className="ml-2 text-green-300 animate-pulse">Copied!</span>
-                    )}
-                  </>
-                )}
-              </motion.span>
-            );
-          })}
-        </div>
+                <option value="7">Last 7 Days</option>
+                <option value="30">Last 30 Days</option>
+                <option value="all">All Time</option>
+              </select>
+              <button
+                className="px-3 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-colors text-sm font-medium"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              >
+                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              </button>
+              <button
+                onClick={() => router.push(`/account/${userData.id}/customize`)}
+                className="flex items-center gap-2 px-4 py-2 bg-white text-black text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <FaUserEdit /> Customize
+              </button>
+            </div>
+          </div>
 
-        {/* Widget Picker */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {defaultWidgets.map(w => (
-            <button
-              key={w.id}
-              className={`px-4 py-2 rounded-full text-xs font-semibold border shadow transition-all ${widgetVisibility[w.id] ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-none' : 'bg-black/20 text-gray-400 border-gray-600'}`}
-              onClick={() => toggleWidget(w.id)}
-            >
-              {widgetVisibility[w.id] ? 'Hide' : 'Show'} {w.label}
-            </button>
-          ))}
-        </div>
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Total Views", value: analytics.totalViews, icon: FaEye, color: "text-white" },
+              { label: "Unique Visitors", value: analytics.uniqueVisitors, icon: FaUsers, color: "text-gray-400" },
+              { label: "Followers", value: analytics.followers, icon: FaUserPlus, color: "text-white" },
+              { label: "Following", value: analytics.following, icon: FaFire, color: "text-gray-400" }
+            ].map((stat, i) => (
+              <div key={i} className="p-5 rounded-xl bg-[#121212] border border-white/5 flex flex-col gap-2 transition-all hover:border-white/10">
+                <div className="flex justify-between items-start">
+                  <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">{stat.label}</span>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                </div>
+                <div className="text-2xl font-bold tracking-tight">{stat.value}</div>
+              </div>
+            ))}
+          </div>
 
-        {/* Analytics Charts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-12">
-          {defaultWidgets.filter(w => widgetVisibility[w.id]).map(w => (
-            <motion.div
-              key={w.id}
-              className="bg-gradient-to-br from-black/40 to-purple-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
-              whileHover={{ scale: 1.03 }}
-            >
-              {w.id === 'viewsOverTime' && (
-                <>
-                  <h4 className="text-lg font-semibold mb-4">Views Over Time</h4>
-                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(viewsOverTime, null, 2)}</pre>
-                  <ResponsiveContainer width="100%" height={220}>
-                    {viewsOverTime.length === 0 ? (
-                      <div className="text-center text-gray-400">No data available</div>
-                    ) : (
-                      <LineChart data={viewsOverTime} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
-                        <XAxis dataKey="date" stroke="#a78bfa" />
-                        <YAxis stroke="#a78bfa" />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="views" stroke="#a78bfa" strokeWidth={3} dot={false} />
+          {/* Milestone Badges */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Milestones</h3>
+            <div className="flex flex-wrap gap-3">
+              {milestoneList.map(milestone => {
+                const achieved = (milestone.key === 'views' && analytics.totalViews >= milestone.value) || (milestone.key === 'followers' && analytics.followers >= milestone.value);
+                return (
+                  <div
+                    key={milestone.label}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${achieved ? 'bg-white/5 border-white/20 text-white' : 'bg-transparent border-white/5 text-gray-600'}`}
+                  >
+                    {milestone.icon}
+                    <span>{milestone.label}</span>
+                    {achieved && (
+                      <button
+                        className="ml-2 p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                        onClick={() => handleShareBadge(milestone)}
+                        title="Share Badge"
+                      >
+                        <FaShareAlt />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+
+          {/* Charts Toggle */}
+          <div className="flex flex-wrap gap-2">
+            {defaultWidgets.map(w => (
+              <button
+                key={w.id}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${widgetVisibility[w.id] ? 'bg-white text-black border-transparent' : 'bg-transparent text-gray-500 border-white/10 hover:border-white/20 hover:text-gray-400'}`}
+                onClick={() => toggleWidget(w.id)}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Analytics Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {defaultWidgets.filter(w => widgetVisibility[w.id]).map(w => (
+              <div
+                key={w.id}
+                className="bg-[#121212] border border-white/5 rounded-xl p-6 flex flex-col"
+              >
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-300">{w.label}</h4>
+                </div>
+
+                <div className="flex-1 min-h-[220px]">
+                  {w.id === 'viewsOverTime' && (
+                    <ResponsiveContainer width="100%" height={220}>
+                      <LineChart data={viewsOverTime}>
+                        <XAxis dataKey="date" stroke="#333" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#333" fontSize={12} tickLine={false} axisLine={false} />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '12px' }}
+                          itemStyle={{ color: '#fff' }}
+                        />
+                        <Line type="monotone" dataKey="views" stroke="#fff" strokeWidth={2} dot={false} />
                       </LineChart>
-                    )}
-                  </ResponsiveContainer>
-                </>
-              )}
-              {w.id === 'followersGrowth' && (
-                <>
-                  <h4 className="text-lg font-semibold mb-4">Followers Growth</h4>
-                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(followersGrowth, null, 2)}</pre>
-                  <ResponsiveContainer width="100%" height={220}>
-                    {followersGrowth.length === 0 ? (
-                      <div className="text-center text-gray-400">No data available</div>
-                    ) : (
-                      <LineChart data={followersGrowth} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
-                        <XAxis dataKey="date" stroke="#34d399" />
-                        <YAxis stroke="#34d399" />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="followers" stroke="#34d399" strokeWidth={3} dot={false} />
+                    </ResponsiveContainer>
+                  )}
+                  {w.id === 'followersGrowth' && (
+                    <ResponsiveContainer width="100%" height={220}>
+                      <LineChart data={followersGrowth}>
+                        <XAxis dataKey="date" stroke="#333" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#333" fontSize={12} tickLine={false} axisLine={false} />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '12px' }}
+                          itemStyle={{ color: '#fff' }}
+                        />
+                        <Line type="monotone" dataKey="followers" stroke="#fff" strokeWidth={2} dot={false} />
                       </LineChart>
-                    )}
-                  </ResponsiveContainer>
-                </>
-              )}
-              {w.id === 'topCountries' && (
-                <>
-                  <h4 className="text-lg font-semibold mb-4">Top Countries</h4>
-                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(topCountries, null, 2)}</pre>
-                  <ResponsiveContainer width="100%" height={220}>
-                    {topCountries.length === 0 ? (
-                      <div className="text-center text-gray-400">No data available</div>
-                    ) : (
+                    </ResponsiveContainer>
+                  )}
+                  {w.id === 'topCountries' && (
+                    <ResponsiveContainer width="100%" height={220}>
                       <PieChart>
-                        <Pie data={topCountries} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={80} fill="#f472b6" label />
-                        <Tooltip />
-                        <Legend />
+                        <Pie
+                          data={topCountries} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={70}
+                          fill="#333" stroke="#121212" strokeWidth={2}
+                        >
+                          {topCountries.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={['#fff', '#666', '#333'][index % 3]} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '12px' }} />
                       </PieChart>
-                    )}
-                  </ResponsiveContainer>
-                </>
-              )}
-              {w.id === 'deviceBreakdown' && (
-                <>
-                  <h4 className="text-lg font-semibold mb-4">Device Breakdown</h4>
-                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(deviceBreakdown, null, 2)}</pre>
-                  <ResponsiveContainer width="100%" height={220}>
-                    {deviceBreakdown.length === 0 ? (
-                      <div className="text-center text-gray-400">No data available</div>
-                    ) : (
+                    </ResponsiveContainer>
+                  )}
+                  {w.id === 'deviceBreakdown' && (
+                    <ResponsiveContainer width="100%" height={220}>
                       <PieChart>
-                        <Pie data={deviceBreakdown} dataKey="count" nameKey="device" cx="50%" cy="50%" outerRadius={80} fill="#60a5fa" label />
-                        <Tooltip />
-                        <Legend />
+                        <Pie
+                          data={deviceBreakdown} dataKey="count" nameKey="device" cx="50%" cy="50%" outerRadius={70}
+                          fill="#333" stroke="#121212" strokeWidth={2}
+                        >
+                          {deviceBreakdown.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={['#fff', '#666', '#333'][index % 3]} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '12px' }} />
                       </PieChart>
-                    )}
-                  </ResponsiveContainer>
-                </>
-              )}
-              {w.id === 'returningVsNew' && (
-                <>
-                  <h4 className="text-lg font-semibold mb-4">Returning vs. New Visitors</h4>
-                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(returningVsNew, null, 2)}</pre>
-                  <ResponsiveContainer width="100%" height={220}>
-                    {returningVsNew.length === 0 ? (
-                      <div className="text-center text-gray-400">No data available</div>
-                    ) : (
+                    </ResponsiveContainer>
+                  )}
+                  {w.id === 'returningVsNew' && (
+                    <ResponsiveContainer width="100%" height={220}>
                       <PieChart>
-                        <Pie data={returningVsNew} dataKey="value" nameKey="type" cx="50%" cy="50%" outerRadius={80} fill="#fbbf24" label />
-                        <Tooltip />
-                        <Legend />
+                        <Pie
+                          data={returningVsNew} dataKey="value" nameKey="type" cx="50%" cy="50%" outerRadius={70}
+                          fill="#333" stroke="#121212" strokeWidth={2}
+                        >
+                          {returningVsNew.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={['#fff', '#666', '#333'][index % 3]} />
+                          ))}
+                        </Pie>
+                        <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '12px' }} />
                       </PieChart>
-                    )}
-                  </ResponsiveContainer>
-                </>
-              )}
-              {w.id === 'mostClickedLinks' && (
-                <>
-                  <h4 className="text-lg font-semibold mb-4">Most Clicked Links</h4>
-                  <pre className="text-xs text-gray-400 mb-2 overflow-x-auto">{JSON.stringify(mostClickedLinks, null, 2)}</pre>
-                  <ResponsiveContainer width="100%" height={220}>
-                    {mostClickedLinks.length === 0 ? (
-                      <div className="text-center text-gray-400">No data available</div>
-                    ) : (
+                    </ResponsiveContainer>
+                  )}
+                  {w.id === 'mostClickedLinks' && (
+                    <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={mostClickedLinks}>
-                        <XAxis dataKey="link" stroke="#a3e635" />
-                        <YAxis stroke="#a3e635" />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="clicks" fill="#a3e635" />
+                        <XAxis dataKey="link" stroke="#333" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#333" fontSize={12} tickLine={false} axisLine={false} />
+                        <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: 'none', borderRadius: '8px', fontSize: '12px' }} cursor={{ fill: '#222' }} />
+                        <Bar dataKey="clicks" fill="#fff" radius={[4, 4, 0, 0]} />
                       </BarChart>
-                    )}
-                  </ResponsiveContainer>
-                </>
-              )}
-            </motion.div>
-          ))}
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </motion.main>
+      </main>
     </div>
   );
 };

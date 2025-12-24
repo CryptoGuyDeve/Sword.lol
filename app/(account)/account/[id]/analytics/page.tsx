@@ -113,158 +113,213 @@ const AnalyticsPage = () => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="flex bg-[#0e0e0e] min-h-screen text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 blur-3xl"
-        animate={{ opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      />
-
+    <div className="flex bg-[#0e0e0e] min-h-screen text-white overflow-hidden">
       <Sidebar id={id} username={userData.username} />
 
-      <motion.main
-        className="flex-1 p-8 md:p-12 relative z-10 min-h-screen overflow-y-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-10 bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text drop-shadow-lg">
-          Analytics Dashboard
-        </h2>
+      <main className="flex-1 p-6 md:p-10 overflow-y-auto h-screen">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-6">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight mb-2">Analytics</h1>
+              <p className="text-gray-400 text-sm">Track your performance, audience growth, and engagement metrics.</p>
+            </div>
 
-        {/* Filter Controls */}
-        <div className="flex flex-wrap gap-4 mb-10 items-center">
-          <select
-            className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition"
-            value={dateRange}
-            onChange={e => setDateRange(e.target.value as any)}
-          >
-            <option value="7">Last 7 Days</option>
-            <option value="30">Last 30 Days</option>
-            <option value="all">All Time</option>
-          </select>
+            <div className="flex bg-[#121212] border border-white/10 rounded-lg p-1 w-full md:w-auto">
+              {[{ v: '7', l: '7 Days' }, { v: '30', l: '30 Days' }, { v: 'all', l: 'All Time' }].map(opt => (
+                <button
+                  key={opt.v}
+                  onClick={() => setDateRange(opt.v as any)}
+                  className={`flex-1 md:flex-none px-4 py-1.5 text-xs font-medium rounded-md transition-all ${dateRange === opt.v ? 'bg-white text-black shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                >
+                  {opt.l}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: 'Total Views', value: analytics.totalViews, icon: FaEye, color: 'text-purple-400' },
+              { label: 'Unique Visitors', value: analytics.uniqueVisitors, icon: FaUsers, color: 'text-blue-400' },
+              { label: 'New Followers', value: analytics.followers, icon: FaUserPlus, color: 'text-emerald-400' },
+              { label: 'Following', value: analytics.following, icon: FaChartLine, color: 'text-pink-400' }
+            ].map((stat, i) => (
+              <div key={i} className="bg-[#121212] border border-white/5 rounded-xl p-6 hover:border-white/20 transition-all group">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">{stat.label}</span>
+                  <stat.icon className={`${stat.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
+                </div>
+                <div className="text-3xl font-bold">{stat.value.toLocaleString()}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Main Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Views Chart */}
+            <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+              <h3 className="text-lg font-semibold mb-8">Views Over Time</h3>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={viewsOverTime}>
+                    <XAxis
+                      dataKey="date"
+                      stroke="#333"
+                      tick={{ fill: '#666', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                      dy={10}
+                    />
+                    <YAxis
+                      stroke="#333"
+                      tick={{ fill: '#666', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                      dx={-10}
+                      tickFormatter={(value) => value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value}
+                    />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                      itemStyle={{ color: '#fff', fontSize: '12px' }}
+                      labelStyle={{ color: '#888', marginBottom: '4px' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="views"
+                      stroke="#a855f7"
+                      strokeWidth={3}
+                      dot={false}
+                      activeDot={{ r: 6, fill: '#a855f7', strokeWidth: 0 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Growth Chart */}
+            <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+              <h3 className="text-lg font-semibold mb-8">Followers Growth</h3>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={followersGrowth}>
+                    <XAxis
+                      dataKey="date"
+                      stroke="#333"
+                      tick={{ fill: '#666', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                      dy={10}
+                    />
+                    <YAxis
+                      stroke="#333"
+                      tick={{ fill: '#666', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                      dx={-10}
+                    />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                      itemStyle={{ color: '#fff', fontSize: '12px' }}
+                      labelStyle={{ color: '#888', marginBottom: '4px' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="followers"
+                      stroke="#10b981"
+                      strokeWidth={3}
+                      dot={false}
+                      activeDot={{ r: 6, fill: '#10b981', strokeWidth: 0 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Secondary Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Top Countries */}
+            <div className="bg-[#121212] border border-white/5 rounded-xl p-6 flex flex-col">
+              <h3 className="text-lg font-semibold mb-4">Top Countries</h3>
+              <div className="flex-1 min-h-[250px] relative">
+                {topCountries.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={topCountries}
+                        dataKey="count"
+                        nameKey="country"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={2}
+                      >
+                        {topCountries.map((e, i) => <Cell key={i} fill={['#a855f7', '#ec4899', '#3b82f6', '#10b981'][i % 4]} stroke="rgba(0,0,0,0)" />)}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }}
+                        itemStyle={{ color: '#fff' }}
+                      />
+                      <Legend
+                        verticalAlign="bottom"
+                        height={36}
+                        iconType="circle"
+                        formatter={(value) => <span style={{ color: '#9ca3af', fontSize: '12px' }}>{value}</span>}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-600 text-sm">
+                    No data available
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Device Breakdown */}
+            <div className="bg-[#121212] border border-white/5 rounded-xl p-6 flex flex-col">
+              <h3 className="text-lg font-semibold mb-4">Device Breakdown</h3>
+              <div className="flex-1 min-h-[250px] relative">
+                {deviceBreakdown.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={deviceBreakdown}
+                        dataKey="count"
+                        nameKey="device"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={2}
+                      >
+                        {deviceBreakdown.map((e, i) => <Cell key={i} fill={['#3b82f6', '#f59e0b', '#ef4444'][i % 3]} stroke="rgba(0,0,0,0)" />)}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }}
+                        itemStyle={{ color: '#fff' }}
+                      />
+                      <Legend
+                        verticalAlign="bottom"
+                        height={36}
+                        iconType="circle"
+                        formatter={(value) => <span style={{ color: '#9ca3af', fontSize: '12px' }}>{value}</span>}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-gray-600 text-sm">
+                    No data available
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-12">
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-purple-700/40 to-purple-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaEye className="text-3xl text-purple-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-purple-200">{analytics.totalViews}</span>
-            <span className="text-xs text-gray-300">Total Views</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-blue-700/40 to-blue-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaUsers className="text-3xl text-blue-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-blue-200">{analytics.uniqueVisitors}</span>
-            <span className="text-xs text-gray-300">Unique Visitors</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-green-700/40 to-green-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaUserPlus className="text-3xl text-green-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-green-200">{analytics.followers}</span>
-            <span className="text-xs text-gray-300">Followers</span>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.04 }} className="p-6 rounded-2xl bg-gradient-to-br from-pink-700/40 to-pink-900/40 shadow-xl flex flex-col items-center gap-2">
-            <FaFire className="text-3xl text-pink-400 mb-2 animate-pulse" />
-            <span className="text-3xl font-bold text-pink-200">{analytics.following}</span>
-            <span className="text-xs text-gray-300">Following</span>
-          </motion.div>
-        </div>
-
-        {/* Analytics Charts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-12">
-          {/* Views Over Time */}
-          <motion.div
-            className="bg-gradient-to-br from-black/40 to-purple-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
-            whileHover={{ scale: 1.03 }}
-          >
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <FaChartLine className="text-purple-400" />
-              Views Over Time
-            </h4>
-            <ResponsiveContainer width="100%" height={220}>
-              {viewsOverTime.length === 0 ? (
-                <div className="text-center text-gray-400">No data available</div>
-              ) : (
-                <LineChart data={viewsOverTime} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
-                  <XAxis dataKey="date" stroke="#a78bfa" />
-                  <YAxis stroke="#a78bfa" />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="views" stroke="#a78bfa" strokeWidth={3} dot={false} />
-                </LineChart>
-              )}
-            </ResponsiveContainer>
-          </motion.div>
-
-          {/* Followers Growth */}
-          <motion.div
-            className="bg-gradient-to-br from-black/40 to-green-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
-            whileHover={{ scale: 1.03 }}
-          >
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <FaUserPlus className="text-green-400" />
-              Followers Growth
-            </h4>
-            <ResponsiveContainer width="100%" height={220}>
-              {followersGrowth.length === 0 ? (
-                <div className="text-center text-gray-400">No data available</div>
-              ) : (
-                <LineChart data={followersGrowth} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
-                  <XAxis dataKey="date" stroke="#34d399" />
-                  <YAxis stroke="#34d399" />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="followers" stroke="#34d399" strokeWidth={3} dot={false} />
-                </LineChart>
-              )}
-            </ResponsiveContainer>
-          </motion.div>
-
-          {/* Top Countries */}
-          <motion.div
-            className="bg-gradient-to-br from-black/40 to-pink-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
-            whileHover={{ scale: 1.03 }}
-          >
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <FaGlobe className="text-pink-400" />
-              Top Countries
-            </h4>
-            <ResponsiveContainer width="100%" height={220}>
-              {topCountries.length === 0 ? (
-                <div className="text-center text-gray-400">No data available</div>
-              ) : (
-                <PieChart>
-                  <Pie data={topCountries} dataKey="count" nameKey="country" cx="50%" cy="50%" outerRadius={80} fill="#f472b6" label />
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              )}
-            </ResponsiveContainer>
-          </motion.div>
-
-          {/* Device Breakdown */}
-          <motion.div
-            className="bg-gradient-to-br from-black/40 to-blue-900/30 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all"
-            whileHover={{ scale: 1.03 }}
-          >
-            <h4 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <FaMobile className="text-blue-400" />
-              Device Breakdown
-            </h4>
-            <ResponsiveContainer width="100%" height={220}>
-              {deviceBreakdown.length === 0 ? (
-                <div className="text-center text-gray-400">No data available</div>
-              ) : (
-                <PieChart>
-                  <Pie data={deviceBreakdown} dataKey="count" nameKey="device" cx="50%" cy="50%" outerRadius={80} fill="#60a5fa" label />
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              )}
-            </ResponsiveContainer>
-          </motion.div>
-        </div>
-      </motion.main>
+      </main>
     </div>
   );
 };

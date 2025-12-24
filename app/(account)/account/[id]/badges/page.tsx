@@ -66,40 +66,48 @@ const BadgesPage = () => {
   }, [userId]);
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a] text-white">
+    <div className="flex bg-[#0e0e0e] min-h-screen text-white overflow-hidden">
       <Sidebar username={username || "Loading..."} id={userId} />
-      <div className="ml-0 md:ml-64 p-8 w-full mt-15">
-        <motion.h1
-          className="text-5xl font-extrabold text-center bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text mb-12"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          All Badges
-        </motion.h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {badges.map((badge, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="flex items-center gap-6 p-6 rounded-xl bg-[#121212] bg-opacity-70 backdrop-blur-md shadow-[0_4px_20px_rgba(255,0,255,0.1)] hover:shadow-purple-500 transition-all duration-300"
-            >
-              <div className="text-5xl text-purple-400">{badge.icon}</div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-100">
-                  {badge.name}
-                </h2>
-                <p className="text-gray-400 text-sm">{badge.description}</p>
-              </div>
-            </motion.div>
-          ))}
+      <main className="flex-1 p-6 md:p-10 overflow-y-auto h-screen">
+        <div className="max-w-7xl mx-auto space-y-10">
+          {/* Header */}
+          <div className="border-b border-white/5 pb-6">
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Badges</h1>
+            <p className="text-gray-400 max-w-2xl">
+              Achievements and roles available in the community. Unlock badges by participating and contributing to the server.
+            </p>
+          </div>
+
+          {/* Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {badges.map((badge, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05, duration: 0.3 }}
+                className="bg-[#121212] border border-white/5 rounded-xl p-6 flex flex-col gap-4 hover:border-white/20 transition-all group hover:-translate-y-1"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="p-3 bg-white/5 rounded-xl w-fit text-2xl text-purple-400 group-hover:bg-purple-500/20 group-hover:text-purple-300 transition-all">
+                    {badge.icon}
+                  </div>
+                  {["Owner", "Co-Owner", "Admin", "Legendary"].includes(badge.name) && (
+                    <span className="px-2 py-1 bg-yellow-500/10 text-yellow-500 text-[10px] uppercase font-bold tracking-wider rounded border border-yellow-500/20">
+                      Rare
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg text-white mb-2 group-hover:text-purple-400 transition-colors">{badge.name}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed min-h-[40px]">{badge.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

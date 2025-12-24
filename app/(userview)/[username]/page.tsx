@@ -467,7 +467,7 @@ const UserPage = () => {
         href={url as string}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-4xl m-2 hover:scale-110 transition-all duration-200"
+        className="text-4xl m-2 hover:scale-110 transition-all duration-200 cursor-pointer relative z-50"
         style={{
           color: "white",
           textShadow: "0 0 15px rgba(255, 255, 255, 0.8)",
@@ -769,7 +769,7 @@ const UserPage = () => {
           )}
 
           {/* Social Icons with Smooth Glow & Tap Effects */}
-          <div className="flex items-center justify-center gap-5 sm:gap-6 mt-6">
+          <div className="relative z-50 flex items-center justify-center gap-5 sm:gap-6 mt-6">
             {renderSocialIcons(userData?.social_links)}
           </div>
 

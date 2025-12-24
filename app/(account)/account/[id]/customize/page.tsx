@@ -151,373 +151,231 @@ const Customize = () => {
   ];
 
   return (
-    <div className="flex bg-[#0e0e0e] min-h-screen text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 -z-10 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 blur-3xl"
-        animate={{ opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      />
-
+    <div className="flex bg-[#0e0e0e] min-h-screen text-white overflow-hidden">
       <Sidebar id={id} username={username || "Loading..."} />
 
-      <motion.main
-        className="flex-1 p-8 md:p-12 relative z-10 min-h-screen overflow-y-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Header */}
-        <div className="mb-12">
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text"
-          >
-            Customize Your Profile
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-xl text-gray-300 max-w-2xl"
-          >
-            Make your profile uniquely yours with custom themes, bio, and personal touches.
-          </motion.p>
-        </div>
+      <main className="flex-1 p-6 md:p-10 overflow-y-auto h-screen">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="mb-10">
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Customize Profile</h1>
+            <p className="text-gray-400">Personalize your public profile appearance and details.</p>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Form Fields */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Profile Picture Section */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-gradient-to-br from-purple-900/40 to-blue-900/40 backdrop-blur-xl rounded-3xl p-8 border border-purple-500/20 shadow-2xl"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-purple-500/20 rounded-xl">
-                  <Camera className="w-6 h-6 text-purple-400" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Form Fields */}
+            <div className="lg:col-span-2 space-y-6">
+
+              {/* Profile Picture & Username Group */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Profile Picture */}
+                <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Camera className="w-5 h-5 text-purple-400" />
+                    <h3 className="font-semibold text-lg">Profile Picture</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {profilePic ? (
+                      <div className="flex justify-center mb-4">
+                        <img src={profilePic} alt="Preview" className="w-24 h-24 rounded-full object-cover border-2 border-white/10" />
+                      </div>
+                    ) : null}
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wider">Image URL</label>
+                      <input
+                        type="text"
+                        value={profilePic || ""}
+                        onChange={(e) => setProfilePic(formatPinterestURL(e.target.value))}
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 text-sm placeholder-gray-600 transition-all"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white">Profile Picture</h3>
+
+                {/* Username */}
+                <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <User className="w-5 h-5 text-indigo-400" />
+                    <h3 className="font-semibold text-lg">Username</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wider">Username</label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={newUsername}
+                          onChange={(e) => handleUsernameChange(e.target.value)}
+                          className={`w-full px-4 py-2.5 bg-[#1a1a1a] border rounded-lg focus:outline-none focus:ring-1 text-sm placeholder-gray-600 transition-all ${usernameError ? 'border-red-500/50 focus:ring-red-500' : 'border-white/10 focus:ring-indigo-500'
+                            }`}
+                          placeholder="username"
+                        />
+                        {isCheckingUsername && (
+                          <div className="absolute right-3 top-2.5">
+                            <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                          </div>
+                        )}
+                      </div>
+                      {usernameError ? (
+                        <p className="text-red-400 text-xs mt-2 flex items-center gap-1"><span className="text-xs">⚠️</span> {usernameError}</p>
+                      ) : newUsername && !isCheckingUsername ? (
+                        <p className="text-green-400 text-xs mt-2 flex items-center gap-1"><span className="text-xs">✅</span> Available</p>
+                      ) : null}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      3-20 characters. Letters, numbers, underscores.
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-6">
+              {/* Bio */}
+              <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Edit3 className="w-5 h-5 text-blue-400" />
+                  <h3 className="font-semibold text-lg">Bio</h3>
+                </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Image URL
-                  </label>
+                  <textarea
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    className="w-full h-24 px-4 py-3 bg-[#1a1a1a] border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm placeholder-gray-600 resize-none"
+                    placeholder="Tell us about yourself..."
+                  />
+                  <div className="flex justify-end mt-2">
+                    <span className="text-xs text-gray-600">{bio.length}/500</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Theme Selection */}
+              <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Palette className="w-5 h-5 text-pink-400" />
+                  <h3 className="font-semibold text-lg">Theme</h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {themes.map((themeOption) => (
+                    <button
+                      key={themeOption.value}
+                      onClick={() => setTheme(themeOption.value)}
+                      className={`p-3 rounded-lg border text-left transition-all ${theme === themeOption.value
+                          ? 'border-purple-500 bg-purple-500/10'
+                          : 'border-white/5 bg-[#1a1a1a] hover:bg-[#222]'
+                        }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl">{themeOption.icon}</span>
+                        <span className="text-sm font-medium">{themeOption.label}</span>
+                      </div>
+                      <div className={`h-1.5 w-full rounded-full bg-gradient-to-r ${themeOption.gradient}`}></div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Details Group */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Location */}
+                <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <MapPin className="w-5 h-5 text-green-400" />
+                    <h3 className="font-semibold text-lg">Location</h3>
+                  </div>
                   <input
                     type="text"
-                    value={profilePic || ""}
-                    onChange={(e) => setProfilePic(formatPinterestURL(e.target.value))}
-                    className="w-full p-4 bg-white/5 border border-purple-500/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-400 transition-all"
-                    placeholder="Paste your image URL here..."
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 text-sm placeholder-gray-600"
+                    placeholder="City, Country"
                   />
                 </div>
 
-                {profilePic && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex justify-center"
-                  >
-                    <div className="relative">
-                      <img
-                        src={profilePic}
-                        alt="Profile Preview"
-                        className="w-32 h-32 rounded-full object-cover border-4 border-purple-500/50 shadow-2xl"
-                      />
-                      <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                        <Sparkles className="w-4 h-4 text-white" />
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-
-            {/* Username Section */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 backdrop-blur-xl rounded-3xl p-8 border border-indigo-500/20 shadow-2xl"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-indigo-500/20 rounded-xl">
-                  <User className="w-6 h-6 text-indigo-400" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">Username</h3>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Choose your username
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={newUsername}
-                      onChange={(e) => handleUsernameChange(e.target.value)}
-                      className={`w-full p-4 bg-white/5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent text-white placeholder-gray-400 transition-all ${usernameError
-                        ? 'border-red-500/50 focus:ring-red-500'
-                        : 'border-indigo-500/30 focus:ring-indigo-500'
-                        }`}
-                      placeholder="Enter your username..."
-                    />
-                    {isCheckingUsername && (
-                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                        <div className="w-5 h-5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
-                      </div>
-                    )}
-                  </div>
-                  {usernameError && (
-                    <p className="text-red-400 text-sm mt-2 flex items-center gap-2">
-                      <span>⚠️</span>
-                      {usernameError}
-                    </p>
-                  )}
-                  {!usernameError && newUsername && (
-                    <p className="text-green-400 text-sm mt-2 flex items-center gap-2">
-                      <span>✅</span>
-                      Username is available
-                    </p>
-                  )}
-                </div>
-
-                <div className="bg-indigo-500/10 rounded-xl p-4 border border-indigo-500/20">
-                  <p className="text-sm text-indigo-300 mb-2">
-                    <strong>Username Guidelines:</strong>
-                  </p>
-                  <ul className="text-xs text-indigo-200 space-y-1">
-                    <li>• 3-20 characters long</li>
-                    <li>• Letters, numbers, and underscores only</li>
-                    <li>• Must be unique across all users</li>
-                    <li>• Cannot be changed frequently</li>
-                  </ul>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Bio Section */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="bg-gradient-to-br from-blue-900/40 to-cyan-900/40 backdrop-blur-xl rounded-3xl p-8 border border-blue-500/20 shadow-2xl"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-blue-500/20 rounded-xl">
-                  <Edit3 className="w-6 h-6 text-blue-400" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">Bio</h3>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Tell your story
-                </label>
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  className="w-full h-32 p-4 bg-white/5 border border-blue-500/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400 resize-none transition-all"
-                  placeholder="Share something about yourself, your interests, or what you do..."
-                />
-                <p className="text-xs text-gray-400 mt-2">
-                  {bio.length}/500 characters
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Theme Selection */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-gradient-to-br from-pink-900/40 to-purple-900/40 backdrop-blur-xl rounded-3xl p-8 border border-pink-500/20 shadow-2xl"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-pink-500/20 rounded-xl">
-                  <Palette className="w-6 h-6 text-pink-400" />
-                </div>
-                <h3 className="text-2xl font-bold text-white">Theme</h3>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {themes.map((themeOption) => (
-                  <motion.button
-                    key={themeOption.value}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setTheme(themeOption.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${theme === themeOption.value
-                      ? 'border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/25'
-                      : 'border-gray-600 bg-white/5 hover:border-purple-500/50'
-                      }`}
-                  >
-                    <div className="text-2xl mb-2">{themeOption.icon}</div>
-                    <div className="text-sm font-medium text-white">{themeOption.label}</div>
-                    <div className={`w-full h-2 rounded-full mt-2 bg-gradient-to-r ${themeOption.gradient}`}></div>
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Location & Video Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 backdrop-blur-xl rounded-3xl p-6 border border-green-500/20 shadow-2xl"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-green-500/20 rounded-lg">
-                    <MapPin className="w-5 h-5 text-green-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white">Location</h3>
-                </div>
-
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full p-3 bg-white/5 border border-green-500/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-white placeholder-gray-400 transition-all"
-                  placeholder="Where are you from?"
-                />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="bg-gradient-to-br from-orange-900/40 to-red-900/40 backdrop-blur-xl rounded-3xl p-6 border border-orange-500/20 shadow-2xl"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-orange-500/20 rounded-lg">
+                {/* Background Video */}
+                <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
                     <Video className="w-5 h-5 text-orange-400" />
+                    <h3 className="font-semibold text-lg">Background Video</h3>
                   </div>
-                  <h3 className="text-xl font-bold text-white">Background Video</h3>
+                  <input
+                    type="text"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm placeholder-gray-600"
+                    placeholder="YouTube URL"
+                  />
                 </div>
+              </div>
 
-                <input
-                  type="text"
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  className="w-full p-3 bg-white/5 border border-orange-500/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-white placeholder-gray-400 transition-all"
-                  placeholder="YouTube video URL"
-                />
-              </motion.div>
             </div>
-          </div>
 
-          {/* Right Column - Live Preview */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="lg:col-span-1"
-          >
-            <div className="sticky top-8">
-              <div className="bg-gradient-to-br from-gray-900/60 to-black/60 backdrop-blur-xl rounded-3xl p-8 border border-gray-500/20 shadow-2xl">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-3 bg-purple-500/20 rounded-xl">
-                    <Eye className="w-6 h-6 text-purple-400" />
+            {/* Right Column - Live Preview & Actions */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-8 space-y-6">
+
+                {/* Live Preview Card */}
+                <div className="bg-[#121212] border border-white/5 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Eye className="w-5 h-5 text-gray-400" />
+                    <h3 className="font-semibold text-lg text-gray-200">Live Preview</h3>
                   </div>
-                  <h3 className="text-2xl font-bold text-white">Live Preview</h3>
-                </div>
 
-                {/* Preview Card */}
-                <div className={`rounded-2xl p-6 border-2 border-purple-500/30 bg-gradient-to-br ${themes.find(t => t.value === theme)?.gradient || 'from-gray-900 to-black'}`}>
-                  <div className="text-center">
-                    {profilePic ? (
-                      <img
-                        src={profilePic}
-                        alt="Profile"
-                        className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-white/20"
-                      />
-                    ) : (
-                      <div className="w-20 h-20 rounded-full mx-auto mb-4 bg-purple-500/20 border-4 border-white/20 flex items-center justify-center">
-                        <User className="w-8 h-8 text-purple-400" />
-                      </div>
-                    )}
-
-                    <h4 className="text-xl font-bold text-white mb-2">
-                      @{newUsername || username || "username"}
-                    </h4>
-
-                    {bio && (
-                      <p className="text-sm text-gray-300 mb-4 line-clamp-3">
-                        {bio}
-                      </p>
-                    )}
-
-                    {location && (
-                      <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-4">
-                        <MapPin className="w-4 h-4" />
-                        {location}
-                      </div>
-                    )}
-
-                    <div className="flex justify-center gap-4 text-sm">
-                      <span className="text-purple-300">1.2K followers</span>
-                      <span className="text-blue-300">5.6K views</span>
+                  <div className={`rounded-xl p-6 border border-white/10 bg-gradient-to-br ${themes.find(t => t.value === theme)?.gradient || 'from-gray-900 to-black'} shadow-lg`}>
+                    <div className="text-center">
+                      {profilePic ? (
+                        <img src={profilePic} alt="Profile" className="w-20 h-20 rounded-full mx-auto mb-3 border-2 border-white/50 shadow-md object-cover" />
+                      ) : (
+                        <div className="w-20 h-20 rounded-full mx-auto mb-3 bg-white/10 flex items-center justify-center border-2 border-white/20">
+                          <User className="w-8 h-8 text-white/50" />
+                        </div>
+                      )}
+                      <div className="font-bold text-lg text-white mb-1">@{newUsername || username || "username"}</div>
+                      {bio && <p className="text-xs text-white/80 line-clamp-2 mb-3">{bio}</p>}
+                      {location && (
+                        <div className="flex items-center justify-center gap-1.5 text-xs text-white/70">
+                          <MapPin className="w-3 h-3" /> {location}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Save Button */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={handleSave}
-                  disabled={isSaving}
-                  className={`w-full mt-6 p-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 ${isSaving
-                    ? 'bg-gray-600 cursor-not-allowed'
-                    : usernameError || !newUsername.trim()
-                      ? 'bg-gray-600 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg hover:shadow-purple-500/25'
+                  disabled={isSaving || !!usernameError || (newUsername !== username && newUsername === "")}
+                  className={`w-full py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 ${isSaving
+                      ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-black hover:bg-gray-200'
                     }`}
                 >
                   {isSaving ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Saving...
-                    </>
-                  ) : usernameError || !newUsername.trim() ? (
-                    <>
-                      <span>⚠️</span>
-                      Fix Username Issues
-                    </>
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-white rounded-full animate-spin"></div>
                   ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      Save Changes
-                    </>
+                    <Save className="w-4 h-4" />
                   )}
-                </motion.button>
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
 
                 <AnimatePresence>
                   {saveSuccess && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-xl text-green-400 text-center"
+                      exit={{ opacity: 0 }}
+                      className="bg-green-500/10 border border-green-500/20 text-green-400 text-center text-sm py-2 rounded-lg"
                     >
-                      Profile updated successfully!
+                      Changes saved successfully!
                     </motion.div>
                   )}
                 </AnimatePresence>
+
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </motion.main>
+      </main>
     </div>
   );
 };

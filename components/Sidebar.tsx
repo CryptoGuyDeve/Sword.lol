@@ -3,19 +3,19 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { 
-  Menu, 
-  X, 
-  ChevronDown, 
-  User, 
-  Settings, 
-  Palette, 
-  Link as LinkIcon, 
-  Search, 
-  TrendingUp, 
-  Crown, 
-  Share2, 
-  ExternalLink, 
+import {
+  Menu,
+  X,
+  ChevronDown,
+  User,
+  Settings,
+  Palette,
+  Link as LinkIcon,
+  Search,
+  TrendingUp,
+  Crown,
+  Share2,
+  ExternalLink,
   Home,
   Bell,
   Zap,
@@ -53,350 +53,177 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
   };
 
   const navigationItems = [
-    {
-      title: "Overview",
-      href: `/account/${id}`,
-      icon: Home,
-      badge: null,
-      color: "from-white to-gray-300"
-    },
-    {
-      title: "Customize",
-      href: `/account/${id}/customize`,
-      icon: Palette,
-      badge: null,
-      color: "from-gray-300 to-gray-400"
-    },
-    {
-      title: "Links",
-      href: `/account/${id}/links`,
-      icon: LinkIcon,
-      badge: null,
-      color: "from-gray-400 to-gray-500"
-    },
-    {
-      title: "Explore",
-      href: `/account/${id}/explore`,
-      icon: Search,
-      badge: null,
-      color: "from-gray-500 to-gray-600"
-    },
-    {
-      title: "Badges",
-      href: `/account/${id}/badges`,
-      icon: Trophy,
-      badge: "New",
-      color: "from-white to-gray-300"
-    },
-    {
-      title: "Analytics",
-      href: `/account/${id}/analytics`,
-      icon: BarChart3,
-      badge: null,
-      color: "from-gray-300 to-gray-400"
-    }
+    { title: "Overview", href: `/account/${id}`, icon: Home },
+    { title: "Customize", href: `/account/${id}/customize`, icon: Palette },
+    { title: "Links", href: `/account/${id}/links`, icon: LinkIcon },
+    { title: "Explore", href: `/account/${id}/explore`, icon: Search },
+    { title: "Badges", href: `/account/${id}/badges`, icon: Trophy, badge: "New" },
+    { title: "Analytics", href: `/account/${id}/analytics`, icon: BarChart3 },
   ];
 
   const quickActions = [
-    {
-      title: "Get Views",
-      href: "/account/getviews",
-      icon: Target,
-      color: "from-white to-gray-300"
-    },
-    {
-      title: "Leaderboard",
-      href: "/leaderboard",
-      icon: Crown,
-      color: "from-gray-300 to-gray-400"
-    }
+    { title: "Get Views", href: "/account/getviews", icon: Target },
+    { title: "Leaderboard", href: "/leaderboard", icon: Crown },
   ];
 
   const SidebarContent = () => (
-    <div className="bg-gradient-to-b from-gray-900/80 to-black/80 backdrop-blur-xl text-white p-6 rounded-3xl h-screen border border-gray-500/20 shadow-2xl relative overflow-hidden">
-      {/* Animated Background - Fixed z-index and pointer-events */}
-      <motion.div
-        className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-900/20 via-transparent to-gray-800/20 pointer-events-none"
-        animate={{ opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 8, repeat: Infinity }}
-      />
-
-      {/* Content Container with proper z-index */}
-      <div className="relative z-10 h-full flex flex-col">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-white to-gray-300 rounded-xl shadow-lg">
-              <Sparkles className="w-6 h-6 text-black" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
-                Sword.lol
-              </h2>
-              <p className="text-xs text-gray-400">Creator Dashboard</p>
-            </div>
+    <div className="bg-[#121212] flex flex-col h-full border-r border-white/5 relative z-10 w-full md:w-80">
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
+            <span className="font-bold text-black text-xl">S</span>
           </div>
+          <div>
+            <h2 className="font-bold text-lg text-white tracking-tight">Sword.lol</h2>
+            <p className="text-xs text-gray-500 font-medium">Creator Dashboard</p>
+          </div>
+        </div>
 
-        </motion.div>
-
-        {/* Navigation */}
-        <nav className="space-y-2 mb-8 flex-1">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <div
-              className="flex justify-between items-center py-3 px-4 cursor-pointer hover:bg-white/5 rounded-xl transition-all duration-200 group"
+        <nav className="space-y-1">
+          <div className="space-y-1">
+            <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors group"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg group-hover:from-white group-hover:to-gray-300 transition-all duration-200">
-                  <User className="w-4 h-4 text-white group-hover:text-black" />
-                </div>
-                <span className="font-medium">Account</span>
+                <User className="w-4 h-4" />
+                <span>Account</span>
               </div>
-              <motion.div 
-                animate={{ rotate: dropdownOpen ? 180 : 0 }} 
-                transition={{ duration: 0.3 }}
-                className="text-gray-400 group-hover:text-white transition-colors"
-              >
-                <ChevronDown className="w-4 h-4" />
-              </motion.div>
-            </div>
-            
-            <AnimatePresence>
+              <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence initial={false}>
               {dropdownOpen && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="ml-8 space-y-1 mt-2"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
                 >
-                  {navigationItems.map((item, index) => (
-                    <motion.div
-                      key={item.title}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.05 }}
-                    >
-                      <Link 
+                  <div className="pl-4 py-2 space-y-1">
+                    {navigationItems.map((item) => (
+                      <Link
+                        key={item.href}
                         href={item.href}
-                        className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-200 group ${
-                          currentPath === item.href
-                            ? 'bg-gradient-to-r from-white/20 to-gray-400/20 border border-white/30 text-white'
-                            : 'text-gray-300 hover:text-white hover:bg-white/5'
-                        }`}
+                        className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${currentPath === item.href
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-400 hover:text-white hover:bg-white/5"
+                          }`}
                       >
-                        <div className={`p-1.5 rounded-lg transition-all duration-200 ${
-                          currentPath === item.href
-                            ? `bg-gradient-to-r ${item.color}`
-                            : 'bg-gray-600/50 group-hover:bg-gray-500/50'
-                        }`}>
-                          <item.icon className={`w-3.5 h-3.5 ${currentPath === item.href ? 'text-black' : 'text-white'}`} />
-                        </div>
-                        <span className="text-sm font-medium">{item.title}</span>
+                        <item.icon className="w-4 h-4" />
+                        {item.title}
                         {item.badge && (
-                          <span className="ml-auto px-2 py-0.5 bg-gradient-to-r from-white to-gray-300 text-xs text-black rounded-full font-bold">
+                          <span className="ml-auto text-[10px] bg-indigo-500 text-white px-1.5 py-0.5 rounded-full font-bold">
                             {item.badge}
                           </span>
                         )}
                       </Link>
-                    </motion.div>
-                  ))}
+                    ))}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
-          {/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-2"
-          >
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-3">
-              Quick Actions
-            </h3>
-            {quickActions.map((item, index) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
+          <div className="pt-4 pb-2">
+            <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Tools</p>
+            {quickActions.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
               >
-                <Link 
-                  href={item.href}
-                  className="flex items-center gap-3 py-3 px-4 rounded-xl transition-all duration-200 group hover:bg-white/5"
-                >
-                  <div className={`p-2 rounded-lg bg-gradient-to-r ${item.color} shadow-lg group-hover:scale-110 transition-transform duration-200`}>
-                    <item.icon className="w-4 h-4 text-black" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
-                    {item.title}
-                  </span>
-                </Link>
-              </motion.div>
+                <item.icon className="w-4 h-4" />
+                {item.title}
+              </Link>
             ))}
-          </motion.div>
+          </div>
         </nav>
+      </div>
 
-        {/* Profile Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="space-y-3 mb-6"
-        >
+      <div className="mt-auto p-6 border-t border-white/5 bg-[#0e0e0e]/50">
+        <div className="flex flex-col gap-2">
           <Link
             href={`/${username}`}
-            className="flex items-center gap-3 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 text-black py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 group"
+            className="flex items-center justify-center gap-2 w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-sm"
           >
             <ExternalLink className="w-4 h-4" />
-            <span className="font-medium">View My Page</span>
-            <Zap className="w-4 h-4 ml-auto group-hover:scale-110 transition-transform" />
+            View Page
           </Link>
-
           <button
             onClick={handleCopyProfileLink}
-            className="flex items-center gap-3 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 text-black py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-white/25 group"
+            className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#1a1a1a] text-white border border-white/10 text-sm font-semibold rounded-lg hover:bg-[#252525] transition-colors"
           >
-            <Share2 className="w-4 h-4" />
-            <span className="font-medium">Share Profile</span>
-            <motion.div
-              animate={copySuccess ? { scale: [1, 1.2, 1] } : {}}
-              transition={{ duration: 0.3 }}
-            >
-              <Heart className="w-4 h-4 ml-auto group-hover:scale-110 transition-transform" />
-            </motion.div>
+            {copySuccess ? <Sparkles className="w-4 h-4 text-yellow-400" /> : <Share2 className="w-4 h-4" />}
+            {copySuccess ? "Copied!" : "Share Profile"}
           </button>
+        </div>
 
-          <AnimatePresence>
-            {copySuccess && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="p-3 bg-gradient-to-r from-white to-gray-300/20 border border-white/30 rounded-xl text-white text-sm text-center"
-              >
-                ✨ Profile link copied to clipboard!
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* User Profile Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="bg-gradient-to-br from-gray-800/60 to-black/60 backdrop-blur-xl rounded-2xl p-4 border border-gray-500/20"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-r from-white to-gray-300 rounded-full flex items-center justify-center shadow-lg">
-                <User className="w-6 h-6 text-black" />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full border-2 border-gray-800"></div>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-black truncate">@{username}</h3>
-              <p className="text-xs text-gray-400">UID: {id.slice(0, 8)}...</p>
-            </div>
+        <div className="flex items-center gap-3 mt-6 pt-6 border-t border-white/5">
+          <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+            {username?.[0]?.toUpperCase()}
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-lg font-bold text-black">1.2K</div>
-              <div className="text-xs text-gray-400">Views</div>
-            </div>
-            <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-lg font-bold text-black">456</div>
-              <div className="text-xs text-gray-400">Followers</div>
-            </div>
-            <div className="bg-white/5 rounded-lg p-2">
-              <div className="text-lg font-bold text-black">89</div>
-              <div className="text-xs text-gray-400">Links</div>
-            </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white truncate">@{username}</p>
+            <p className="text-xs text-gray-500 truncate">Pro Plan</p>
           </div>
-
-          {/* Discord Button */}
-          <a
-            href="https://discord.gg/GwFKb9NPvY"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 text-black py-2 px-3 rounded-lg mt-4 transition-all duration-200 shadow-lg hover:shadow-white/25 group"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span className="text-sm font-medium">Join Discord</span>
-            <Globe className="w-3 h-3 ml-auto group-hover:scale-110 transition-transform" />
-          </a>
-        </motion.div>
+          <Settings2 className="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors" />
+        </div>
       </div>
     </div>
   );
 
   return (
     <>
-      {/* Mobile Navbar Button */}
+      {/* Mobile Toggle */}
       <div className="md:hidden fixed top-4 left-4 z-50">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={() => setIsSidebarOpen(true)}
-          className="text-black bg-gradient-to-r from-white to-gray-300 p-3 rounded-xl shadow-lg border border-white/30"
+          className="p-2.5 bg-[#121212] text-white border border-white/10 rounded-lg shadow-lg"
         >
-          <Menu className="w-6 h-6" />
-        </motion.button>
+          <Menu className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:block w-80 p-4 relative z-30 h-screen">
+      <div className="hidden md:block h-screen w-80 fixed left-0 top-0 z-40">
         <SidebarContent />
       </div>
+
+      {/* Spacer for Desktop Content */}
+      <div className="hidden md:block w-80 flex-shrink-0" />
 
       {/* Mobile Sidebar */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <motion.aside
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed top-0 left-0 w-80 h-screen z-50 md:hidden p-4"
-          >
-            <div className="flex justify-end mb-4">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsSidebarOpen(false)} 
-                className="text-black bg-gradient-to-r from-gray-700 to-gray-800 p-2 rounded-lg shadow-lg"
-              >
-                <X className="w-5 h-5" />
-              </motion.button>
-            </div>
-            <SidebarContent />
-          </motion.aside>
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 md:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="fixed inset-y-0 left-0 w-[280px] bg-[#121212] z-50 md:hidden border-r border-white/10"
+            >
+              <div className="absolute top-4 right-4">
+                <button
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="p-2 text-gray-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <SidebarContent />
+            </motion.aside>
+          </>
         )}
       </AnimatePresence>
-
-      {/* Mobile Overlay */}
-      {isSidebarOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.5 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
     </>
   );
 };

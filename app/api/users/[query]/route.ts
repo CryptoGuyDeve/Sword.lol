@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: Request,
-  { params }: { params: { query: string } }
+  { params }: { params: Promise<{ query: string }> }
 ) {
   // Wait, in app router [query]/route.ts, query is in params.
   // But wait, the folder structure needs to be app/api/users/[query]/route.ts
@@ -71,7 +71,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { query: string } }
+  { params }: { params: Promise<{ query: string }> }
 ) {
   const { query } = await params;
   const session = await getServerSession(authOptions);
