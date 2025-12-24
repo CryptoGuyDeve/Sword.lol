@@ -10,6 +10,8 @@ import Link from "next/link";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Papa from 'papaparse';
 
+// Force dynamic rendering to prevent static generation errors
+export const dynamic = "force-dynamic";
 
 type User = { id: string; username: string; profile_pic: string };
 

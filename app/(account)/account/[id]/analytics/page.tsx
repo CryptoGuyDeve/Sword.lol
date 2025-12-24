@@ -9,7 +9,8 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tool
 
 import { useSession } from "next-auth/react";
 
-
+// Force dynamic rendering to prevent static generation errors
+export const dynamic = "force-dynamic";
 
 type User = { id: string; username: string; profile_pic: string };
 

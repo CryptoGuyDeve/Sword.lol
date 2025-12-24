@@ -11,7 +11,8 @@ import {
   FaFire, FaChessQueen, FaGhost, FaRocket, FaCrosshairs, FaStar
 } from "react-icons/fa";
 
-
+// Force dynamic rendering to prevent static generation errors
+export const dynamic = "force-dynamic";
 
 const badges = [
   { name: "Owner", description: "Owner of the server.", icon: <FaCrown /> },

@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
 import { FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaEdit, FaTrash, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard } from 'react-icons/fa';
 
+// Force dynamic rendering to prevent static generation errors
+export const dynamic = "force-dynamic";
 
 const socialPlatforms = [
   { name: 'YouTube', icon: <FaYoutube />, key: 'youtube' },

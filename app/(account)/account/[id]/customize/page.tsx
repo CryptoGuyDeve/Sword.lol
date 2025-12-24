@@ -16,6 +16,8 @@ import {
   Camera
 } from "lucide-react";
 
+// Force dynamic rendering to prevent static generation errors
+export const dynamic = "force-dynamic";
 
 type ParamsType = {
   id?: string;
@@ -261,8 +263,8 @@ const Customize = () => {
                       key={themeOption.value}
                       onClick={() => setTheme(themeOption.value)}
                       className={`p-3 rounded-lg border text-left transition-all ${theme === themeOption.value
-                          ? 'border-purple-500 bg-purple-500/10'
-                          : 'border-white/5 bg-[#1a1a1a] hover:bg-[#222]'
+                        ? 'border-purple-500 bg-purple-500/10'
+                        : 'border-white/5 bg-[#1a1a1a] hover:bg-[#222]'
                         }`}
                     >
                       <div className="flex items-center gap-2 mb-2">
@@ -346,8 +348,8 @@ const Customize = () => {
                   onClick={handleSave}
                   disabled={isSaving || !!usernameError || (newUsername !== username && newUsername === "")}
                   className={`w-full py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 ${isSaving
-                      ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                      : 'bg-white text-black hover:bg-gray-200'
+                    ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-black hover:bg-gray-200'
                     }`}
                 >
                   {isSaving ? (

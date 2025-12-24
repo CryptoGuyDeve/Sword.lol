@@ -40,6 +40,8 @@ import {
 // Supabase client setup
 import { useSession } from "next-auth/react";
 
+// Force dynamic rendering to prevent static generation errors
+export const dynamic = "force-dynamic";
 
 interface User {
   id: string;
