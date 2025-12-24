@@ -1,107 +1,140 @@
-import { createSupabaseServerClient } from '@/lib/supabase-server';
-import { NextResponse } from 'next/server';
+import { db } from "@/lib/db";
+import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const userId = searchParams.get('userId');
-  const dateRange = searchParams.get('dateRange') || '30';
+  const userId = searchParams.get("userId");
+  const dateRange = searchParams.get("dateRange") || "30";
 
   if (!userId) {
-    return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    return NextResponse.json({ error: "User ID is required" }, { status: 400 });
   }
 
-  const supabase = createSupabaseServerClient();
-
   try {
-    // Helper to get since date
     const getSince = () => {
-      if (dateRange === 'all') return null;
+      if (dateRange === "all") return null;
       const since = new Date();
-      since.setDate(since.getDate() - (dateRange === '7' ? 6 : 29));
+      since.setDate(since.getDate() - (dateRange === "7" ? 6 : 29));
       since.setHours(0, 0, 0, 0);
       return since;
     };
 
     const since = getSince();
+    const sinceISO = since ? since.toISOString() : null;
 
-    // Fetch basic analytics
-    const [totalViews, uniqueVisitors, followers, following] = await Promise.all([
-      supabase
-        .from("profile_views")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userId),
-      supabase
-        .from("profile_views")
-        .select("viewer_id")
-        .eq("user_id", userId),
-      supabase
-        .from("follows")
-        .select("id", { count: "exact", head: true })
-        .eq("following_id", userId),
-      supabase
-        .from("follows")
-        .select("id", { count: "exact", head: true })
-        .eq("follower_id", userId),
-    ]);
+    // Queries
+    const queries = [
+      // Total Views
+      db.query(
+        "SELECT COUNT(*) as count FROM profile_views WHERE user_id = $1",
+        [userId]
+      ),
 
-    // Fetch recent followers and viewers
-    const [recentFollowers, recentViewers] = await Promise.all([
-      supabase
-        .from("follows")
-        .select("follower_id, users:follower_id(id, username, profile_pic)")
-        .eq("following_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(5),
-      supabase
-        .from("profile_views")
-        .select("viewer_id, users:viewer_id(id, username, profile_pic)")
-        .eq("user_id", userId)
-        .order("viewed_at", { ascending: false })
-        .limit(10),
-    ]);
+      // Unique Visitors (approximate distinct viewer_id)
+      db.query(
+        "SELECT COUNT(DISTINCT viewer_id) as count FROM profile_views WHERE user_id = $1",
+        [userId]
+      ),
 
-    // Fetch views over time
-    let viewsQuery = supabase
-      .from("profile_views")
-      .select("viewed_at")
-      .eq("user_id", userId);
-    if (since) viewsQuery = viewsQuery.gte("viewed_at", since.toISOString());
-    const { data: viewsData } = await viewsQuery;
+      // Followers Count
+      db.query(
+        "SELECT COUNT(*) as count FROM follows WHERE following_id = $1",
+        [userId]
+      ),
 
-    // Fetch followers growth
-    let followersQuery = supabase
-      .from("follows")
-      .select("created_at")
-      .eq("following_id", userId);
-    if (since) followersQuery = followersQuery.gte("created_at", since.toISOString());
-    const { data: followersData } = await followersQuery;
+      // Following Count
+      db.query("SELECT COUNT(*) as count FROM follows WHERE follower_id = $1", [
+        userId,
+      ]),
 
-    // Fetch top countries
-    const { data: countriesData } = await supabase
-      .from("profile_views")
-      .select("country")
-      .eq("user_id", userId);
+      // Recent Followers
+      db.query(
+        `
+        SELECT f.follower_id, u.id, u.username, u.profile_pic
+        FROM follows f
+        JOIN users u ON f.follower_id = u.id
+        WHERE f.following_id = $1
+        ORDER BY f.created_at DESC
+        LIMIT 5
+      `,
+        [userId]
+      ),
 
-    // Fetch device breakdown
-    const { data: devicesData } = await supabase
-      .from("profile_views")
-      .select("device")
-      .eq("user_id", userId);
+      // Recent Viewers
+      db.query(
+        `
+        SELECT pv.viewer_id, u.id, u.username, u.profile_pic
+        FROM profile_views pv
+        JOIN users u ON pv.viewer_id = u.id
+        WHERE pv.user_id = $1 AND pv.viewer_id IS NOT NULL
+        ORDER BY pv.viewed_at DESC
+        LIMIT 10
+      `,
+        [userId]
+      ),
 
-    // Process data
-    const uniqueVisitorsCount = new Set((uniqueVisitors.data || []).map((v) => v.viewer_id)).size;
-    
-    const recentFollowersList = ((recentFollowers.data || []).flatMap((f) => 
-      Array.isArray(f.users) ? f.users : [f.users]
-    ) as any[]).filter(Boolean);
-    
-    const recentViewersList = ((recentViewers.data || [])
-      .flatMap((v) => Array.isArray(v.users) ? v.users : [v.users]) as any[])
-      .filter((u) => u && u.id)
+      // Views Over Time
+      sinceISO
+        ? db.query(
+            "SELECT viewed_at FROM profile_views WHERE user_id = $1 AND viewed_at >= $2",
+            [userId, sinceISO]
+          )
+        : db.query("SELECT viewed_at FROM profile_views WHERE user_id = $1", [
+            userId,
+          ]),
+
+      // Followers Growth
+      sinceISO
+        ? db.query(
+            "SELECT created_at FROM follows WHERE following_id = $1 AND created_at >= $2",
+            [userId, sinceISO]
+          )
+        : db.query("SELECT created_at FROM follows WHERE following_id = $1", [
+            userId,
+          ]),
+
+      // Top Countries
+      db.query(
+        "SELECT country, COUNT(*) as count FROM profile_views WHERE user_id = $1 GROUP BY country ORDER BY count DESC LIMIT 10",
+        [userId]
+      ),
+
+      // Device Breakdown
+      db.query(
+        "SELECT device, COUNT(*) as count FROM profile_views WHERE user_id = $1 GROUP BY device ORDER BY count DESC",
+        [userId]
+      ),
+    ];
+
+    const results = await Promise.all(queries);
+
+    const totalViews = parseInt(results[0].rows[0]?.count || "0");
+    const uniqueVisitors = parseInt(results[1].rows[0]?.count || "0");
+    const followers = parseInt(results[2].rows[0]?.count || "0");
+    const following = parseInt(results[3].rows[0]?.count || "0");
+    const recentFollowersList = results[4].rows;
+    // For recent viewers, dedup by user id in JS or rely on raw list. The UI expects a list of users.
+    // The previous implementation fetched list and sliced.
+    // Unique recent viewers:
+    const recentViewersRaw = results[5].rows;
+    const seenViewers = new Set();
+    const recentViewersList = recentViewersRaw
+      .filter((u) => {
+        if (seenViewers.has(u.id)) return false;
+        seenViewers.add(u.id);
+        return true;
+      })
       .slice(0, 5);
 
-    // Process views over time
-    const days = dateRange === '7' ? 7 : 30;
+    const viewsData = results[6].rows;
+    const followersData = results[7].rows;
+    // countries and devices are already grouped by SQL
+
+    // Process views over time (JS grouping similar to previous)
+    const days = dateRange === "7" ? 7 : 30;
     const counts: Record<string, number> = {};
     for (let i = 0; i < days; i++) {
       const d = since ? new Date(since) : new Date();
@@ -110,9 +143,11 @@ export async function GET(request: Request) {
       const key = d.toISOString().slice(0, 10);
       counts[key] = 0;
     }
-    (viewsData || []).forEach((row: any) => {
-      const key = row.viewed_at.slice(0, 10);
-      if (counts[key] !== undefined) counts[key]++;
+
+    viewsData.forEach((row: any) => {
+      // row.viewed_at is date object or string? pg returns Date object usually.
+      const dateStr = new Date(row.viewed_at).toISOString().slice(0, 10);
+      if (counts[dateStr] !== undefined) counts[dateStr]++;
     });
 
     // Process followers growth
@@ -124,46 +159,35 @@ export async function GET(request: Request) {
       const key = d.toISOString().slice(0, 10);
       followerCounts[key] = 0;
     }
-    (followersData || []).forEach((row: any) => {
-      const key = row.created_at.slice(0, 10);
-      if (followerCounts[key] !== undefined) followerCounts[key]++;
-    });
-
-    // Process countries
-    const countryCounts: Record<string, number> = {};
-    (countriesData || []).forEach((row: any) => {
-      const country = row.country || 'Unknown';
-      countryCounts[country] = (countryCounts[country] || 0) + 1;
-    });
-
-    // Process devices
-    const deviceCounts: Record<string, number> = {};
-    (devicesData || []).forEach((row: any) => {
-      const device = row.device || 'Unknown';
-      deviceCounts[device] = (deviceCounts[device] || 0) + 1;
+    followersData.forEach((row: any) => {
+      const dateStr = new Date(row.created_at).toISOString().slice(0, 10);
+      if (followerCounts[dateStr] !== undefined) followerCounts[dateStr]++;
     });
 
     return NextResponse.json({
       analytics: {
-        totalViews: totalViews.count || 0,
-        uniqueVisitors: uniqueVisitorsCount,
-        followers: followers.count || 0,
-        following: following.count || 0,
+        totalViews,
+        uniqueVisitors,
+        followers,
+        following,
         recentFollowers: recentFollowersList,
         recentViewers: recentViewersList,
       },
-      viewsOverTime: Object.entries(counts).map(([date, views]) => ({ date, views })),
-      followersGrowth: Object.entries(followerCounts).map(([date, followers]) => ({ date, followers })),
-      topCountries: Object.entries(countryCounts)
-        .map(([country, count]) => ({ country, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10),
-      deviceBreakdown: Object.entries(deviceCounts)
-        .map(([device, count]) => ({ device, count }))
-        .sort((a, b) => b.count - a.count),
+      viewsOverTime: Object.entries(counts).map(([date, views]) => ({
+        date,
+        views,
+      })),
+      followersGrowth: Object.entries(followerCounts).map(
+        ([date, followers]) => ({ date, followers })
+      ),
+      topCountries: results[8].rows, // already { country, count }
+      deviceBreakdown: results[9].rows, // already { device, count }
     });
   } catch (error) {
-    console.error('Analytics API error:', error);
-    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 });
+    console.error("Analytics API error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch analytics" },
+      { status: 500 }
+    );
   }
 }

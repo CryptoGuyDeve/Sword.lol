@@ -3,36 +3,30 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
+import { useSession } from "next-auth/react";
 import { Sparkles, ArrowRight, Star, Zap, Crown } from "lucide-react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const Hero = () => {
-  const [userId, setUserId] = useState<string | null>(null);
+  const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) setUserId(data.user.id);
+    if (status !== "loading") {
       setLoading(false);
-    };
-    fetchUser();
-  }, []);
+    }
+  }, [status]);
+
 
   const handleClick = () => {
-    if (userId) {
-      router.push(`/account/${userId}`);
+    if (session?.user) {
+      router.push(`/account/${(session.user as any).id}`);
     } else {
       router.push("/signup");
     }
   };
+
 
   const features = [
     { icon: Sparkles, text: "Custom Bio Links", color: "text-white" },
@@ -45,7 +39,7 @@ const Hero = () => {
       {/* Animated Background */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-black to-gray-800/20"
-        animate={{ 
+        animate={{
           background: [
             "linear-gradient(45deg, rgba(75, 75, 75, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.1) 100%)",
             "linear-gradient(45deg, rgba(100, 100, 100, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(75, 75, 75, 0.1) 100%)",
@@ -123,7 +117,7 @@ const Hero = () => {
           className="text-xl md:text-2xl max-w-3xl mx-auto text-gray-300 mb-12 leading-relaxed"
         >
           Create stunning bio links, host files securely, and build your online presence with{" "}
-          <span className="text-white font-semibold">sword.lol</span>. 
+          <span className="text-white font-semibold">sword.lol</span>.
           The ultimate platform for modern creators.
         </motion.p>
 

@@ -1,106 +1,117 @@
-import { createSupabaseServerClient } from '@/lib/supabase-server';
-import { NextResponse } from 'next/server';
+import { db } from "@/lib/db";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const supabase = createSupabaseServerClient();
-  
-  // Check authentication
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { followerId, followingId, action } = await request.json();
+  // Need user ID. session.user.id was added in auth.ts
+  const followerId = (session.user as any).id;
 
-  if (!followerId || !followingId || !action) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+  const { followingId, action } = await request.json(); // followerId should come from session for security
+
+  if (!followingId || !action) {
+    return NextResponse.json(
+      { error: "Missing required fields" },
+      { status: 400 }
+    );
   }
 
-  // Ensure user can only follow/unfollow for themselves
-  if (followerId !== session.user.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  // Prevent self-following
   if (followerId === followingId) {
-    return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Cannot follow yourself" },
+      { status: 400 }
+    );
   }
 
   try {
-    if (action === 'follow') {
-      const { error } = await supabase
-        .from("follows")
-        .insert({ follower_id: followerId, following_id: followingId });
-      
-      if (error && error.code !== "23505") { // 23505 is unique violation
-        return NextResponse.json({ error: error.message }, { status: 500 });
-      }
-      
-      return NextResponse.json({ success: true, action: 'followed' });
-    } else if (action === 'unfollow') {
-      const { error } = await supabase
-        .from("follows")
-        .delete()
-        .eq("follower_id", followerId)
-        .eq("following_id", followingId);
-      
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-      }
-      
-      return NextResponse.json({ success: true, action: 'unfollowed' });
+    if (action === "follow") {
+      // Upsert or insert ignoring conflict? Or explicitly check?
+      // "ON CONFLICT DO NOTHING" is safest
+      await db.query(
+        "INSERT INTO follows (follower_id, following_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+        [followerId, followingId]
+      );
+
+      return NextResponse.json({ success: true, action: "followed" });
+    } else if (action === "unfollow") {
+      await db.query(
+        "DELETE FROM follows WHERE follower_id = $1 AND following_id = $2",
+        [followerId, followingId]
+      );
+
+      return NextResponse.json({ success: true, action: "unfollowed" });
     } else {
-      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
   } catch (error) {
-    console.error('Follow API error:', error);
-    return NextResponse.json({ error: 'Failed to process follow action' }, { status: 500 });
+    console.error("Follow API error:", error);
+    return NextResponse.json(
+      { error: "Failed to process follow action" },
+      { status: 500 }
+    );
   }
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const userId = searchParams.get('userId');
-  const type = searchParams.get('type'); // 'followers' or 'following'
+  const userId = searchParams.get("userId");
+  const type = searchParams.get("type"); // 'followers' or 'following'
 
   if (!userId || !type) {
-    return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing required parameters" },
+      { status: 400 }
+    );
   }
 
-  const supabase = createSupabaseServerClient();
-
   try {
-    let query;
-    if (type === 'followers') {
-      query = supabase
-        .from("follows")
-        .select("follower_id, users:follower_id(id, username, profile_pic)")
-        .eq("following_id", userId)
-        .order("created_at", { ascending: false });
-    } else if (type === 'following') {
-      query = supabase
-        .from("follows")
-        .select("following_id, users:following_id(id, username, profile_pic)")
-        .eq("follower_id", userId)
-        .order("created_at", { ascending: false });
+    let users = [];
+    if (type === "followers") {
+      const { rows } = await db.query(
+        `
+        SELECT u.id, u.username, u.profile_pic
+        FROM follows f
+        JOIN users u ON f.follower_id = u.id
+        WHERE f.following_id = $1
+        ORDER BY f.created_at DESC
+      `,
+        [userId]
+      );
+      users = rows;
+    } else if (type === "following") {
+      const { rows } = await db.query(
+        `
+        SELECT u.id, u.username, u.profile_pic
+        FROM follows f
+        JOIN users u ON f.following_id = u.id
+        WHERE f.follower_id = $1
+        ORDER BY f.created_at DESC
+      `,
+        [userId]
+      );
+      users = rows;
     } else {
-      return NextResponse.json({ error: 'Invalid type parameter' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid type parameter" },
+        { status: 400 }
+      );
     }
-
-    const { data, error } = await query;
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    const users = (data || []).map((item: any) => {
-      const userKey = type === 'followers' ? 'follower_id' : 'following_id';
-      return item.users;
-    }).filter(Boolean);
 
     return NextResponse.json({ users });
   } catch (error) {
-    console.error('Follow list API error:', error);
-    return NextResponse.json({ error: 'Failed to fetch follow list' }, { status: 500 });
+    console.error("Follow list API error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch follow list" },
+      { status: 500 }
+    );
   }
 }

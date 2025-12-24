@@ -4,32 +4,25 @@ import { Button } from '@/components/ui/button';
 import React, { useState, useEffect } from 'react';
 import { FaCheckCircle, FaCrown, FaRocket, FaStar, FaExclamationTriangle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import { createClient } from '@supabase/supabase-js';
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const Page = () => {
-  const [user, setUser] = useState<any>(null);
+  const { data: session } = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-  }, []);
 
   const handleSubscribe = async (plan: 'basic' | 'premium') => {
-    if (!user) {
-      window.location.href = '/signup';
+    if (!session || !session.user) {
+      router.push('/signup');
       return;
     }
+    const user = session.user as any;
+
 
     setLoading(true);
     setError(null);
@@ -39,14 +32,14 @@ const Page = () => {
       const configResponse = await fetch('/api/test-subscription');
       const config = await configResponse.json();
       setDebugInfo(config);
-      
+
       if (config.status === 'missing_variables') {
         setError(`Configuration error: ${config.message}`);
         return;
       }
 
       const storeId = process.env.NEXT_PUBLIC_LEMON_SQUEEZY_STORE_ID;
-      const variantId = plan === 'premium' 
+      const variantId = plan === 'premium'
         ? process.env.NEXT_PUBLIC_LEMON_SQUEEZY_PREMIUM_VARIANT_ID
         : process.env.NEXT_PUBLIC_LEMON_SQUEEZY_BASIC_VARIANT_ID;
 
@@ -56,10 +49,10 @@ const Page = () => {
       }
 
       const checkoutUrl = `https://checkout.lemonsqueezy.com/checkout/buy/${variantId}?store=${storeId}&checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}&checkout[custom][plan_name]=${plan}&checkout[redirect_url]=${encodeURIComponent(window.location.origin + '/account/' + user.id)}`;
-      
+
       console.log('Redirecting to:', checkoutUrl);
       window.location.href = checkoutUrl;
-      
+
     } catch (err) {
       console.error('Subscription error:', err);
       setError('Failed to start checkout. Please try again.');
@@ -89,8 +82,8 @@ const Page = () => {
   const renderFeatures = (features: string[]) => (
     <ul className="text-left space-y-3 mb-8">
       {features.map((feature, index) => (
-        <motion.li 
-          key={index} 
+        <motion.li
+          key={index}
           className="flex items-center gap-3"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -176,7 +169,7 @@ const Page = () => {
             <div className="absolute top-4 right-4">
               <FaRocket className="text-2xl text-gray-400" />
             </div>
-            
+
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4 text-white">Free</h2>
               <div className="mb-2">
@@ -191,7 +184,7 @@ const Page = () => {
 
             {renderFeatures(featuresFree)}
 
-            <Button 
+            <Button
               onClick={() => window.location.href = '/signup'}
               className="w-full bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
             >
@@ -216,7 +209,7 @@ const Page = () => {
             <div className="absolute top-4 right-4">
               <FaStar className="text-2xl text-yellow-400" />
             </div>
-            
+
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
                 Premium
@@ -236,7 +229,7 @@ const Page = () => {
 
             {renderFeatures(featuresPremium)}
 
-            <Button 
+            <Button
               onClick={() => handleSubscribe('premium')}
               disabled={loading}
               className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"

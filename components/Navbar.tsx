@@ -3,61 +3,41 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { useSession, signOut } from "next-auth/react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Zap, Crown } from "lucide-react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const Navbar = () => {
   const router = useRouter();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    fetchUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setUser(session.user);
-      } else {
-        setUser(null);
-      }
-    });
-
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => {
-      authListener?.subscription.unsubscribe();
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
+    await signOut();
+    router.push("/login"); // Optional, signOut redirects by default often or stays on page
   };
 
   return (
     <motion.nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled 
-          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl' 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
+          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl'
           : 'bg-transparent'
-      }`}
+        }`}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 120, damping: 12 }}
@@ -85,9 +65,9 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <motion.div whileHover={{ scale: 1.05 }} className="relative group">
-              <Link 
-                href="https://discord.gg/pwQaFQuRpN" 
-                target="_blank" 
+              <Link
+                href="https://discord.gg/pwQaFQuRpN"
+                target="_blank"
                 className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-white"
               >
                 <Zap className="w-4 h-4" />
@@ -95,10 +75,10 @@ const Navbar = () => {
               </Link>
               <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-white to-gray-400 transition-all duration-300 group-hover:w-full" />
             </motion.div>
-            
+
             <motion.div whileHover={{ scale: 1.05 }} className="relative group">
-              <Link 
-                href="/pricing" 
+              <Link
+                href="/pricing"
                 className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-white"
               >
                 <Crown className="w-4 h-4" />
@@ -114,7 +94,7 @@ const Navbar = () => {
               <>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
-                    href={`/account/${user.id}`}
+                    href={`/account/${(user as any).id}`}
                     className="px-6 py-2.5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-gray-500/25 border border-gray-600/50"
                   >
                     Dashboard
@@ -177,27 +157,27 @@ const Navbar = () => {
             transition={{ type: "spring", stiffness: 100, damping: 15 }}
           >
             <div className="px-4 py-6 space-y-4">
-              <Link 
-                href="https://discord.gg/pwQaFQuRpN" 
-                target="_blank" 
+              <Link
+                href="https://discord.gg/pwQaFQuRpN"
+                target="_blank"
                 className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors duration-300 py-2"
               >
                 <Zap className="w-5 h-5" />
                 <span className="font-medium">Discord</span>
               </Link>
-              <Link 
-                href="/pricing" 
+              <Link
+                href="/pricing"
                 className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors duration-300 py-2"
               >
                 <Crown className="w-5 h-5" />
                 <span className="font-medium">Pricing</span>
               </Link>
-              
+
               <div className="pt-4 border-t border-gray-700/50">
                 {user ? (
                   <div className="space-y-3">
                     <Link
-                      href={`/account/${user.id}`}
+                      href={`/account/${(user as any).id}`}
                       className="block w-full px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg font-medium text-white text-center transition-all duration-300"
                     >
                       Dashboard

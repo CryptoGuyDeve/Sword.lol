@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { useSession, signOut } from "next-auth/react";
 import Sidebar from "@/components/Sidebar";
 import { motion } from "framer-motion";
 import { FaUserEdit, FaEye, FaSignOutAlt, FaUsers, FaUserPlus, FaMedal, FaBolt, FaCrown, FaFire, FaShareAlt } from "react-icons/fa";
@@ -10,10 +10,6 @@ import Link from "next/link";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import Papa from 'papaparse';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 type User = { id: string; username: string; profile_pic: string };
 
@@ -35,6 +31,7 @@ function getHealthScore(analytics: any) {
 const AccountPage = () => {
   const { id } = useParams();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -97,59 +94,38 @@ const AccountPage = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
+      if (status === "loading") return;
+
+      if (!session || !session.user) {
         router.push("/signup");
         return;
       }
-      if (data.user.id !== id) {
+
+      const sessionUserId = (session.user as any).id;
+      if (sessionUserId !== id) {
         router.push("/");
         return;
       }
-      setLoading(true);
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("username, id, profile_views, profile_pic")
-        .eq("id", id)
-        .single();
 
-      if (userError || !userData) {
-        // Create a minimal user profile row if missing, then refetch
-        try {
-          const authUser = data.user;
-          const fallbackUsername = (authUser.user_metadata?.username as string) || (authUser.email?.split("@")[0] ?? `user_${authUser.id.slice(0, 8)}`);
-          const { error: upsertErr } = await supabase.from("users").upsert({
-            id: authUser.id,
-            username: fallbackUsername,
-            profile_pic: "",
-            bio: "",
-            theme: "dark",
-            background_video: "",
-            location: "",
-            social_links: {},
-            badges: [],
-          }, { onConflict: "id" });
-          if (upsertErr) {
-            setError("Error initializing user profile");
-          } else {
-            const { data: refetched } = await supabase
-              .from("users")
-              .select("username, id, profile_views, profile_pic")
-              .eq("id", id)
-              .single();
-            if (refetched) setUserData(refetched);
-          }
-        } catch {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/users/${id}`);
+        if (!res.ok) {
           setError("Error fetching user data");
+          return;
         }
-      } else {
-        setUserData(userData);
+        const data = await res.json();
+        setUserData(data);
+      } catch (e) {
+        setError("Error fetching user data");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkAuth();
-  }, [id, router]);
+  }, [id, router, session, status]);
+
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -170,63 +146,18 @@ const AccountPage = () => {
     fetchAnalytics();
   }, [id, dateRange]);
 
-    // Real-time subscriptions for analytics
-  useEffect(() => {
-    if (!id) return;
-    
-    // Subscribe to profile_views
-    const profileViewsSub = supabase
-      .channel('profile_views-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profile_views', filter: `user_id=eq.${id}` }, () => {
-        // Refetch analytics when views change
-        fetch(`/api/analytics?userId=${id}&dateRange=${dateRange}`)
-          .then(res => res.json())
-          .then(data => {
-            setAnalytics(data.analytics);
-            setViewsOverTime(data.viewsOverTime);
-            setFollowersGrowth(data.followersGrowth);
-            setTopCountries(data.topCountries);
-            setDeviceBreakdown(data.deviceBreakdown);
-          })
-          .catch(console.error);
-      })
-      .subscribe();
-    
-    // Subscribe to follows
-    const followsSub = supabase
-      .channel('follows-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'follows', filter: `following_id=eq.${id}` }, () => {
-        // Refetch analytics when follows change
-        fetch(`/api/analytics?userId=${id}&dateRange=${dateRange}`)
-          .then(res => res.json())
-          .then(data => {
-            setAnalytics(data.analytics);
-            setFollowersGrowth(data.followersGrowth);
-          })
-          .catch(console.error);
-      })
-      .subscribe();
+  // Real-time subscriptions removed (NeonDB does not support Supabase Realtime)
+  // Polling could be implemented if necessary, but omitting for now.
 
-    return () => {
-      profileViewsSub.unsubscribe();
-      followsSub.unsubscribe();
-    };
-  }, [id, dateRange]);
 
   // Real-time viewers polling (every 10s)
   useEffect(() => {
     let interval: any;
     const poll = async () => {
-      const since = new Date(Date.now() - 2 * 60 * 1000); // last 2 minutes
-      const { count } = await supabase
-        .from("profile_views")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", id)
-        .gte("viewed_at", since.toISOString());
-      setRealTimeViewers(count || 0);
+      // Mock or implement backend endpoint for realtime count
+      // For now, doing nothing to avoid Supabase calls
     };
-    poll();
-    interval = setInterval(poll, 10000);
+    // interval = setInterval(poll, 10000);
     return () => clearInterval(interval);
   }, [id]);
 
@@ -241,21 +172,26 @@ const AccountPage = () => {
 
   const handleUsernameChange = async () => {
     if (!newUsername.trim()) return;
-    const { error } = await supabase
-      .from("users")
-      .update({ username: newUsername })
-      .eq("id", id);
-    if (error) {
+    try {
+      const res = await fetch(`/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newUsername })
+      });
+      if (res.ok) {
+        setUserData((prev: any) => ({ ...prev, username: newUsername }));
+        setNewUsername("");
+        alert("Username updated successfully!");
+      } else {
+        alert("Failed to update username");
+      }
+    } catch {
       alert("Failed to update username");
-    } else {
-      setUserData((prev: any) => ({ ...prev, username: newUsername }));
-      setNewUsername("");
-      alert("Username updated successfully!");
     }
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     router.push("/");
   };
 
@@ -322,7 +258,7 @@ const AccountPage = () => {
           <button className="ml-auto bg-gradient-to-r from-purple-500 to-blue-500 px-5 py-2 rounded-full text-white font-semibold shadow-lg hover:from-purple-600 hover:to-blue-600 transition" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
             Toggle {theme === 'dark' ? 'Light' : 'Dark'}
           </button>
-          <button className="bg-gradient-to-r from-pink-500 to-purple-500 px-5 py-2 rounded-full text-white font-semibold shadow-lg hover:from-pink-600 hover:to-purple-600 transition" onClick={() => {/* CSV Export logic */}}>Export CSV</button>
+          <button className="bg-gradient-to-r from-pink-500 to-purple-500 px-5 py-2 rounded-full text-white font-semibold shadow-lg hover:from-pink-600 hover:to-purple-600 transition" onClick={() => {/* CSV Export logic */ }}>Export CSV</button>
         </div>
 
         {/* Profile Card */}

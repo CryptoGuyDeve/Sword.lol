@@ -4,13 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { GiPistolGun } from "react-icons/gi";
 import { FiMail, FiLock, FiUser, FiArrowRight, FiCheck } from "react-icons/fi";
-import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -33,52 +29,45 @@ const Signup = () => {
       return;
     }
 
+    // Basic client-side username validation
+    const valid = /^[a-zA-Z0-9_]{3,20}$/.test(username);
+    if (!valid) {
+      setError("Username must be 3-20 chars: letters, numbers, underscores only.");
+      setLoading(false);
+      return;
+    }
+
+    // Check username availability (case-insensitive)
+    // Note: We skip client-side check for now and let the server handle it
+    // because existing API handles it.
+
+
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            username: username,
-          },
-        },
+      // Create confirmed user via server (no email confirmation)
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, username }),
       });
 
-      if (error) {
-        setError(error.message);
-      } else if (data.user) {
-        // Create or update corresponding profile row in users table
-        try {
-          const { error: upsertError } = await supabase.from("users").upsert(
-            {
-              id: data.user.id,
-              username: username,
-              profile_pic: null,
-              bio: null,
-              theme: null,
-              background_video: null,
-              location: null,
-              social_links: {},
-              badges: [],
-            },
-            { onConflict: "id" }
-          );
+      const result = await res.json();
+      if (!res.ok) {
+        setError(result.error || 'Failed to sign up');
+        setLoading(false);
+        return;
+      }
 
-          if (upsertError) {
-            // Surface a readable error but still allow navigation if auth succeeded
-            console.error("Failed to create user profile row:", upsertError);
-          }
-        } catch (e) {
-          console.error("Unexpected error creating user profile row:", e);
-        }
+      // Immediately sign in
+      const resultSignIn = await signIn("credentials", {
+        username, // Pass username as username field
+        password,
+        redirect: false
+      });
 
-        // Redirect to the user's account page after successful signup
-        router.push(`/account/${data.user.id}`);
+      if (resultSignIn?.error) {
+        setError(resultSignIn.error);
       } else {
-        // If email confirmation is required and no session/user returned
-        setError(
-          "Signup successful. Please check your email to confirm your account before logging in."
-        );
+        router.push("/dashboard"); // Redirect to dashboard root, which will redirect to specific user
       }
     } catch (error) {
       setError("An unexpected error occurred");
@@ -170,7 +159,7 @@ const Signup = () => {
           <div className="relative">
             {/* Card Glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-3xl blur-xl" />
-            
+
             {/* Main Card */}
             <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl">
               {/* Logo Section */}
@@ -234,12 +223,10 @@ const Signup = () => {
                   <label className="block text-sm font-semibold text-gray-300 mb-3">
                     Username
                   </label>
-                  <div className={`relative transition-all duration-300 ${
-                    focusedField === 'username' ? 'scale-105' : ''
-                  }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${
-                      focusedField === 'username' ? 'opacity-100' : 'opacity-50'
-                    }`} />
+                  <div className={`relative transition-all duration-300 ${focusedField === 'username' ? 'scale-105' : ''
+                    }`}>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'username' ? 'opacity-100' : 'opacity-50'
+                      }`} />
                     <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
                       <FiUser className="text-gray-400 mr-3 text-lg" />
                       <input
@@ -266,12 +253,10 @@ const Signup = () => {
                   <label className="block text-sm font-semibold text-gray-300 mb-3">
                     Email Address
                   </label>
-                  <div className={`relative transition-all duration-300 ${
-                    focusedField === 'email' ? 'scale-105' : ''
-                  }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${
-                      focusedField === 'email' ? 'opacity-100' : 'opacity-50'
-                    }`} />
+                  <div className={`relative transition-all duration-300 ${focusedField === 'email' ? 'scale-105' : ''
+                    }`}>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'email' ? 'opacity-100' : 'opacity-50'
+                      }`} />
                     <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
                       <FiMail className="text-gray-400 mr-3 text-lg" />
                       <input
@@ -298,12 +283,10 @@ const Signup = () => {
                   <label className="block text-sm font-semibold text-gray-300 mb-3">
                     Password
                   </label>
-                  <div className={`relative transition-all duration-300 ${
-                    focusedField === 'password' ? 'scale-105' : ''
-                  }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${
-                      focusedField === 'password' ? 'opacity-100' : 'opacity-50'
-                    }`} />
+                  <div className={`relative transition-all duration-300 ${focusedField === 'password' ? 'scale-105' : ''
+                    }`}>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'password' ? 'opacity-100' : 'opacity-50'
+                      }`} />
                     <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
                       <FiLock className="text-gray-400 mr-3 text-lg" />
                       <input
@@ -345,7 +328,7 @@ const Signup = () => {
                   >
                     {/* Button Glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-300 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
-                    
+
                     {/* Button Content */}
                     <div className="relative bg-gradient-to-r from-white to-gray-300 text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center text-lg shadow-xl">
                       <span className="mr-2">
@@ -381,8 +364,8 @@ const Signup = () => {
                 </p>
                 <p className="text-gray-400">
                   Already have an account?{" "}
-                  <Link 
-                    href="/login" 
+                  <Link
+                    href="/login"
                     className="text-white hover:text-gray-300 font-semibold transition-colors duration-300 hover:underline"
                   >
                     Sign in

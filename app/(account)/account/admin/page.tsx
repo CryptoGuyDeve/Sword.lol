@@ -1,14 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
 import { FaBan, FaTrash, FaUserSlash, FaEdit, FaSave, FaTimes } from "react-icons/fa";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+
 
 const AdminPanel = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -20,24 +16,41 @@ const AdminPanel = () => {
   }, []);
 
   const fetchUsers = async () => {
-    const { data, error } = await supabase.from("users").select("*");
-    if (!error) setUsers(data || []);
+    try {
+      const res = await fetch("/api/admin/users");
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data);
+      }
+    } catch (e) {
+      console.error("Error fetching users", e);
+    }
   };
 
+
   const handleBanUser = async (userId: string) => {
-    await supabase.from("users").update({ is_banned: true }).eq("id", userId);
+    await fetch("/api/admin/users", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: userId, is_banned: true })
+    });
     fetchUsers();
   };
 
   const handleUnbanUser = async (userId: string) => {
-    await supabase.from("users").update({ is_banned: false }).eq("id", userId);
+    await fetch("/api/admin/users", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: userId, is_banned: false })
+    });
     fetchUsers();
   };
 
   const handleDeleteUser = async (userId: string) => {
-    await supabase.from("users").delete().eq("id", userId);
+    await fetch(`/api/admin/users?id=${userId}`, { method: "DELETE" });
     fetchUsers();
   };
+
 
   const handleEditUser = (user: any) => {
     setEditingUserId(user.id);
@@ -45,17 +58,22 @@ const AdminPanel = () => {
   };
 
   const handleUpdateUser = async () => {
-    await supabase.from("users").update(editData).eq("id", editingUserId);
+    await fetch("/api/admin/users", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: editingUserId, ...editData })
+    });
     setEditingUserId(null);
     fetchUsers();
   };
+
 
   const handleInputChange = (field: string, value: any) => {
     setEditData({ ...editData, [field]: value });
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen bg-gradient-to-r from-black via-gray-900 to-black text-white p-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

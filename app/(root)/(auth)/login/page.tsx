@@ -2,16 +2,13 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { GiPistolGun } from "react-icons/gi";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import { FaDiscord } from "react-icons/fa";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const LoginPage = () => {
   const router = useRouter();
@@ -20,6 +17,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
@@ -34,24 +32,43 @@ const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNotice("");
     setLoading(true);
-    
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+      const res = await signIn("credentials", {
+        username: email, // we allow email as username
         password,
+        redirect: false
       });
 
-      if (error) {
+      if (res?.error) {
         setError("Invalid email or password.");
-      } else if (data.user) {
-        router.push(`/account/${data.user.id}`);
+      } else if (res?.ok) {
+        // Redirect to /dashboard, the middleware or page will handle the specific user route
+        router.push("/dashboard");
+        router.refresh();
       }
     } catch (error) {
       setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
+  };
+
+  const resendConfirmation = async () => {
+    // Not implemented in this demo
+    setNotice('Feature not available');
+  };
+
+  const handleResetPassword = async () => {
+    // Not implemented in this demo
+    setNotice('Feature not available');
+  };
+
+  const handleDiscordLogin = async () => {
+    // Not implemented in this demo
+    setNotice('Feature not available');
   };
 
   return (
@@ -137,7 +154,7 @@ const LoginPage = () => {
           <div className="relative">
             {/* Card Glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-3xl blur-xl" />
-            
+
             {/* Main Card */}
             <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl">
               {/* Logo Section */}
@@ -180,7 +197,7 @@ const LoginPage = () => {
                     initial={{ opacity: 0, y: -20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm"
+                    className="mb-3 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm"
                   >
                     <p className="text-red-400 text-sm text-center font-medium">
                       {error}
@@ -188,6 +205,11 @@ const LoginPage = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
+              {notice && (
+                <div className="mb-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-sm text-center">
+                  {notice}
+                </div>
+              )}
 
               {/* Login Form */}
               <form onSubmit={handleLogin} className="space-y-6">
@@ -201,12 +223,10 @@ const LoginPage = () => {
                   <label className="block text-sm font-semibold text-gray-300 mb-3">
                     Email Address
                   </label>
-                  <div className={`relative transition-all duration-300 ${
-                    focusedField === 'email' ? 'scale-105' : ''
-                  }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${
-                      focusedField === 'email' ? 'opacity-100' : 'opacity-50'
-                    }`} />
+                  <div className={`relative transition-all duration-300 ${focusedField === 'email' ? 'scale-105' : ''
+                    }`}>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'email' ? 'opacity-100' : 'opacity-50'
+                      }`} />
                     <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
                       <FiMail className="text-gray-400 mr-3 text-lg" />
                       <input
@@ -233,12 +253,10 @@ const LoginPage = () => {
                   <label className="block text-sm font-semibold text-gray-300 mb-3">
                     Password
                   </label>
-                  <div className={`relative transition-all duration-300 ${
-                    focusedField === 'password' ? 'scale-105' : ''
-                  }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${
-                      focusedField === 'password' ? 'opacity-100' : 'opacity-50'
-                    }`} />
+                  <div className={`relative transition-all duration-300 ${focusedField === 'password' ? 'scale-105' : ''
+                    }`}>
+                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'password' ? 'opacity-100' : 'opacity-50'
+                      }`} />
                     <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
                       <FiLock className="text-gray-400 mr-3 text-lg" />
                       <input
@@ -264,6 +282,16 @@ const LoginPage = () => {
                   </div>
                 </motion.div>
 
+                {/* Actions */}
+                <div className="flex items-center justify-between -mt-2">
+                  <button type="button" onClick={handleResetPassword} className="text-xs text-gray-400 hover:text-gray-200 underline">
+                    Forgot password?
+                  </button>
+                  <button type="button" onClick={resendConfirmation} className="text-xs text-gray-400 hover:text-gray-200 underline">
+                    Resend verification email
+                  </button>
+                </div>
+
                 {/* Submit Button */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -280,7 +308,7 @@ const LoginPage = () => {
                   >
                     {/* Button Glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-300 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
-                    
+
                     {/* Button Content */}
                     <div className="relative bg-gradient-to-r from-white to-gray-300 text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center text-lg shadow-xl">
                       <span className="mr-2">
@@ -297,6 +325,29 @@ const LoginPage = () => {
                 </motion.div>
               </form>
 
+              {/* OAuth Divider */}
+              <div className="flex items-center gap-4 my-6">
+                <div className="h-px bg-white/10 flex-1" />
+                <span className="text-xs text-gray-400">or</span>
+                <div className="h-px bg-white/10 flex-1" />
+              </div>
+
+              {/* Discord OAuth */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.3 }}
+                className="pt-2"
+              >
+                <button
+                  type="button"
+                  onClick={handleDiscordLogin}
+                  className="w-full flex items-center justify-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold py-3 rounded-xl transition-colors"
+                >
+                  <FaDiscord size={18} /> Continue with Discord
+                </button>
+              </motion.div>
+
               {/* Sign Up Link */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -306,8 +357,8 @@ const LoginPage = () => {
               >
                 <p className="text-gray-400">
                   New to <span className="text-white font-semibold">sward.xd</span>?{" "}
-                  <Link 
-                    href="/signup" 
+                  <Link
+                    href="/signup"
                     className="text-white hover:text-gray-300 font-semibold transition-colors duration-300 hover:underline"
                   >
                     Create an account

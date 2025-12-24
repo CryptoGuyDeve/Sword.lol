@@ -2,22 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import Sidebar from "@/components/Sidebar";
 import { motion } from "framer-motion";
 import { FaEye, FaUsers, FaUserPlus, FaFire, FaChartLine, FaGlobe, FaMobile, FaDesktop } from "react-icons/fa";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { useSession } from "next-auth/react";
+
+
 
 type User = { id: string; username: string; profile_pic: string };
 
 const AnalyticsPage = () => {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string;
   const router = useRouter();
+
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -42,34 +42,53 @@ const AnalyticsPage = () => {
   const [deviceBreakdown, setDeviceBreakdown] = useState<{ device: string; count: number }[]>([]);
   const [dateRange, setDateRange] = useState<'7' | '30' | 'all'>('30');
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error || !data?.user) {
-        router.push("/signup");
-        return;
-      }
-      if (data.user.id !== id) {
-        router.push("/");
-        return;
-      }
-      setLoading(true);
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("username, id, profile_views, profile_pic")
-        .eq("id", id)
-        .single();
+  /* 
+    The checkAuth function specifically checked creating a supabase client.
+    We can replace this with useSession. 
+    However, useEffect relies on checking if user matches ID.
+  */
+  const { data: session, status } = useSession();
 
-      if (userError || !userData) {
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session || !session.user) {
+      router.push("/signup");
+      return;
+    }
+
+    // Check if session.user.id == id or authorized
+    // Note: session.user.id is not typed by default in NextAuth unless extended. 
+    // We cast it.
+    const currentUserId = (session.user as any).id;
+    if (currentUserId !== id) {
+      // router.push("/"); // Uncomment to enforce restriction
+      // For now, analytics might be public or protected? 
+      // Original code enforced match.
+      router.push("/");
+      return;
+    }
+
+    const fetchUserData = async () => {
+      setLoading(true);
+      try {
+        // Using existing API which now handles ID lookup
+        const res = await fetch(`/api/users/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setUserData(data);
+        } else {
+          setError("Error fetching user data");
+        }
+      } catch (e) {
         setError("Error fetching user data");
-      } else {
-        setUserData(userData);
       }
       setLoading(false);
     };
 
-    checkAuth();
-  }, [id, router]);
+    fetchUserData();
+  }, [id, router, session, status]);
+
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -116,9 +135,9 @@ const AnalyticsPage = () => {
 
         {/* Filter Controls */}
         <div className="flex flex-wrap gap-4 mb-10 items-center">
-          <select 
-            className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition" 
-            value={dateRange} 
+          <select
+            className="bg-white/10 border border-purple-500/30 rounded-full px-5 py-2 text-white focus:ring-2 focus:ring-purple-500 transition"
+            value={dateRange}
             onChange={e => setDateRange(e.target.value as any)}
           >
             <option value="7">Last 7 Days</option>

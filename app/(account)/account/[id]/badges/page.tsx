@@ -3,20 +3,15 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
 import Sidebar from "@/components/Sidebar";
-import { 
-  FaUserShield, FaBolt, FaTrophy, FaMedal, FaBug, FaServer, 
+import {
+  FaUserShield, FaBolt, FaTrophy, FaMedal, FaBug, FaServer,
   FaTree, FaMoon, FaCrown, FaUserSecret, FaGavel, FaLaptopCode,
   FaShieldAlt, FaGamepad, FaUserTie, FaSkullCrossbones, FaHeart,
-  FaFire, FaChessQueen, FaGhost, FaRocket, FaCrosshairs, FaStar 
+  FaFire, FaChessQueen, FaGhost, FaRocket, FaCrosshairs, FaStar
 } from "react-icons/fa";
 
-// ✅ Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+
 
 const badges = [
   { name: "Owner", description: "Owner of the server.", icon: <FaCrown /> },
@@ -54,15 +49,17 @@ const BadgesPage = () => {
   const [username, setUsername] = useState<string | null>(null);
 
   const fetchUserData = async () => {
-    const { data, error } = await supabase
-      .from("users")
-      .select("username")
-      .eq("id", userId)
-      .single();
-
-    if (data) setUsername(data.username || "Unknown User");
-    if (error) console.error("Error fetching user:", error);
+    try {
+      const res = await fetch(`/api/users/${userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setUsername(data.username || "Unknown User");
+      }
+    } catch (e) {
+      console.error("Error fetching user", e);
+    }
   };
+
 
   useEffect(() => {
     if (userId) fetchUserData();

@@ -5,15 +5,16 @@ import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js"; // removed
+
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Search, 
-  Users, 
-  Star, 
-  TrendingUp, 
-  Filter, 
-  Grid, 
+import {
+  Search,
+  Users,
+  Star,
+  TrendingUp,
+  Filter,
+  Grid,
   List,
   MapPin,
   Calendar,
@@ -37,10 +38,8 @@ import {
 } from "lucide-react";
 
 // Supabase client setup
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { useSession } from "next-auth/react";
+
 
 interface User {
   id: string;
@@ -82,50 +81,43 @@ const ExplorePage = () => {
     { value: "followers", label: "Most Followers", icon: Users },
   ];
 
+  const { data: session } = useSession();
+
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from("users")
-        .select("id, username, profile_pic, bio, location, created_at");
-
-      if (error) {
+      try {
+        const res = await fetch(`/api/explore?search=${encodeURIComponent(search)}`);
+        if (res.ok) {
+          const data = await res.json();
+          // Add mock data for demonstration
+          const usersWithMockData = (data || []).map((user: any) => ({
+            ...user,
+            followers_count: Math.floor(Math.random() * 10000) + 100,
+            views_count: Math.floor(Math.random() * 50000) + 1000,
+            category: categories[Math.floor(Math.random() * categories.length)].id,
+          }));
+          setUsers(usersWithMockData);
+        }
+      } catch (error) {
         console.error("Error fetching users:", error);
-      } else {
-        // Add mock data for demonstration
-        const usersWithMockData = (data || []).map(user => ({
-          ...user,
-          followers_count: Math.floor(Math.random() * 10000) + 100,
-          views_count: Math.floor(Math.random() * 50000) + 1000,
-          category: categories[Math.floor(Math.random() * categories.length)].id,
-        }));
-        setUsers(usersWithMockData);
       }
       setLoading(false);
     };
 
-    const fetchCurrentUser = async () => {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !sessionData.session) return;
-
-      const userId = sessionData.session.user.id;
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("id, username")
-        .eq("id", userId)
-        .single();
-
-      if (!userError && userData) {
-        setCurrentUser(userData);
-      }
-    };
-
     fetchUsers();
-    fetchCurrentUser();
-  }, []);
+  }, [search]); // Re-fetch when search changes, or local filter
+
+  useEffect(() => {
+    if (session?.user) {
+      const u = session.user as any;
+      setCurrentUser({ id: u.id, username: u.username || u.name || "User" });
+    }
+  }, [session]);
+
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch = user.username.toLowerCase().includes(search.toLowerCase()) ||
-                         user.bio?.toLowerCase().includes(search.toLowerCase());
+      user.bio?.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = selectedCategory === "all" || user.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -232,7 +224,7 @@ const ExplorePage = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-white">Trending Now</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {trendingUsers.map((user, index) => (
                   <motion.div
@@ -249,7 +241,7 @@ const ExplorePage = () => {
                             <Crown className="w-4 h-4 text-white" />
                           </div>
                         )}
-                        
+
                         <div className="flex items-center gap-4">
                           <div className="relative">
                             <img
@@ -261,7 +253,7 @@ const ExplorePage = () => {
                               <TrendingUp className="w-3 h-3 text-white" />
                             </div>
                           </div>
-                          
+
                           <div className="flex-1">
                             <h3 className="font-bold text-lg text-white">{user.username}</h3>
                             <p className="text-sm text-gray-300 line-clamp-2">{user.bio}</p>
@@ -318,11 +310,10 @@ const ExplorePage = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setSelectedCategory(category.id)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                          selectedCategory === category.id
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${selectedCategory === category.id
                             ? `bg-gradient-to-r ${category.color} text-white shadow-lg`
                             : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                        }`}
+                          }`}
                       >
                         {category.name}
                       </motion.button>
@@ -350,17 +341,15 @@ const ExplorePage = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "grid" ? 'bg-purple-500/20 text-purple-400' : 'bg-white/10 text-gray-400 hover:bg-white/20'
-                    }`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? 'bg-purple-500/20 text-purple-400' : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                      }`}
                   >
                     <Grid className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "list" ? 'bg-purple-500/20 text-purple-400' : 'bg-white/10 text-gray-400 hover:bg-white/20'
-                    }`}
+                    className={`p-2 rounded-lg transition-all ${viewMode === "list" ? 'bg-purple-500/20 text-purple-400' : 'bg-white/10 text-gray-400 hover:bg-white/20'
+                      }`}
                   >
                     <List className="w-4 h-4" />
                   </button>
@@ -371,17 +360,15 @@ const ExplorePage = () => {
 
           {/* User Grid/List */}
           {loading ? (
-            <div className={`grid gap-6 ${
-              viewMode === "grid" 
-                ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" 
+            <div className={`grid gap-6 ${viewMode === "grid"
+                ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
                 : "grid-cols-1"
-            }`}>
+              }`}>
               {Array(12).fill(0).map((_, i) => (
                 <Skeleton
                   key={i}
-                  className={`bg-gray-800/50 rounded-2xl ${
-                    viewMode === "grid" ? "h-64" : "h-24"
-                  }`}
+                  className={`bg-gray-800/50 rounded-2xl ${viewMode === "grid" ? "h-64" : "h-24"
+                    }`}
                 />
               ))}
             </div>
@@ -393,11 +380,10 @@ const ExplorePage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className={`grid gap-6 ${
-                  viewMode === "grid" 
-                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" 
+                className={`grid gap-6 ${viewMode === "grid"
+                    ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
                     : "grid-cols-1"
-                }`}
+                  }`}
               >
                 {sortedUsers.length > 0 ? (
                   sortedUsers.map((user, index) => (
@@ -425,15 +411,15 @@ const ExplorePage = () => {
                                   })()}
                                 </div>
                               </div>
-                              
+
                               <h3 className="font-bold text-lg text-white mb-2 group-hover:text-purple-400 transition-colors">
                                 @{user.username}
                               </h3>
-                              
+
                               <p className="text-sm text-gray-300 line-clamp-3 mb-4">
                                 {user.bio || "No bio available"}
                               </p>
-                              
+
                               <div className="flex justify-center items-center gap-4 text-xs text-gray-400">
                                 <span className="flex items-center gap-1">
                                   <Heart className="w-3 h-3" />
@@ -444,7 +430,7 @@ const ExplorePage = () => {
                                   {formatNumber(user.views_count || 0)}
                                 </span>
                               </div>
-                              
+
                               {user.location && (
                                 <div className="flex items-center justify-center gap-1 text-xs text-gray-500 mt-2">
                                   <MapPin className="w-3 h-3" />
@@ -469,7 +455,7 @@ const ExplorePage = () => {
                                   })()}
                                 </div>
                               </div>
-                              
+
                               <div className="flex-1">
                                 <h3 className="font-bold text-lg text-white group-hover:text-purple-400 transition-colors">
                                   @{user.username}
@@ -494,7 +480,7 @@ const ExplorePage = () => {
                                   )}
                                 </div>
                               </div>
-                              
+
                               <div className="text-right">
                                 <div className="text-xs text-gray-500 mb-1">
                                   {user.created_at ? new Date(user.created_at).toLocaleDateString() : "Recently joined"}

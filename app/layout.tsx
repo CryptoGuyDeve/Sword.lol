@@ -19,6 +19,8 @@ export const metadata: Metadata = {
     "A sleek and customizable user platform with live game status, social links, and personalized profiles.",
 };
 
+import SessionProvider from "@/components/SessionProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -53,9 +55,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
-        {children}
+        <SessionProvider>
+          {children}
+        </SessionProvider>
         <Analytics />
       </body>
     </html>
   );
 }
+

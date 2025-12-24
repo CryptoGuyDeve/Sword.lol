@@ -3,24 +3,19 @@
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import { useParams } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  User, 
-  Edit3, 
-  Palette, 
-  MapPin, 
-  Video, 
-  Save, 
-  Eye, 
+import {
+  User,
+  Edit3,
+  Palette,
+  MapPin,
+  Video,
+  Save,
+  Eye,
   Sparkles,
   Camera
 } from "lucide-react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 type ParamsType = {
   id?: string;
@@ -46,55 +41,64 @@ const Customize = () => {
     if (!id) return;
 
     const fetchUserData = async () => {
-      const { data } = await supabase
-        .from("users")
-        .select("profile_pic, bio, theme, background_video, location, username")
-        .eq("id", id)
-        .single();
-
-      if (data) {
-        setProfilePic(data.profile_pic);
-        setBio(data.bio || "");
-        setTheme(data.theme || "dark");
-        setVideoUrl(data.background_video || "");
-        setLocation(data.location || "");
-        setUsername(data.username || "");
-        setNewUsername(data.username || "");
+      try {
+        const res = await fetch(`/api/users/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setProfilePic(data.profile_pic);
+          setBio(data.bio || "");
+          setTheme(data.theme || "dark");
+          setVideoUrl(data.background_video || "");
+          setLocation(data.location || "");
+          setUsername(data.username || "");
+          setNewUsername(data.username || "");
+        }
+      } catch (e) {
+        console.error("Error fetching user", e);
       }
     };
 
     fetchUserData();
   }, [id]);
 
+
   const handleSave = async () => {
     if (!id) return alert("User ID not found!");
 
     setIsSaving(true);
-    const { error } = await supabase
-      .from("users")
-      .update({
-        profile_pic: profilePic,
-        bio,
-        theme,
-        background_video: videoUrl,
-        location,
-        username: newUsername,
-      })
-      .eq("id", id);
 
-    setIsSaving(false);
+    try {
+      const res = await fetch(`/api/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profile_pic: profilePic,
+          bio,
+          theme,
+          background_video: videoUrl,
+          location,
+          username: newUsername !== username ? newUsername : undefined
+        })
+      });
 
-    if (error) {
+      if (res.ok) {
+        setUsername(newUsername);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } else {
+        const err = await res.json();
+        alert(err.error || "Failed to update profile.");
+      }
+    } catch {
       alert("Failed to update profile.");
-    } else {
-      setUsername(newUsername);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const checkUsernameAvailability = async (username: string) => {
-    if (!username.trim()) {
+
+  const checkUsernameAvailability = async (u: string) => {
+    if (!u.trim() || u === username) {
       setUsernameError("");
       return;
     }
@@ -103,20 +107,16 @@ const Customize = () => {
     setUsernameError("");
 
     try {
-      const { data, error } = await supabase
-        .from("users")
-        .select("username")
-        .eq("username", username)
-        .neq("id", id)
-        .single();
-
-      if (data) {
+      const res = await fetch(`/api/users/${u}`);
+      // If user exists and it's not the current user (handled by logic above but also in backend usually)
+      if (res.ok) {
+        // User exists
         setUsernameError("Username is already taken");
-      } else if (error && error.code === "PGRST116") {
-        // No rows returned, username is available
+      } else if (res.status === 404) {
+        // User not found - available
         setUsernameError("");
       } else {
-        setUsernameError("Error checking username availability");
+        setUsernameError("Error checking username");
       }
     } catch (err) {
       setUsernameError("Error checking username availability");
@@ -124,6 +124,7 @@ const Customize = () => {
       setIsCheckingUsername(false);
     }
   };
+
 
   const handleUsernameChange = (value: string) => {
     setNewUsername(value);
@@ -202,7 +203,7 @@ const Customize = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-white">Profile Picture</h3>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -216,7 +217,7 @@ const Customize = () => {
                     placeholder="Paste your image URL here..."
                   />
                 </div>
-                
+
                 {profilePic && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -251,7 +252,7 @@ const Customize = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-white">Username</h3>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -262,11 +263,10 @@ const Customize = () => {
                       type="text"
                       value={newUsername}
                       onChange={(e) => handleUsernameChange(e.target.value)}
-                      className={`w-full p-4 bg-white/5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent text-white placeholder-gray-400 transition-all ${
-                        usernameError 
-                          ? 'border-red-500/50 focus:ring-red-500' 
-                          : 'border-indigo-500/30 focus:ring-indigo-500'
-                      }`}
+                      className={`w-full p-4 bg-white/5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent text-white placeholder-gray-400 transition-all ${usernameError
+                        ? 'border-red-500/50 focus:ring-red-500'
+                        : 'border-indigo-500/30 focus:ring-indigo-500'
+                        }`}
                       placeholder="Enter your username..."
                     />
                     {isCheckingUsername && (
@@ -288,7 +288,7 @@ const Customize = () => {
                     </p>
                   )}
                 </div>
-                
+
                 <div className="bg-indigo-500/10 rounded-xl p-4 border border-indigo-500/20">
                   <p className="text-sm text-indigo-300 mb-2">
                     <strong>Username Guidelines:</strong>
@@ -316,7 +316,7 @@ const Customize = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-white">Bio</h3>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Tell your story
@@ -346,7 +346,7 @@ const Customize = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-white">Theme</h3>
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {themes.map((themeOption) => (
                   <motion.button
@@ -354,11 +354,10 @@ const Customize = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTheme(themeOption.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      theme === themeOption.value
-                        ? 'border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/25'
-                        : 'border-gray-600 bg-white/5 hover:border-purple-500/50'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${theme === themeOption.value
+                      ? 'border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/25'
+                      : 'border-gray-600 bg-white/5 hover:border-purple-500/50'
+                      }`}
                   >
                     <div className="text-2xl mb-2">{themeOption.icon}</div>
                     <div className="text-sm font-medium text-white">{themeOption.label}</div>
@@ -382,7 +381,7 @@ const Customize = () => {
                   </div>
                   <h3 className="text-xl font-bold text-white">Location</h3>
                 </div>
-                
+
                 <input
                   type="text"
                   value={location}
@@ -404,7 +403,7 @@ const Customize = () => {
                   </div>
                   <h3 className="text-xl font-bold text-white">Background Video</h3>
                 </div>
-                
+
                 <input
                   type="text"
                   value={videoUrl}
@@ -431,7 +430,7 @@ const Customize = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-white">Live Preview</h3>
                 </div>
-                
+
                 {/* Preview Card */}
                 <div className={`rounded-2xl p-6 border-2 border-purple-500/30 bg-gradient-to-br ${themes.find(t => t.value === theme)?.gradient || 'from-gray-900 to-black'}`}>
                   <div className="text-center">
@@ -446,44 +445,43 @@ const Customize = () => {
                         <User className="w-8 h-8 text-purple-400" />
                       </div>
                     )}
-                    
+
                     <h4 className="text-xl font-bold text-white mb-2">
                       @{newUsername || username || "username"}
                     </h4>
-                    
+
                     {bio && (
                       <p className="text-sm text-gray-300 mb-4 line-clamp-3">
                         {bio}
                       </p>
                     )}
-                    
+
                     {location && (
                       <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mb-4">
                         <MapPin className="w-4 h-4" />
                         {location}
                       </div>
                     )}
-                    
+
                     <div className="flex justify-center gap-4 text-sm">
                       <span className="text-purple-300">1.2K followers</span>
                       <span className="text-blue-300">5.6K views</span>
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Save Button */}
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSave}
                   disabled={isSaving}
-                  className={`w-full mt-6 p-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 ${
-                    isSaving
+                  className={`w-full mt-6 p-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 ${isSaving
+                    ? 'bg-gray-600 cursor-not-allowed'
+                    : usernameError || !newUsername.trim()
                       ? 'bg-gray-600 cursor-not-allowed'
-                      : usernameError || !newUsername.trim()
-                        ? 'bg-gray-600 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg hover:shadow-purple-500/25'
-                  }`}
+                      : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 shadow-lg hover:shadow-purple-500/25'
+                    }`}
                 >
                   {isSaving ? (
                     <>
@@ -502,7 +500,7 @@ const Customize = () => {
                     </>
                   )}
                 </motion.button>
-                
+
                 <AnimatePresence>
                   {saveSuccess && (
                     <motion.div

@@ -2,13 +2,14 @@
 
 import { useEffect, useState, useRef, JSX } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiVolumeX, FiVolume2, FiMapPin, FiEye } from "react-icons/fi";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import { FaUserPlus, FaUserCheck, FaUsers } from "react-icons/fa";
 import Link from "next/link";
 import Bowser from "bowser";
+import { useSession } from "next-auth/react";
+
 
 import {
   FaYoutube,
@@ -103,15 +104,15 @@ const badgeIcons: Record<string, JSX.Element> = {
   "Server OG": <FaUserSecret />,
 };
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Remove supabase init
+
 
 const UserPage = () => {
   const { username } = useParams();
   const router = useRouter();
+  const { data: session } = useSession();
   const [userData, setUserData] = useState<any>(null);
+
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(50);
   const [showControls, setShowControls] = useState(false);
@@ -159,32 +160,25 @@ const UserPage = () => {
     if (!username) return;
 
     const fetchUser = async () => {
-      const { data, error } = await supabase
-        .from("users")
-        .select(
-          "id, username, profile_pic, bio, theme, background_video, location, profile_views, social_links, badges"
-        )
-        .eq("username", username)
-        .single();
-
-      if (error || !data) {
+      try {
+        const res = await fetch(`/api/users/${username}`, { cache: 'no-store' });
+        if (!res.ok) {
+          router.push("/404");
+          return;
+        }
+        const data = await res.json();
+        setUserData(data);
+        // Views increment is handled by separate logging in next useEffect
+      } catch {
         router.push("/404");
-        return;
       }
-
-      setUserData(data);
-      await incrementProfileViews(data.id);
     };
 
     fetchUser();
-  }, [username]);
+  }, [username, router]);
 
-  const incrementProfileViews = async (userId: string) => {
-    await supabase
-      .from("users")
-      .update({ profile_views: (userData?.profile_views || 0) + 1 })
-      .eq("id", userId);
-  };
+  // incrementProfileViews removed, using API
+
 
   const getVideoId = (url: string) => {
     const match = url.match(
@@ -256,12 +250,19 @@ const UserPage = () => {
 
     let sessionStart = Date.now();
     let didLogView = false;
+    const viewerId = (session?.user as any)?.id || null;
+
+    const fetchViews = async () => {
+      try {
+        const res = await fetch(`/api/analytics?userId=${userData.id}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.analytics?.totalViews !== undefined) {
+          setViews(data.analytics.totalViews);
+        }
+      } catch { }
+    };
 
     const logAndFetchViews = async () => {
-      // Get current user (viewer)
-      const { data: sessionData } = await supabase.auth.getSession();
-      const viewerId = sessionData.session?.user?.id || null;
-
       // Prevent self-views
       if (viewerId === userData.id) return;
 
@@ -271,8 +272,8 @@ const UserPage = () => {
         const res = await fetch("https://ipapi.co/json/");
         const geo = await res.json();
         country = geo.country_name || geo.country || "Unknown";
-      } catch {}
-      
+      } catch { }
+
       // Parse device/browser
       const browser = Bowser.getParser(window.navigator.userAgent);
       const device = browser.getPlatformType(true) || "Unknown";
@@ -285,13 +286,13 @@ const UserPage = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             userId: userData.id,
-            viewerId,
+            viewerId: viewerId || null,
             country,
             device,
             browser: browserName,
           }),
         });
-        
+
         if (response.ok) {
           const result = await response.json();
           if (result.success && result.message !== 'View already logged today') {
@@ -302,90 +303,71 @@ const UserPage = () => {
         console.error('Failed to log profile view:', error);
       }
 
-      // Fetch total views
-      const { count } = await supabase
-        .from("profile_views")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userData.id);
-      setViews(count || 0);
+      // Fetch total views immediately
+      fetchViews();
     };
 
     logAndFetchViews();
 
+    // Poll for views every 5 seconds to show "realtime" updates from other users
+    const interval = setInterval(fetchViews, 5000);
+
     // On unmount, update session_duration
     return () => {
-      if (!didLogView || !userData?.id) return;
+      clearInterval(interval);
+      if (!didLogView || !userData?.id) return; // allow logging duration even if viewerId is null (anonymous)
       const sessionEnd = Date.now();
       const duration = Math.floor((sessionEnd - sessionStart) / 1000); // seconds
-      
+
       // Update session duration via API
       const updateDuration = async () => {
         try {
-          const { data: sessionData } = await supabase.auth.getSession();
-          const viewerId = sessionData.session?.user?.id || null;
-          
-          if (viewerId) {
-            await fetch('/api/profile-view', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: userData.id,
-                viewerId,
-                duration,
-              }),
-            });
-          }
+          // Fire and forget
+          fetch('/api/profile-view', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: userData.id,
+              viewerId: viewerId || null, // pass null if anonymous
+              duration,
+            }),
+            keepalive: true // Ensure request completes after unload
+          });
         } catch (error) {
           console.error('Failed to update session duration:', error);
         }
       };
       updateDuration();
     };
-  }, [userData?.id]);
+  }, [userData?.id, session]);
 
   // Fetch current user
   useEffect(() => {
-    const fetchCurrentUser = async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) return;
-      const userId = sessionData.session.user.id;
-      const { data: userData } = await supabase
-        .from("users")
-        .select("id, username")
-        .eq("id", userId)
-        .single();
-      setCurrentUser(userData);
-    };
-    fetchCurrentUser();
-  }, []);
+    if (session?.user) {
+      setCurrentUser({ id: (session.user as any).id, username: session.user.name });
+    }
+  }, [session]);
 
   // Fetch follow status and counts
   useEffect(() => {
     if (!userData?.id || !currentUser?.id) return;
     const fetchFollowData = async () => {
       // Check if following
-      const { data: followData } = await supabase
-        .from("follows")
-        .select("id")
-        .eq("follower_id", currentUser.id)
-        .eq("following_id", userData.id)
-        .single();
-      setIsFollowing(!!followData);
-      // Followers count
-      const { count: followers } = await supabase
-        .from("follows")
-        .select("id", { count: "exact", head: true })
-        .eq("following_id", userData.id);
-      setFollowersCount(followers || 0);
-      // Following count
-      const { count: following } = await supabase
-        .from("follows")
-        .select("id", { count: "exact", head: true })
-        .eq("follower_id", userData.id);
-      setFollowingCount(following || 0);
+      try {
+        const res = await fetch(`/api/follow?userId=${userData.id}&type=followers`); // This gets list, inefficient but works
+        const data = await res.json();
+        const isFollowingMe = data.users.some((u: any) => u.id === currentUser.id);
+        setIsFollowing(isFollowingMe);
+        setFollowersCount(data.users.length);
+
+        const resFollowing = await fetch(`/api/follow?userId=${userData.id}&type=following`);
+        const dataFollowing = await resFollowing.json();
+        setFollowingCount(dataFollowing.users.length);
+      } catch { }
     };
     fetchFollowData();
   }, [userData?.id, currentUser?.id]);
+
 
   // Fetch followers/following lists for modals
   const fetchFollowersList = async () => {
@@ -399,7 +381,7 @@ const UserPage = () => {
       console.error('Failed to fetch followers:', error);
     }
   };
-  
+
   const fetchFollowingList = async () => {
     try {
       const response = await fetch(`/api/follow?userId=${userData.id}&type=following`);
@@ -517,11 +499,10 @@ const UserPage = () => {
 
   return (
     <div
-      className={`relative w-full min-h-screen flex items-center justify-center ${
-        userData?.theme === "light"
-          ? "bg-white text-black"
-          : "bg-black text-white"
-      }`}
+      className={`relative w-full min-h-screen flex items-center justify-center ${userData?.theme === "light"
+        ? "bg-white text-black"
+        : "bg-black text-white"
+        }`}
       onClick={handleScreenClick}
     >
       {userData?.background_video && (
@@ -631,10 +612,9 @@ const UserPage = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleFollow}
                 className={`px-6 py-2 rounded-full font-semibold shadow-lg transition-all duration-300 
-                  ${
-                    isFollowing
-                      ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white"
-                      : "bg-gradient-to-r from-white to-gray-300 text-black"
+                  ${isFollowing
+                    ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white"
+                    : "bg-gradient-to-r from-white to-gray-300 text-black"
                   }
                   glassmorphism-btn border border-white/20 backdrop-blur-xl`}
                 disabled={followLoading}

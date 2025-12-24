@@ -2,14 +2,10 @@
 
 import Sidebar from '@/components/Sidebar';
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { useSession } from "next-auth/react";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
-import { FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaEdit, FaTrash, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero,  FaAddressCard } from 'react-icons/fa';
+import { FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaEdit, FaTrash, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard } from 'react-icons/fa';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
 
 const socialPlatforms = [
   { name: 'YouTube', icon: <FaYoutube />, key: 'youtube' },
@@ -42,64 +38,74 @@ const Links = () => {
   const [username, setUsername] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
 
+  const { data: session } = useSession();
+
   useEffect(() => {
-    getUserId();
-  }, []);
+    if (session?.user) {
+      const u = session.user as any;
+      setUserId(u.id);
+      fetchUserLinks(u.id);
+    }
+  }, [session]);
 
-  const getUserId = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
 
-    if (session) {
-      const user_id = session.user.id;
-      setUserId(user_id);
-      fetchUserLinks(user_id);
+  const fetchUserLinks = async (uid: string) => {
+    try {
+      const res = await fetch(`/api/users/${uid}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSocialLinks(data.social_links || {});
+        setUsername(data.username || 'Unknown');
+      }
+    } catch (error) {
+      console.error("Error fetching links", error);
     }
   };
 
-  const fetchUserLinks = async (userId: string) => {
-    const { data } = await supabase
-      .from('users')
-      .select('username, social_links')
-      .eq('id', userId)
-      .single();
-
-    if (data) {
-      setSocialLinks(data.social_links || {});
-      setUsername(data.username || 'Unknown');
-    }
-  };
 
   const handleAddOrEditLink = async () => {
     if (!selectedPlatform || !url || !userId) return;
 
     const updatedLinks = { ...socialLinks, [selectedPlatform]: url };
 
-    const { error } = await supabase
-      .from('users')
-      .update({ social_links: updatedLinks })
-      .eq('id', userId);
+    try {
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ social_links: updatedLinks })
+      });
 
-    if (!error) {
-      setSocialLinks(updatedLinks);
-      setUrl('');
-      setSelectedPlatform(null);
-      setEditMode(false);
+      if (res.ok) {
+        setSocialLinks(updatedLinks);
+        setUrl('');
+        setSelectedPlatform(null);
+        setEditMode(false);
+      }
+    } catch (e) {
+      console.error("Error updating links", e);
     }
   };
+
 
   const handleDeleteLink = async (platform: string) => {
     const updatedLinks = { ...socialLinks };
     delete updatedLinks[platform];
 
-    const { error } = await supabase
-      .from('users')
-      .update({ social_links: updatedLinks })
-      .eq('id', userId);
+    try {
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ social_links: updatedLinks })
+      });
 
-    if (!error) {
-      setSocialLinks(updatedLinks);
+      if (res.ok) {
+        setSocialLinks(updatedLinks);
+      }
+    } catch (e) {
+      console.error("Error deleting link", e);
     }
   };
+
 
   const handleEdit = (platform: string, currentUrl: string) => {
     setSelectedPlatform(platform);
