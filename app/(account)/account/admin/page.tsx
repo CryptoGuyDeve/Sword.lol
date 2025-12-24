@@ -32,28 +32,44 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  // Check authentication
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session || !session.user) {
+      router.push("/login");
+      return;
+    }
+
+    const u = session.user as any;
+    setCurrentUser({ id: u.id, username: u.username || u.name || "Admin" });
+  }, [session, status, router]);
 
   useEffect(() => {
     if (session?.user) {
-      const u = session.user as any;
-      setCurrentUser({ id: u.id, username: u.username || u.name || "Admin" });
+      fetchUsers();
     }
   }, [session]);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const fetchUsers = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/admin/users");
       if (res.ok) {
         const data = await res.json();
         setUsers(data);
+      } else if (res.status === 401) {
+        setError("Unauthorized. You must be logged in as an admin to access this page.");
+        router.push("/login");
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || "Failed to fetch users");
       }
     } catch (e) {
       console.error("Error fetching users", e);
@@ -135,6 +151,19 @@ const AdminPanel = () => {
               </div>
             </div>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
+              <div className="p-2 bg-red-500/20 rounded-lg">
+                <Shield className="w-5 h-5 text-red-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-400 mb-1">Error</h3>
+                <p className="text-sm text-red-300">{error}</p>
+              </div>
+            </div>
+          )}
 
           {/* Users List */}
           {loading ? (
