@@ -45,9 +45,8 @@ const LoginPage = () => {
       if (res?.error) {
         setError("Invalid email or password.");
       } else if (res?.ok) {
-        // Redirect to /dashboard, the middleware or page will handle the specific user route
-        router.push("/dashboard");
-        router.refresh();
+        // Use window.location for a more reliable redirect
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       setError("An unexpected error occurred");
