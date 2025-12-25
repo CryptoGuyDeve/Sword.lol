@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { FiMail, FiLock, FiArrowRight } from "react-icons/fi";
