@@ -294,7 +294,7 @@ const UserPage = () => {
                         <img
                             src={userData?.profile_pic}
                             alt="Entity"
-                            className="relative w-32 h-32 md:w-40 md:h-40 grayscale hover:grayscale-0 transition-all duration-700 rounded-none border border-white/10 p-2 bg-black object-cover"
+                            className="relative w-32 h-32 md:w-40 md:h-40 transition-all duration-700 rounded-none border border-white/10 p-2 bg-black object-cover"
                         />
                     </div>
 
@@ -433,7 +433,7 @@ const UserPage = () => {
                                         onClick={() => { setFollowersModal(false); setFollowingModal(false); }}
                                     >
                                         <div className="flex items-center gap-4">
-                                            <img src={user.profile_pic} className="w-8 h-8 rounded-none border border-white/10 grayscale group-hover:grayscale-0 transition-all" />
+                                            <img src={user.profile_pic} className="w-8 h-8 rounded-none border border-white/10 transition-all object-cover" />
                                             <span className="text-sm font-bold tracking-tight italic">{user.username}</span>
                                         </div>
                                         <FiArrowRight className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-gray-500" />

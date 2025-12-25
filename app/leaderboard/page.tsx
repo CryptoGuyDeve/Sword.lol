@@ -225,7 +225,7 @@ export default function LeaderboardPage() {
                         <div className="absolute inset-0 bg-white/5 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-1000" />
                         <img
                           src={creator.profile_pic}
-                          className="relative w-12 h-12 grayscale group-hover:grayscale-0 transition-all duration-700 border border-white/10 p-1 bg-black object-cover"
+                          className="relative w-12 h-12 transition-all duration-700 border border-white/10 p-1 bg-black object-cover"
                           alt={creator.username}
                         />
                       </div>
