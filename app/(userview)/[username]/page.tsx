@@ -294,7 +294,7 @@ const UserPage = () => {
                         <img
                             src={userData?.profile_pic}
                             alt="Entity"
-                            className="relative w-32 h-32 md:w-40 md:h-40 grayscale hover:grayscale-0 transition-all duration-700 rounded-none border border-white/10 p-2 bg-black"
+                            className="relative w-32 h-32 md:w-40 md:h-40 grayscale hover:grayscale-0 transition-all duration-700 rounded-none border border-white/10 p-2 bg-black object-cover"
                         />
                     </div>
 
