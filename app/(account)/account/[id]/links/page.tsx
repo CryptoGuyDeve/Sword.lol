@@ -3,9 +3,17 @@
 import Sidebar from '@/components/Sidebar';
 import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
 import Loading from '@/components/Loading';
+import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
-import { FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaEdit, FaTrash, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard } from 'react-icons/fa';
+import {
+  FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok,
+  FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud,
+  FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon,
+  FaBitcoin, FaEthereum, FaMonero, FaAddressCard, FaPlus, FaTrash
+} from 'react-icons/fa';
+import { FiEdit3, FiExternalLink, FiGlobe, FiShare2, FiLink, FiArrowRight } from "react-icons/fi";
 
 // Force dynamic rendering to prevent static generation errors
 export const dynamic = "force-dynamic";
@@ -34,10 +42,11 @@ const socialPlatforms = [
 ];
 
 const Links = () => {
+  const params = useParams();
+  const id = params?.id as string;
   const [url, setUrl] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [socialLinks, setSocialLinks] = useState<any>({});
-  const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,13 +54,10 @@ const Links = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (session?.user) {
-      const u = session.user as any;
-      setUserId(u.id);
-      fetchUserLinks(u.id);
+    if (id) {
+      fetchUserLinks(id);
     }
-  }, [session]);
-
+  }, [id]);
 
   const fetchUserLinks = async (uid: string) => {
     try {
@@ -68,14 +74,13 @@ const Links = () => {
     }
   };
 
-
   const handleAddOrEditLink = async () => {
-    if (!selectedPlatform || !url || !userId) return;
+    if (!selectedPlatform || !url || !id) return;
 
     const updatedLinks = { ...socialLinks, [selectedPlatform]: url };
 
     try {
-      const res = await fetch(`/api/users/${userId}`, {
+      const res = await fetch(`/api/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ social_links: updatedLinks })
@@ -92,13 +97,12 @@ const Links = () => {
     }
   };
 
-
   const handleDeleteLink = async (platform: string) => {
     const updatedLinks = { ...socialLinks };
     delete updatedLinks[platform];
 
     try {
-      const res = await fetch(`/api/users/${userId}`, {
+      const res = await fetch(`/api/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ social_links: updatedLinks })
@@ -112,122 +116,237 @@ const Links = () => {
     }
   };
 
-
   const handleEdit = (platform: string, currentUrl: string) => {
     setSelectedPlatform(platform);
     setUrl(currentUrl);
     setEditMode(true);
   };
 
-  if (loading) return <Loading fullScreen text="SYNCING_IDENTITY" />;
+  if (loading) return <Loading fullScreen text="LOADING_LINKS" />;
 
   return (
-    <div className="flex bg-[#0e0e0e] min-h-screen text-white overflow-hidden">
-      <Sidebar id={userId || ''} username={username || 'Loading...'} />
+    <div className="flex bg-[#0E0E0E] min-h-screen text-white overflow-hidden selection:bg-white selection:text-black font-sans">
+      <Sidebar id={id || ''} username={username || 'User'} />
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto h-screen">
-        <div className="max-w-5xl mx-auto space-y-10">
-          {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Social Links</h1>
-            <p className="text-gray-400">Connect your profiles to your account.</p>
+      <main className="flex-1 relative overflow-y-auto h-screen custom-scrollbar">
+        {/* Stage 3: Ambient Shading */}
+        <div className="absolute inset-0 pointer-events-none z-[1]">
+          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/[0.02] blur-[150px] rounded-full" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-white/[0.02] blur-[150px] rounded-full" />
+        </div>
+
+        {/* Global Grain Texture */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay z-[2] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+
+        {/* Background Grid */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.05] z-[1]"
+          style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '100px 100px' }}
+        />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-24 md:py-32">
+
+          {/* Header Section */}
+          <div className="mb-24 relative">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/30 uppercase">
+                  SOCIAL_LINKS / MODULE_03
+                </span>
+                <div className="h-px w-12 bg-white/10" />
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter italic mb-4">
+                Social Links<span className="text-gray-600 font-normal">.</span>
+              </h1>
+              <p className="text-zinc-400 font-medium italic tracking-tight text-lg">
+                Connect your social profiles to your Sword page.
+              </p>
+            </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
-            {/* Left: Add Links */}
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
-                Add a Link
-              </h2>
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
-                {socialPlatforms.map((platform) => (
-                  <button
-                    key={platform.key}
-                    onClick={() => {
-                      setSelectedPlatform(platform.key);
-                      setEditMode(false);
-                    }}
-                    className="flex flex-col items-center justify-center p-4 bg-[#121212] border border-white/5 rounded-xl hover:bg-white/5 hover:border-white/20 transition-all gap-3 group aspect-square"
-                  >
-                    <div className="text-2xl text-gray-500 group-hover:text-white transition-colors duration-300">{platform.icon}</div>
-                    <span className="text-xs font-medium text-gray-500 group-hover:text-gray-300 transition-colors">{platform.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-24">
 
-            {/* Right: Existing Links */}
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <span className="w-1 h-6 bg-blue-500 rounded-full"></span>
-                Your Links
-              </h2>
-              {Object.entries(socialLinks).length === 0 ? (
-                <div className="p-12 border border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center text-gray-500 gap-4">
-                  <FaAddressCard className="text-4xl opacity-20" />
-                  <p>No links added yet. Click an icon to add one.</p>
+            {/* Left/Middle Column - Link Selection */}
+            <div className="lg:col-span-2 space-y-16">
+              <section>
+                <div className="flex items-center gap-4 mb-10">
+                  <FiShare2 className="text-gray-600" />
+                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Add New Link</h3>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {Object.entries(socialLinks).map(([platform, value]) => (
-                    <div key={platform} className="flex items-center justify-between p-4 bg-[#121212] border border-white/5 rounded-xl group hover:border-white/10 transition-colors">
-                      <div className="flex items-center gap-4 overflow-hidden">
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-xl text-gray-300">
-                          {socialPlatforms.find(p => p.key === platform)?.icon || <FaAddressCard />}
-                        </div>
-                        <div className="flex flex-col min-w-0">
-                          <span className="text-sm font-medium capitalize text-white">{platform}</span>
-                          <a href={value as string} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-500 truncate hover:text-blue-400 transition-colors block max-w-[200px] sm:max-w-xs">
-                            {value as string}
-                          </a>
-                        </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/5 border border-white/5 overflow-hidden shadow-2xl">
+                  {socialPlatforms.map((platform, i) => (
+                    <motion.button
+                      key={platform.key}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: i * 0.02 }}
+                      onClick={() => {
+                        setSelectedPlatform(platform.key);
+                        setEditMode(false);
+                      }}
+                      className="aspect-square flex flex-col items-center justify-center gap-4 bg-black/40 p-8 hover:bg-white text-gray-500 hover:text-black transition-all duration-700 group relative"
+                    >
+                      <div className="text-2xl transition-transform duration-700 group-hover:scale-110">
+                        {platform.icon}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handleEdit(platform, value as string)} className="p-2 hover:bg-white/10 rounded-lg text-gray-500 hover:text-white transition-colors" title="Edit">
-                          <FaEdit size={14} />
-                        </button>
-                        <button onClick={() => handleDeleteLink(platform)} className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-400 transition-colors" title="Remove">
-                          <FaTrash size={14} />
-                        </button>
-                      </div>
-                    </div>
+                      <span className="text-[9px] uppercase font-bold tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                        {platform.name}
+                      </span>
+                      {/* Corner Accents on Hover */}
+                      <div className="absolute top-4 left-4 w-2 h-2 border-t border-l border-black/20 opacity-0 group-hover:opacity-100 transition-all duration-700" />
+                      <div className="absolute bottom-4 right-4 w-2 h-2 border-b border-r border-black/20 opacity-0 group-hover:opacity-100 transition-all duration-700" />
+                    </motion.button>
                   ))}
                 </div>
-              )}
+              </section>
+            </div>
+
+            {/* Right Column - Active Links */}
+            <div className="space-y-12">
+              <section>
+                <div className="flex items-center gap-4 mb-10">
+                  <FiGlobe className="text-gray-600" />
+                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Your Active Links</h3>
+                </div>
+
+                <div className="space-y-4">
+                  <AnimatePresence mode="popLayout">
+                    {Object.entries(socialLinks).length === 0 ? (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="p-12 border border-white/5 bg-white/[0.01] text-center space-y-4"
+                      >
+                        <FiLink className="text-2xl text-white/10 mx-auto" />
+                        <p className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/20 italic">No links added yet</p>
+                      </motion.div>
+                    ) : (
+                      Object.entries(socialLinks).map(([platform, value]) => (
+                        <motion.div
+                          key={platform}
+                          layout
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="bg-white/[0.02] border border-white/5 p-6 flex items-center justify-between group hover:bg-white/[0.05] transition-all duration-500"
+                        >
+                          <div className="flex items-center gap-5 overflow-hidden">
+                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-xl text-gray-400 group-hover:text-white transition-colors">
+                              {socialPlatforms.find(p => p.key === platform)?.icon || <FaAddressCard />}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[10px] uppercase font-bold tracking-widest text-white/40 mb-1">{platform}</p>
+                              <p className="text-xs font-medium italic text-white/80 truncate opacity-60 group-hover:opacity-100 transition-opacity">/{String(value).split('/').pop()}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <button
+                              onClick={() => handleEdit(platform, value as string)}
+                              className="p-2 hover:bg-white hover:text-black text-gray-400 transition-all"
+                            >
+                              <FiEdit3 size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteLink(platform)}
+                              className="p-2 hover:bg-red-500 hover:text-white text-gray-400 transition-all"
+                            >
+                              <FaTrash size={12} />
+                            </button>
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
+                  </AnimatePresence>
+                </div>
+              </section>
+
+              {/* Pro Tip/Meta */}
+              <div className="p-8 border-l border-white/5 bg-white/[0.01]">
+                <p className="text-[9px] font-mono tracking-widest text-gray-600 leading-relaxed uppercase">
+                  Tip: Links are instantly added to your public profile and optimized for search engines.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        {selectedPlatform && (
-          <AlertDialog open={Boolean(selectedPlatform)} onOpenChange={() => setSelectedPlatform(null)}>
-            <AlertDialogTrigger className="hidden" />
-            <AlertDialogContent className="bg-[#121212] text-white border border-white/10 sm:rounded-2xl">
-              <AlertDialogTitle className="text-xl font-bold mb-4">
-                {editMode ? `Edit ${selectedPlatform}` : `Add ${selectedPlatform}`}
-              </AlertDialogTitle>
-              <AlertDialogDescription asChild>
-                <div className="space-y-4">
-                  <p className="text-gray-400 text-sm">Enter the URL for your {selectedPlatform} profile.</p>
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full p-3 bg-[#1a1a1a] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-gray-600 transition-all font-medium"
-                    autoFocus
+        {/* Custom Edit/Add Modal */}
+        <AnimatePresence>
+          {selectedPlatform && (
+            <AlertDialog open={Boolean(selectedPlatform)} onOpenChange={() => setSelectedPlatform(null)}>
+              <AlertDialogContent className="bg-[#0E0E0E] text-white border border-white/10 rounded-none max-w-lg p-0 overflow-hidden">
+                <div className="relative p-12 space-y-12">
+                  {/* Background Grid Accent */}
+                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                    style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
                   />
+
+                  <div className="relative z-10 flex justify-between items-start">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-white rounded-full" />
+                        <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/40 uppercase">
+                          LINK_INPUT / {selectedPlatform}
+                        </span>
+                      </div>
+                      <AlertDialogTitle className="text-4xl font-bold italic tracking-tighter">
+                        {editMode ? "Update Link." : "Add Link."}
+                      </AlertDialogTitle>
+                    </div>
+                    <div className="text-6xl opacity-[0.03] absolute -right-4 -top-4 font-bold italic pointer-events-none">
+                      {selectedPlatform.toUpperCase()}
+                    </div>
+                  </div>
+
+                  <div className="relative z-10 space-y-8">
+                    <div className="space-y-4">
+                      <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Profile or Page URL</label>
+                      <input
+                        type="text"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        placeholder="https://..."
+                        className="w-full bg-[#121212] border border-white/10 p-5 text-sm focus:border-white transition-all outline-none font-medium placeholder:text-zinc-800"
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+
+                  <div className="relative z-10 flex flex-col gap-4">
+                    <AlertDialogAction
+                      onClick={handleAddOrEditLink}
+                      className="w-full bg-white text-black hover:bg-gray-200 py-6 text-[10px] font-bold tracking-[0.5em] uppercase rounded-none transition-all flex items-center justify-center gap-3"
+                    >
+                      {editMode ? "Update Link" : "Save Link"}
+                      <FiArrowRight />
+                    </AlertDialogAction>
+                    <AlertDialogCancel className="w-full bg-white/5 border border-white/5 text-white/40 hover:bg-white/10 py-4 text-[9px] font-bold tracking-[0.4em] uppercase rounded-none transition-all mt-0 border-none">
+                      Cancel
+                    </AlertDialogCancel>
+                  </div>
                 </div>
-              </AlertDialogDescription>
-              <div className="flex justify-end mt-8 gap-3">
-                <AlertDialogCancel className="bg-transparent hover:bg-white/5 border border-white/10 text-gray-300 hover:text-white px-5 py-2.5 rounded-xl transition-colors">Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleAddOrEditLink} className="bg-white text-black hover:bg-gray-200 px-6 py-2.5 rounded-xl font-semibold transition-colors">
-                  {editMode ? 'Save Changes' : 'Add Link'}
-                </AlertDialogAction>
-              </div>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </AnimatePresence>
+
+        <style jsx global>{`
+          .custom-scrollbar::-webkit-scrollbar {
+              width: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+              background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: rgba(255, 255, 255, 0.05);
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: rgba(255, 255, 255, 0.1);
+          }
+        `}</style>
       </main>
     </div>
   );

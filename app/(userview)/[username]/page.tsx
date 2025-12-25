@@ -221,7 +221,7 @@ const UserPage = () => {
             {/* Background Video Layer */}
             {userData?.background_video && (
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
-                    <div id="youtube-player" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-[100vw] min-h-[100vh] scale-110 blur-[4px]" />
+                    <div id="youtube-player" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-[100vw] min-h-[100vh] scale-110 blur-[1px]" />
                 </div>
             )}
 
@@ -229,7 +229,7 @@ const UserPage = () => {
             <div className="absolute inset-0 pointer-events-none z-[1]">
                 <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/[0.03] blur-[120px] rounded-full" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-white/[0.03] blur-[120px] rounded-full" />
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
             </div>
 
             {/* Global Grain Texture */}
