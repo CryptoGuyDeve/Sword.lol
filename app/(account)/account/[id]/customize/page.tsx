@@ -221,7 +221,7 @@ const Customize = () => {
               <h1 className="text-5xl md:text-7xl font-bold tracking-tighter italic mb-4">
                 Engineering<span className="text-gray-600 font-normal">.</span>
               </h1>
-              <p className="text-gray-500 font-medium italic tracking-tight text-lg">
+              <p className="text-zinc-400 font-medium italic tracking-tight text-lg">
                 Modify your architectural footprint in the Sword network.
               </p>
             </motion.div>
@@ -242,12 +242,12 @@ const Customize = () => {
                     <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">ASSET_MGR</span>
                   </div>
                   <div className="space-y-6">
-                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 italic">Avatar Endpoint</label>
+                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Avatar Endpoint</label>
                     <input
                       type="text"
                       value={profilePic || ""}
                       onChange={(e) => setProfilePic(formatPinterestURL(e.target.value))}
-                      className="w-full bg-transparent border-b border-white/10 py-4 text-xs focus:border-white transition-all outline-none font-medium placeholder:text-gray-800"
+                      className="w-full bg-transparent border-b border-white/10 py-4 text-sm focus:border-white transition-all outline-none font-medium placeholder:text-zinc-800 text-white"
                       placeholder="https://..."
                     />
                   </div>
@@ -263,13 +263,13 @@ const Customize = () => {
                     <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">DOMAIN_ID</span>
                   </div>
                   <div className="space-y-6">
-                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 italic">Identifier</label>
+                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Identifier</label>
                     <div className="relative">
                       <input
                         type="text"
                         value={newUsername}
                         onChange={(e) => handleUsernameChange(e.target.value)}
-                        className={`w-full bg-transparent border-b py-4 text-xs transition-all outline-none font-medium placeholder:text-gray-800 ${usernameError ? "border-red-900" : "border-white/10 focus:border-white"}`}
+                        className={`w-full bg-transparent border-b py-4 text-sm transition-all outline-none font-medium placeholder:text-zinc-800 text-white ${usernameError ? "border-red-900" : "border-white/10 focus:border-white"}`}
                         placeholder="@entity"
                       />
                       {isCheckingUsername && (
@@ -291,7 +291,7 @@ const Customize = () => {
                   <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">METADATA_STR</span>
                 </div>
                 <div className="space-y-8">
-                  <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 italic">System Bio</label>
+                  <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">System Bio</label>
                   <textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
@@ -314,13 +314,13 @@ const Customize = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
                     <FiVideo className="text-gray-600 text-xs" />
-                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 italic">Visual Stream</label>
+                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Visual Stream</label>
                   </div>
                   <input
                     type="text"
                     value={videoUrl}
                     onChange={(e) => setVideoUrl(e.target.value)}
-                    className="w-full bg-[#121212]/50 border border-white/5 px-6 py-4 text-xs text-white focus:border-white transition-all outline-none font-mono"
+                    className="w-full bg-[#121212]/50 border border-white/5 px-6 py-4 text-sm text-white focus:border-white transition-all outline-none font-mono placeholder:text-zinc-800"
                     placeholder="YOUTUBE_ENDPOINT"
                   />
                 </div>
@@ -329,13 +329,13 @@ const Customize = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
                     <FiMapPin className="text-gray-600 text-xs" />
-                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 italic">Coordinate Lock</label>
+                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Coordinate Lock</label>
                   </div>
                   <input
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full bg-[#121212]/50 border border-white/5 px-6 py-4 text-xs text-white focus:border-white transition-all outline-none font-mono"
+                    className="w-full bg-[#121212]/50 border border-white/5 px-6 py-4 text-sm text-white focus:border-white transition-all outline-none font-mono placeholder:text-zinc-800"
                     placeholder="GEOGRAPHICAL_COORD"
                   />
                 </div>
@@ -345,7 +345,7 @@ const Customize = () => {
               <div className="space-y-10">
                 <div className="flex items-center gap-4">
                   <FiGrid className="text-gray-600" />
-                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-500 italic">Palette Schema</h3>
+                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Palette Schema</h3>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5 overflow-hidden">
                   {themes.map((t) => (
@@ -358,7 +358,7 @@ const Customize = () => {
                         <span className="text-xl">{t.icon}</span>
                         {theme === t.value && <FiCheck className="text-xs" />}
                       </div>
-                      <span className={`text-[10px] uppercase font-bold tracking-[0.3em] ${theme === t.value ? "text-black" : "text-gray-500 group-hover:text-white"}`}>{t.label}</span>
+                      <span className={`text-[10px] uppercase font-bold tracking-[0.3em] ${theme === t.value ? "text-black" : "text-zinc-400 group-hover:text-white"}`}>{t.label}</span>
                     </button>
                   ))}
                 </div>
@@ -446,12 +446,12 @@ const Customize = () => {
         {/* Floating Meta Details */}
         <div className="fixed bottom-12 left-12 hidden lg:block z-[2]">
           <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-800 uppercase vertical-text italic">
-            Config_Node / Identity_Sec
+            Config_Node / Identity_Sec_Module
           </div>
         </div>
         <div className="fixed bottom-12 right-12 hidden lg:block z-[2]">
-          <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-800 uppercase vertical-text italic">
-            Stream_Protocol / Secure_Auth
+          <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-zinc-600 uppercase vertical-text italic">
+            Stream_Protocol / Secure_Auth_Layer
           </div>
         </div>
 
