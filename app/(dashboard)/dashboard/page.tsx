@@ -9,8 +9,11 @@ export default async function DashboardRootPage() {
         redirect("/login");
     }
 
-    // Redirect to the user-specific dashboard using their username
-    // session.user.name is mapped to username in auth.ts
+    // Check onboarding status
+    if (!(session.user as any).onboarding_completed) {
+        redirect("/onboarding");
+    }
+
     const username = session.user.name || "user";
     redirect(`/dashboard/${username}`);
 }

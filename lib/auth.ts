@@ -35,6 +35,7 @@ export const authOptions: NextAuthOptions = {
             name: user.username,
             email: user.email,
             image: user.profile_pic,
+            onboarding_completed: user.onboarding_completed,
           };
         }
         return null;
@@ -50,14 +51,21 @@ export const authOptions: NextAuthOptions = {
         // Add ID to session user
         (session.user as any).id = token.sub;
         session.user.name = token.name;
+        (session.user as any).onboarding_completed = token.onboarding_completed;
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.sub = user.id;
         token.name = user.name;
+        token.onboarding_completed = (user as any).onboarding_completed;
       }
+
+      if (trigger === "update" && session?.onboarding_completed !== undefined) {
+        token.onboarding_completed = session.onboarding_completed;
+      }
+
       return token;
     },
   },

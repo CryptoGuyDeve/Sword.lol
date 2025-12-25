@@ -59,7 +59,7 @@ const Signup = () => {
         redirect: false
       });
 
-      window.location.href = "/dashboard";
+      window.location.href = "/onboarding";
     } catch (error) {
       setError("An unexpected error occurred");
     } finally {

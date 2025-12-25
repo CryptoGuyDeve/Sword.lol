@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
   discord_id TEXT,
   discord_username TEXT,
   discord_avatar TEXT,
+  onboarding_completed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
