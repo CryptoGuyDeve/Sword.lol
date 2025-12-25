@@ -56,7 +56,39 @@ export async function GET(
     // Remove password_hash
     delete user.password_hash;
 
-    return NextResponse.json(user);
+    // Fetch aggregate counts
+    const countsPromise = db.query(
+      `
+      SELECT 
+        (SELECT COUNT(*) FROM follows WHERE following_id = $1) as followers_count,
+        (SELECT COUNT(*) FROM follows WHERE follower_id = $1) as following_count,
+        (SELECT COUNT(*) FROM profile_views WHERE user_id = $1) as views_count
+    `,
+      [user.id]
+    );
+
+    // Check if current user follows this user
+    const session = await getServerSession(authOptions);
+    let isFollowing = false;
+    if (session?.user) {
+      const followerId = (session.user as any).id;
+      const { rows: followRows } = await db.query(
+        "SELECT 1 FROM follows WHERE follower_id = $1 AND following_id = $2",
+        [followerId, user.id]
+      );
+      isFollowing = followRows.length > 0;
+    }
+
+    const countsResults = await countsPromise;
+    const counts = countsResults.rows[0];
+
+    return NextResponse.json({
+      ...user,
+      followers_count: parseInt(counts.followers_count || "0"),
+      following_count: parseInt(counts.following_count || "0"),
+      views_count: parseInt(counts.views_count || "0"),
+      isFollowing,
+    });
   } catch (error) {
     console.error("User fetch API error:", error);
     return NextResponse.json(

@@ -9,16 +9,27 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
     // Simple search implementation
-    let query =
-      "SELECT id, username, profile_pic, bio, location, created_at, social_links FROM users";
+    let query = `
+      SELECT 
+        u.id, 
+        u.username, 
+        u.profile_pic, 
+        u.bio, 
+        u.location, 
+        u.created_at, 
+        u.social_links,
+        (SELECT COUNT(*) FROM follows WHERE following_id = u.id) as followers_count,
+        (SELECT COUNT(*) FROM profile_views WHERE user_id = u.id) as views_count
+      FROM users u
+    `;
     let params: any[] = [];
 
     if (search) {
-      query += " WHERE username ILIKE $1 OR bio ILIKE $1";
+      query += " WHERE u.username ILIKE $1 OR u.bio ILIKE $1";
       params.push(`%${search}%`);
     }
 
-    query += " ORDER BY created_at DESC LIMIT 100";
+    query += " ORDER BY u.created_at DESC LIMIT 100";
 
     const { rows } = await db.query(query, params);
 

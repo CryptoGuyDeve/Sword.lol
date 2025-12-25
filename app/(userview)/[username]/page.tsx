@@ -74,7 +74,7 @@ const UserPage = () => {
     const router = useRouter();
     const { data: session } = useSession();
     const [userData, setUserData] = useState<any>(null);
-    const [isMuted, setIsMuted] = useState(true);
+    const [isMuted, setIsMuted] = useState(false);
     const [volume, setVolume] = useState(50);
     const [isBlurred, setIsBlurred] = useState(true);
     const [views, setViews] = useState(0);
@@ -100,12 +100,31 @@ const UserPage = () => {
                 }
                 const data = await res.json();
                 setUserData(data);
-            } catch {
+                setViews(data.views_count || 0);
+                setFollowersCount(data.followers_count || 0);
+                setFollowingCount(data.following_count || 0);
+                setIsFollowing(data.isFollowing || false);
+
+                // Log view
+                const browserInfo = Bowser.getParser(window.navigator.userAgent);
+                await fetch("/api/profile-view", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: data.id,
+                        viewerId: session?.user ? (session.user as any).id : null,
+                        country: "Unknown", // Can be enhanced with IP API if needed
+                        device: browserInfo.getPlatformType(),
+                        browser: browserInfo.getBrowserName(),
+                    }),
+                });
+            } catch (error) {
+                console.error("Error fetching user or logging view:", error);
                 router.push("/404");
             }
         };
         fetchUser();
-    }, [username, router]);
+    }, [username, router, session]);
 
     useEffect(() => {
         if (!userData?.background_video) return;

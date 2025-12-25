@@ -91,14 +91,14 @@ const ExplorePage = () => {
         const res = await fetch(`/api/explore?search=${encodeURIComponent(search)}`);
         if (res.ok) {
           const data = await res.json();
-          // Add mock data for demonstration
-          const usersWithMockData = (data || []).map((user: any) => ({
+          // Use real data from API, but keep category mocking for now as it's not in DB yet
+          const usersWithRealStats = (data || []).map((user: any) => ({
             ...user,
-            followers_count: Math.floor(Math.random() * 10000) + 100,
-            views_count: Math.floor(Math.random() * 50000) + 1000,
+            followers_count: parseInt(user.followers_count || "0"),
+            views_count: parseInt(user.views_count || "0"),
             category: categories[Math.floor(Math.random() * categories.length)].id,
           }));
-          setUsers(usersWithMockData);
+          setUsers(usersWithRealStats);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
