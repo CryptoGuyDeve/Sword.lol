@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, JSX } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { FiVolumeX, FiVolume2, FiMapPin, FiEye, FiArrowRight, FiMaximize2, FiMaximize } from "react-icons/fi";
-import { FaUserPlus, FaUserCheck, FaUsers, FaCrown, FaStar, FaGavel, FaUserShield, FaLaptopCode, FaBug, FaUserTie, FaBolt, FaFire, FaChessQueen, FaSkullCrossbones, FaServer, FaGamepad, FaTrophy, FaRocket, FaCrosshairs, FaTree, FaMoon, FaGhost, FaHeart, FaMedal, FaShieldAlt, FaUserSecret, FaYoutube, FaInstagram, FaTwitter, FaSnapchatGhost, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard } from "react-icons/fa";
+import { FaUserPlus, FaUserCheck, FaUsers, FaCrown, FaStar, FaGavel, FaUserShield, FaLaptopCode, FaBug, FaUserTie, FaBolt, FaFire, FaChessQueen, FaSkullCrossbones, FaServer, FaGamepad, FaTrophy, FaRocket, FaCrosshairs, FaTree, FaMoon, FaGhost, FaHeart, FaMedal, FaShieldAlt, FaUserSecret, FaYoutube, FaInstagram, FaTwitter, FaSnapchatGhost, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard, FaUserFriends, FaHandshake } from "react-icons/fa";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import Bowser from "bowser";
@@ -44,6 +44,8 @@ const badgeIcons: Record<string, JSX.Element> = {
     "Third Place": <FaMedal />,
     "Beta Tester": <FaShieldAlt />,
     "Server OG": <FaUserSecret />,
+    "Owners Friend": <FaUserFriends />,
+    "Close Owner Friend": <FaHandshake />,
 };
 
 const socialIcons = {

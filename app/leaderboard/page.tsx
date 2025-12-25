@@ -38,7 +38,9 @@ import {
   FaHeart,
   FaMedal,
   FaShieldAlt,
-  FaUserSecret
+  FaUserSecret,
+  FaUserFriends,
+  FaHandshake
 } from "react-icons/fa";
 
 const badgeIcons: Record<string, React.JSX.Element> = {
@@ -68,6 +70,8 @@ const badgeIcons: Record<string, React.JSX.Element> = {
   "Third Place": <FaMedal />,
   "Beta Tester": <FaShieldAlt />,
   "Server OG": <FaUserSecret />,
+  "Owners Friend": <FaUserFriends />,
+  "Close Owner Friend": <FaHandshake />,
 };
 
 const leaderboardTabs = [
