@@ -245,16 +245,63 @@ const UserPage = () => {
                     <motion.div
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-3xl flex items-center justify-center cursor-pointer"
+                        className="fixed inset-0 z-[100] bg-black backdrop-blur-3xl flex items-center justify-center cursor-pointer overflow-hidden"
                         onClick={() => setIsBlurred(false)}
                     >
+                        {/* Background Scanning Line */}
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ y: ["0%", "100%", "0%"] }}
+                            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                            className="absolute inset-x-0 h-px bg-white/[0.05] z-[1] shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                        />
+
+                        {/* Top Left Meta Data */}
+                        <div className="absolute top-12 left-12 space-y-2 opacity-30 hidden md:block">
+                            <p className="text-[8px] font-mono tracking-[0.4em] font-bold">INIT_SEQUENCE / SWORD_CORE</p>
+                            <div className="h-px w-8 bg-white/40" />
+                            <p className="text-[8px] font-mono tracking-[0.3em]">ENCRYPTION / RSA_4096</p>
+                        </div>
+
+                        {/* Bottom Right Meta Data */}
+                        <div className="absolute bottom-12 right-12 space-y-2 opacity-30 text-right hidden md:block">
+                            <p className="text-[8px] font-mono tracking-[0.4em] font-bold uppercase">LOC / {userData?.location || "GLOBAL"}</p>
+                            <div className="h-px w-8 bg-white/40 ml-auto" />
+                            <p className="text-[8px] font-mono tracking-[0.3em]">ESTABLISHING_DATALINK</p>
+                        </div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="text-[10px] uppercase font-bold tracking-[0.5em] text-gray-400 group flex flex-col items-center gap-4"
+                            className="relative z-10 flex flex-col items-center gap-12 group"
                         >
-                            <span className="group-hover:text-white transition-colors underline underline-offset-8 decoration-white/10 italic">Enter Architecture</span>
-                            <div className="w-px h-12 bg-white/10 group-hover:h-16 transition-all duration-700" />
+                            {/* Central Heartbeat Hub */}
+                            <div className="relative flex items-center justify-center">
+                                <motion.div
+                                    animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                    className="absolute w-24 h-24 bg-white/10 rounded-full blur-xl"
+                                />
+                                <div className="w-12 h-12 border border-white/20 flex items-center justify-center text-[10px] font-bold tracking-tighter transition-all duration-700 group-hover:bg-white group-hover:text-black">
+                                    S
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center gap-6">
+                                <span className="text-[10px] uppercase font-bold tracking-[0.6em] text-gray-400 group-hover:text-white transition-colors italic">Enter Architecture</span>
+                                <div className="flex items-center gap-3">
+                                    <div className="h-px w-8 bg-white/5 group-hover:w-16 transition-all duration-700" />
+                                    <span className="text-[8px] font-mono text-gray-600 tracking-widest uppercase animate-pulse">Waiting for synchronization</span>
+                                    <div className="h-px w-8 bg-white/5 group-hover:w-16 transition-all duration-700" />
+                                </div>
+                            </div>
+
+                            {/* Corner Guards */}
+                            <div className="absolute -inset-16 pointer-events-none">
+                                <div className="absolute top-0 left-0 w-4 h-[1px] bg-white/10" />
+                                <div className="absolute top-0 left-0 w-[1px] h-4 bg-white/10" />
+                                <div className="absolute bottom-0 right-0 w-4 h-[1px] bg-white/10" />
+                                <div className="absolute bottom-0 right-0 w-[1px] h-4 bg-white/10" />
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}
@@ -414,6 +461,23 @@ const UserPage = () => {
                 <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-800 uppercase vertical-text">
                     {userData?.location ? `LOC / ${userData.location.toUpperCase()}` : "LOC / GLOBAL"}
                 </div>
+            </div>
+
+            {/* Platform Promotion Mark */}
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-2">
+                <Link href="/" className="group flex flex-col items-center gap-3">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-4 px-6 py-2 bg-black/40 border border-white/10 backdrop-blur-xl group-hover:border-white/40 transition-all duration-700"
+                    >
+                        <div className="w-6 h-6 bg-white text-black flex items-center justify-center font-bold text-xs">S</div>
+                        <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/60 group-hover:text-white transition-colors uppercase">
+                            SWORD.LOL
+                        </span>
+                    </motion.div>
+                    <div className="h-px w-12 bg-white/20 group-hover:w-24 transition-all duration-1000" />
+                </Link>
             </div>
 
             {/* Modals */}
