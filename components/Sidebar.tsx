@@ -62,7 +62,8 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
   ];
 
   const quickActions = [
-    { title: "Get Views", href: "/account/getviews", icon: Target },
+    { title: "Get Views", href: `/account/${id}/getviews`, icon: Target },
+    { title: "Collab", href: `/account/${id}/collab`, icon: Sparkles },
     { title: "Leaderboard", href: "/leaderboard", icon: Crown },
   ];
 
@@ -106,8 +107,8 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
                         key={item.href}
                         href={item.href}
                         className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${currentPath === item.href
-                            ? "bg-white text-black shadow-sm"
-                            : "text-gray-400 hover:text-white hover:bg-white/5"
+                          ? "bg-white text-black shadow-sm"
+                          : "text-gray-400 hover:text-white hover:bg-white/5"
                           }`}
                       >
                         <item.icon className="w-4 h-4" />
@@ -145,6 +146,7 @@ const Sidebar = ({ username, id }: { username: string; id: string }) => {
         <div className="flex flex-col gap-2">
           <Link
             href={`/${username}`}
+            target="_blank"
             className="flex items-center justify-center gap-2 w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-100 transition-colors shadow-sm"
           >
             <ExternalLink className="w-4 h-4" />
