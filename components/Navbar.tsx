@@ -26,7 +26,7 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: "Discord", href: "https://discord.gg/pwQaFQuRpN", target: "_blank" },
+    { name: "Discord", href: "https://discord.gg/FhECf5pQQH", target: "_blank" },
     { name: "Pricing", href: "/pricing" },
   ];
 

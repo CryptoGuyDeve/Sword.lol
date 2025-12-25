@@ -102,7 +102,7 @@ const FAQ = () => {
         <div className="mt-40 flex items-center justify-between border-t border-white/10 pt-12">
           <div className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold">Still seeking clarity?</div>
           <a
-            href="https://discord.gg/pwQaFQuRpN"
+            href="https://discord.gg/FhECf5pQQH"
             target="_blank"
             className="text-white text-xs uppercase tracking-widest font-bold hover:text-gray-300 transition-colors border-b border-white/20 pb-1"
           >
