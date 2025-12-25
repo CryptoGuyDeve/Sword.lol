@@ -14,9 +14,66 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "sward.lol",
-  description:
-    "A sleek and customizable user platform with live game status, social links, and personalized profiles.",
+  title: {
+    default: "Sword.lol | Minimalist Identity Network",
+    template: "%s | Sword.lol"
+  },
+  description: "The premier minimalist platform for architectural identities. Customize your broadcast node, track analytics, and connect your social network with high-end aesthetics.",
+  keywords: ["Sword.lol", "social links", "minimalist profile", "identity network", "personalized links", "bio link"],
+  authors: [{ name: "Sword Team" }],
+  creator: "Sword.lol",
+  publisher: "Sword.lol",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://sword.lol"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Sword.lol | Minimalist Identity Network",
+    description: "Connect your social profiles with an ultra-premium, architectural dashboard. Designed for clarity, optimized for influence.",
+    url: "https://sword.lol",
+    siteName: "Sword.lol",
+    images: [
+      {
+        url: "/og-image.png", // Ensure this exists or user adds it
+        width: 1200,
+        height: 630,
+        alt: "Sword.lol - The Architectural Identity Network",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sword.lol | Minimalist Identity Network",
+    description: "The future of social identity. Architectural, minimal, and premium.",
+    images: ["/og-image.png"],
+    creator: "@sword_lol",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  category: "technology",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: "/logo.png",
+  },
 };
 
 import SessionProvider from "@/components/SessionProvider";
