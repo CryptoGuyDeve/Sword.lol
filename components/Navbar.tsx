@@ -5,212 +5,205 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Zap, Crown } from "lucide-react";
-
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 
 const Navbar = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const user = session?.user;
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  // Transform values for floating effect
+  const width = useTransform(scrollY, [0, 50], ["100%", "90%"]);
+  const top = useTransform(scrollY, [0, 50], ["0px", "20px"]);
+  const borderRadius = useTransform(scrollY, [0, 50], ["0px", "100px"]);
+  const borderOpacity = useTransform(scrollY, [0, 50], [0, 1]);
 
   const handleLogout = async () => {
     await signOut();
-    router.push("/login"); // Optional, signOut redirects by default often or stays on page
+    router.push("/login");
   };
 
+  const navLinks = [
+    { name: "Discord", href: "https://discord.gg/pwQaFQuRpN", target: "_blank" },
+    { name: "Pricing", href: "/pricing" },
+  ];
+
   return (
-    <motion.nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-          ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl'
-          : 'bg-transparent'
-        }`}
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 120, damping: 12 }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center space-x-2"
-          >
-            <div className="relative">
-              <Sparkles className="w-8 h-8 text-white animate-pulse" />
-              <div className="absolute inset-0 bg-white/20 rounded-full blur-lg animate-ping" />
-            </div>
-            <Link
-              href="/"
-              className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500"
+    <>
+      <motion.nav
+        style={{
+          width,
+          top,
+          borderRadius,
+        }}
+        className={`fixed left-1/2 -translate-x-1/2 z-[100] transition-colors duration-500 overflow-hidden
+          ${isOpen ? "bg-black/95" : "bg-black/20 backdrop-blur-2xl"}
+          border border-white/5 shadow-2xl`}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center"
             >
-              sword.lol
-            </Link>
-          </motion.div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <motion.div whileHover={{ scale: 1.05 }} className="relative group">
               <Link
-                href="https://discord.gg/pwQaFQuRpN"
-                target="_blank"
-                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-white"
+                href="/"
+                className="text-xl font-bold tracking-tighter text-white italic"
               >
-                <Zap className="w-4 h-4" />
-                <span className="font-medium">Discord</span>
+                sword<span className="text-gray-500 font-normal">.lol</span>
               </Link>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-white to-gray-400 transition-all duration-300 group-hover:w-full" />
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05 }} className="relative group">
-              <Link
-                href="/pricing"
-                className="flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-300 group-hover:text-white"
-              >
-                <Crown className="w-4 h-4" />
-                <span className="font-medium">Pricing</span>
-              </Link>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-white to-gray-400 transition-all duration-300 group-hover:w-full" />
-            </motion.div>
-          </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-12">
+              {navLinks.map((link, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.1 }}
+                >
+                  <Link
+                    href={link.href}
+                    target={link.target}
+                    className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 hover:text-white transition-all duration-300 italic"
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
 
-          {/* Right Side Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            {user ? (
-              <>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            {/* Right Side Actions */}
+            <div className="hidden md:flex items-center space-x-8">
+              {user ? (
+                <>
                   <Link
                     href={`/account/${(user as any).id}`}
-                    className="px-6 py-2.5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-gray-500/25 border border-gray-600/50"
+                    className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-300 hover:text-white transition-colors"
                   >
                     Dashboard
                   </Link>
-                </motion.div>
-                <motion.button
-                  onClick={handleLogout}
-                  className="px-6 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-gray-500/25"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Logout
-                </motion.button>
-              </>
-            ) : (
-              <>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <button
+                    onClick={handleLogout}
+                    className="px-6 py-2.5 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
                   <Link
                     href="/login"
-                    className="px-6 py-2.5 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 rounded-full font-medium text-white transition-all duration-300 shadow-lg hover:shadow-gray-500/25 border border-gray-600/50"
+                    className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 hover:text-white transition-colors"
                   >
                     Login
                   </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     href="/signup"
-                    className="px-6 py-2.5 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-full font-medium text-black transition-all duration-300 shadow-lg hover:shadow-white/25 relative overflow-hidden group"
+                    className="px-8 py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                   >
-                    <span className="relative z-10">Get Started Free</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    Start Free
                   </Link>
-                </motion.div>
-              </>
-            )}
-          </div>
+                </>
+              )}
+            </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <motion.button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-white p-2 rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700/50"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              {isOpen ? <AiOutlineClose size={24} /> : <AiOutlineMenu size={24} />}
-            </motion.button>
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-white p-2"
+              >
+                {isOpen ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="md:hidden bg-black/95 backdrop-blur-xl border-t border-white/10"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-          >
-            <div className="px-4 py-6 space-y-4">
-              <Link
-                href="https://discord.gg/pwQaFQuRpN"
-                target="_blank"
-                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors duration-300 py-2"
-              >
-                <Zap className="w-5 h-5" />
-                <span className="font-medium">Discord</span>
-              </Link>
-              <Link
-                href="/pricing"
-                className="flex items-center space-x-3 text-gray-300 hover:text-white transition-colors duration-300 py-2"
-              >
-                <Crown className="w-5 h-5" />
-                <span className="font-medium">Pricing</span>
-              </Link>
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-white/5 bg-black/95 px-6 py-12"
+            >
+              <div className="flex flex-col space-y-8">
+                {navLinks.map((link, i) => (
+                  <Link
+                    key={i}
+                    href={link.href}
+                    target={link.target}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center space-x-6 group"
+                  >
+                    <span className="text-[10px] text-gray-600 font-mono">0{i + 1}</span>
+                    <span className="text-2xl font-bold uppercase tracking-tighter text-white group-hover:pl-2 transition-all">
+                      {link.name}
+                    </span>
+                  </Link>
+                ))}
 
-              <div className="pt-4 border-t border-gray-700/50">
-                {user ? (
-                  <div className="space-y-3">
-                    <Link
-                      href={`/account/${(user as any).id}`}
-                      className="block w-full px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg font-medium text-white text-center transition-all duration-300"
-                    >
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full px-4 py-3 bg-gradient-to-r from-gray-600 to-gray-700 rounded-lg font-medium text-white transition-all duration-300"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <Link
-                      href="/login"
-                      className="block w-full px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg font-medium text-white text-center transition-all duration-300"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/signup"
-                      className="block w-full px-4 py-3 bg-gradient-to-r from-white to-gray-300 rounded-lg font-medium text-black text-center transition-all duration-300"
-                    >
-                      Get Started Free
-                    </Link>
-                  </div>
-                )}
+                <div className="pt-12 border-t border-white/5 space-y-6">
+                  {user ? (
+                    <>
+                      <Link
+                        href={`/account/${(user as any).id}`}
+                        onClick={() => setIsOpen(false)}
+                        className="block text-sm uppercase tracking-widest font-bold text-white text-center"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full py-4 bg-white text-black text-xs font-bold uppercase tracking-widest"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/login"
+                        onClick={() => setIsOpen(false)}
+                        className="block text-sm uppercase tracking-widest font-bold text-gray-400 text-center"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/signup"
+                        onClick={() => setIsOpen(false)}
+                        className="block w-full py-4 bg-white text-black text-xs font-bold uppercase tracking-widest text-center"
+                      >
+                        Get Started
+                      </Link>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.nav>
+
+      {/* Global Grain Texture Overlay (Specific to Navbar area if needed, but usually Layout level) */}
+      <style jsx global>{`
+        .navbar-grain {
+          pointer-events: none;
+          opacity: 0.03;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+      `}</style>
+    </>
   );
 };
 

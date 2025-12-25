@@ -1,16 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { Sparkles, ArrowRight, Star, Zap, Crown } from "lucide-react";
-
+import { ArrowRight } from "lucide-react";
 
 const Hero = () => {
   const { data: session, status } = useSession();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
 
   useEffect(() => {
     if (status !== "loading") {
@@ -18,204 +27,129 @@ const Hero = () => {
     }
   }, [status]);
 
-
-  const handleClick = () => {
-    if (session?.user) {
-      router.push(`/account/${(session.user as any).id}`);
-    } else {
-      router.push("/signup");
-    }
-  };
-
-
-  const features = [
-    { icon: Sparkles, text: "Custom Bio Links", color: "text-white" },
-    { icon: Zap, text: "Lightning Fast", color: "text-gray-300" },
-    { icon: Crown, text: "Premium Features", color: "text-gray-400" },
-  ];
-
   return (
-    <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center text-white text-center overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-black to-gray-800/20"
-        animate={{
-          background: [
-            "linear-gradient(45deg, rgba(75, 75, 75, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.1) 100%)",
-            "linear-gradient(45deg, rgba(100, 100, 100, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(75, 75, 75, 0.1) 100%)",
-            "linear-gradient(45deg, rgba(75, 75, 75, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.1) 100%)",
-          ]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-      />
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-white/30 rounded-full"
-            animate={{
-              x: [0, Math.random() * 1000 - 500],
-              y: [0, Math.random() * 1000 - 500],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-            }}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-          />
-        ))}
+    <div
+      ref={containerRef}
+      className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center text-white overflow-hidden"
+    >
+      {/* Ultra-Minimal Background Grid */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px), 
+                            linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px'
+        }} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
       </div>
 
-      {/* Glowing Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-400/10 rounded-full blur-3xl animate-pulse delay-1000" />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/8 rounded-full blur-2xl animate-pulse delay-500" />
+      {/* Global Grain Texture Overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] animate-pulse" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        mixBlendMode: 'overlay'
+      }} />
 
-      {/* Main Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="inline-flex items-center space-x-2 bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
-        >
-          <Star className="w-5 h-5 text-white animate-spin" />
-          <span className="text-sm font-medium text-gray-300">
-            Trusted by 1,000+ creators worldwide
-          </span>
-        </motion.div>
-
-        {/* Main Heading */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-6"
-        >
-          <span className="bg-gradient-to-r from-white via-gray-300 to-gray-500 text-transparent bg-clip-text">
-            Own Your
-          </span>
-          <br />
-          <span className="bg-gradient-to-r from-gray-400 via-white to-gray-300 text-transparent bg-clip-text">
-            Digital Identity
-          </span>
-        </motion.h1>
-
-        {/* Subtext */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 1 }}
-          className="text-xl md:text-2xl max-w-3xl mx-auto text-gray-300 mb-12 leading-relaxed"
-        >
-          Create stunning bio links, host files securely, and build your online presence with{" "}
-          <span className="text-white font-semibold">sword.lol</span>.
-          The ultimate platform for modern creators.
-        </motion.p>
-
-        {/* Features */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="flex flex-wrap justify-center gap-6 mb-12"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-2"
-            >
-              <feature.icon className={`w-5 h-5 ${feature.color}`} />
-              <span className="text-sm font-medium text-gray-300">{feature.text}</span>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* CTA Buttons */}
+      <motion.div
+        style={{ y, opacity, scale }}
+        className="relative z-10 max-w-6xl mx-auto px-6 text-center"
+      >
+        {/* Modern Label */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-8 inline-block px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-300">
+            Evolution of *Bio Links*
+          </span>
+        </motion.div>
+
+        {/* Powerful Typography with Staggered Reveal */}
+        <div className="overflow-hidden mb-10">
+          <motion.h1
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-7xl md:text-8xl lg:text-[10.5rem] font-bold tracking-tight leading-[0.85] pointer-events-none"
+          >
+            <span className="bg-gradient-to-b from-white via-white to-gray-400 text-transparent bg-clip-text inline-block pb-4">
+              Own Your
+            </span>
+            <br />
+            <span className="text-white inline-block italic">
+              Identity.
+            </span>
+          </motion.h1>
+        </div>
+
+        {/* Minimalist Subtext */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-lg md:text-2xl max-w-2xl mx-auto text-gray-300 mb-14 font-normal leading-relaxed tracking-tight"
+        >
+          The definitive platform for modern creators. <br className="hidden md:block" />
+          Secure, beautiful, and unapologetically minimal.
+        </motion.p>
+
+        {/* Ultra-Clean CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-8 mb-24"
         >
           <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => router.push("/signup")}
-            className="group relative px-8 py-4 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-full font-semibold text-black transition-all duration-300 shadow-2xl hover:shadow-white/25 overflow-hidden"
+            className="group relative px-12 py-5 bg-white text-black rounded-none font-bold text-sm uppercase tracking-widest transition-all duration-500"
           >
-            <span className="relative z-10 flex items-center space-x-2">
-              <span>Get Started Free</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <span className="flex items-center space-x-3">
+              <span>Start Building</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Magnetic Border Glow Effect */}
+            <div className="absolute inset-0 -m-[1px] border border-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </motion.button>
 
           <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/login")}
-            className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 rounded-full font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-white/10"
+            className="text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold text-gray-400 hover:text-white transition-colors duration-500 py-2 border-b border-transparent hover:border-white"
           >
             Sign In
           </motion.button>
         </motion.div>
+      </motion.div>
 
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-        >
-          {[
-            { value: "50K+", label: "Profile Views" },
-            { value: "1.7K+", label: "Active Users" },
-            { value: "32K+", label: "Files Hosted" },
-            { value: "99.9%", label: "Uptime" },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.05 }}
-              className="text-center"
-            >
-              <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Scroll Indicator */}
+      {/* Modern Scrolling Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        transition={{ delay: 1, duration: 2 }}
+        className="absolute bottom-12 flex flex-col items-center gap-4"
       >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center"
-        >
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-1 h-3 bg-white/60 rounded-full mt-2"
-          />
-        </motion.div>
+        <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-gray-500">Scroll</span>
+        <div className="w-[1px] h-12 bg-gradient-to-b from-gray-700 to-transparent" />
       </motion.div>
+
+      {/* Architectural Corner Accents */}
+      <div className="absolute top-8 left-8 w-px h-12 bg-white/5" />
+      <div className="absolute top-8 left-8 w-12 h-px bg-white/5" />
+      <div className="absolute top-8 right-8 w-px h-12 bg-white/5" />
+      <div className="absolute top-8 right-8 w-12 h-px bg-white/5" />
+      <div className="absolute bottom-8 left-8 w-px h-12 bg-white/5" />
+      <div className="absolute bottom-8 left-8 w-12 h-px bg-white/5" />
+      <div className="absolute bottom-8 right-8 w-px h-12 bg-white/5" />
+      <div className="absolute bottom-8 right-8 w-12 h-px bg-white/5" />
+
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.03; }
+          50% { opacity: 0.05; }
+        }
+      `}</style>
     </div>
   );
 };

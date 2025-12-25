@@ -3,247 +3,154 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Users, Eye, Upload, Star, CheckCircle, ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, CheckCircle, Shield, Zap, Globe, Github } from "lucide-react";
 
 const stats = [
-  { icon: Eye, label: "Profile Views", value: "50,623+", color: "text-white" },
-  { icon: Users, label: "Active Users", value: "1,745+", color: "text-gray-300" },
-  { icon: Upload, label: "File Uploads", value: "32,868+", color: "text-gray-400" },
-  { icon: Star, label: "Premium Users", value: "254+", color: "text-gray-500" },
+  { label: "Views", value: "50K+", sub: "Total profile engagement" },
+  { label: "Users", value: "1.7K+", sub: "Verified creators" },
+  { label: "Files", value: "32K+", sub: "Securely hosted assets" },
+  { label: "SLA", value: "99.9%", sub: "Guaranteed uptime" },
 ];
 
 const plans = [
   {
     title: "Free",
     price: "$0",
-    period: "Lifetime",
-    description: "Perfect for getting started with your online presence.",
-    features: [
-      "Custom Bio Links",
-      "Basic Customization",
-      "Social Media Integration",
-      "File Hosting (100MB)",
-      "Analytics Dashboard",
-    ],
-    link: "/get-started",
-    button: "Get Started Free",
-    bgColor: "bg-gradient-to-br from-gray-900 to-gray-800",
-    border: "border border-gray-700",
+    features: ["Custom Links", "Social Integration", "100MB Hosting"],
     popular: false,
   },
   {
     title: "Premium",
     price: "$4.00",
-    period: "Lifetime",
-    description: "Unlock advanced features and unlimited possibilities.",
-    features: [
-      "Everything in Free",
-      "Exclusive Premium Badge",
-      "Advanced Profile Layouts",
-      "Custom Fonts & Colors",
-      "Typewriter Animations",
-      "Special Profile Effects",
-      "Unlimited File Hosting",
-      "Priority Support",
-      "Custom Domain Support",
-    ],
-    link: "/premium",
-    button: "Get Premium",
-    bgColor: "bg-gradient-to-br from-gray-800/50 to-gray-900/50",
-    border: "border border-white/50",
+    features: ["Priority Support", "Custom Domains", "Unlimited Hosting"],
     popular: true,
   },
 ];
 
 const SecondHero = () => {
   return (
-    <div className="relative bg-black text-white py-20 px-6 overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-gray-900/10 via-black to-gray-800/10"
-        animate={{ 
-          background: [
-            "linear-gradient(45deg, rgba(75, 75, 75, 0.05) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.05) 100%)",
-            "linear-gradient(45deg, rgba(100, 100, 100, 0.05) 0%, rgba(0, 0, 0, 1) 50%, rgba(75, 75, 75, 0.05) 100%)",
-            "linear-gradient(45deg, rgba(75, 75, 75, 0.05) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.05) 100%)",
-          ]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-      />
-
-      {/* Glowing Effects */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gray-400/10 rounded-full blur-3xl" />
+    <div className="relative bg-black text-white py-40 px-6 overflow-hidden">
+      {/* Background Accent */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-32">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="text-4xl md:text-6xl font-bold mb-8 tracking-tighter"
+          >
+            Engineered for <br className="md:block hidden" />
+            <span className="text-gray-300 italic">Digital Sophistication.</span>
+          </motion.h2>
+        </div>
+
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-4 mb-40">
+          {/* Main Stat Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
+            viewport={{ once: true }}
+            className="col-span-1 md:col-span-6 lg:col-span-8 bg-white/[0.03] border border-white/5 p-12 flex flex-col justify-between min-h-[400px]"
           >
-            <Zap className="w-5 h-5 text-white" />
-            <span className="text-sm font-medium text-gray-300">
-              Trusted by creators worldwide
-            </span>
+            <div>
+              <Zap className="w-8 h-8 text-white mb-8" />
+              <h3 className="text-4xl font-bold mb-4 tracking-tight">Scale *Without* Limits.</h3>
+              <p className="text-gray-400 font-normal max-w-md leading-relaxed italic">Our infrastructure is built to handle millions of requests while maintaining absolute minimalist beauty.</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.map((stat, i) => (
+                <div key={i}>
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <div className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-400 mt-1">{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </motion.div>
 
-          <motion.h2
+          {/* Side Feature Cards */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl md:text-6xl font-extrabold mb-6"
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="col-span-1 md:col-span-3 lg:col-span-4 bg-white/[0.03] border border-white/5 p-12 flex flex-col justify-between"
           >
-            <span className="bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
-              Join 1,000+
-            </span>
-            <br />
-            <span className="text-white">creators already using sword.lol</span>
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
-          >
-            Build your modern biolink page, unlock exclusive profile layouts, and host files securely, 
-            all with the power of sword.lol.
-          </motion.p>
-        </div>
-
-        {/* Stats Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20"
-        >
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.05, y: -5 }}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center group hover:bg-white/10 transition-all duration-300"
-            >
-              <div className={`${stat.color} mb-3 flex justify-center`}>
-                <stat.icon className="w-8 h-8 group-hover:scale-110 transition-transform" />
-              </div>
-              <div className="text-2xl md:text-3xl font-bold text-white mb-1">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-400">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Username Claim Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-2xl p-8 mb-20 backdrop-blur-sm"
-        >
-          <div className="text-center">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Claim Your Username
-            </h3>
-            <p className="text-gray-300 mb-8 max-w-md mx-auto">
-              Secure your unique username and start building your online presence today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <div className="flex-1 relative">
-                <input
-                  type="text"
-                  placeholder="sword.lol/username"
-                  className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-white transition-colors backdrop-blur-sm"
-                />
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-xl font-semibold text-black transition-all duration-300 shadow-lg hover:shadow-white/25 flex items-center justify-center space-x-2"
-              >
-                <span>Claim Now</span>
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
+            <Shield className="w-6 h-6 text-gray-300 mb-8" />
+            <div>
+              <h4 className="text-xl font-bold mb-2 italic">Privacy First.</h4>
+              <p className="text-sm text-gray-400 font-normal leading-relaxed opacity-70">Zero tracking. Zero bloat. Just your identity, pure and *simple*.</p>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Pricing Section */}
-        <div className="text-center mb-16">
-          <motion.h2
+          {/* Bottom Bento Row */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold mb-6"
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="col-span-1 md:col-span-3 lg:col-span-4 bg-white/[0.03] border border-white/5 p-12"
           >
-            Choose Your <span className="bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">Perfect Plan</span>
-          </motion.h2>
-          <motion.p
+            <Globe className="w-6 h-6 text-gray-300 mb-8" />
+            <h4 className="text-xl font-bold mb-2">Global CDN.</h4>
+            <p className="text-sm text-gray-400 font-normal">Edge delivery for instant loading anywhere in the world.</p>
+          </motion.div>
+
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-xl text-gray-300 max-w-2xl mx-auto"
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="col-span-1 md:col-span-6 lg:col-span-8 bg-white/[0.03] border border-white/5 p-12 flex items-center justify-between"
           >
-            Start free and upgrade when you're ready to unlock advanced features.
-          </motion.p>
+            <div className="max-w-md">
+              <h4 className="text-2xl font-bold mb-2">Claim Your Name.</h4>
+              <p className="text-sm text-gray-400 font-normal">The first step to owning your digital destiny starts with a unique sword.lol handle.</p>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="username"
+                className="bg-black border border-white/10 px-6 py-3 text-sm focus:outline-none focus:border-white transition-colors w-40"
+              />
+              <button className="bg-white text-black p-3 hover:bg-gray-200 transition-colors">
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className={`relative ${plan.bgColor} ${plan.border} rounded-2xl p-8 backdrop-blur-sm ${
-                plan.popular ? 'ring-2 ring-white/50' : ''
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-white text-black px-4 py-1 rounded-full text-sm font-semibold">
-                    Most Popular
-                  </span>
-                </div>
-              )}
+        {/* Ultra-Minimal Pricing */}
+        <div className="text-center mb-24">
+          <h3 className="text-xs uppercase font-bold tracking-[0.4em] text-gray-400 mb-4">Pricing</h3>
+          <h2 className="text-4xl font-bold tracking-tighter italic">Transparent & Fair.</h2>
+        </div>
 
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-white mb-2">{plan.title}</h3>
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  <span className="text-gray-400 ml-2">/{plan.period}</span>
+        <div className="grid md:grid-cols-2 gap-px bg-white/5 border border-white/5 max-w-4xl mx-auto overflow-hidden">
+          {plans.map((plan, i) => (
+            <div key={i} className="bg-black p-16 flex flex-col justify-between group hover:bg-white/[0.01] transition-colors duration-700">
+              <div className="mb-12">
+                <div className="flex justify-between items-start mb-8">
+                  <h4 className="text-2xl font-bold tracking-tight">{plan.title}</h4>
+                  {plan.popular && <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 border border-white/10 px-3 py-1.5">Recommended</span>}
                 </div>
-                <p className="text-gray-300">{plan.description}</p>
+                <div className="text-6xl font-bold mb-8 leading-none">{plan.price} <span className="text-sm text-gray-400 font-normal">/ Lifetime</span></div>
+                <ul className="space-y-5">
+                  {plan.features.map((f, j) => (
+                    <li key={j} className="flex items-center gap-3 text-sm text-gray-400 font-normal group-hover:text-white transition-colors">
+                      <div className="w-1 h-1 bg-white/40 rounded-full" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-white flex-shrink-0" />
-                    <span className="text-gray-300">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link href={plan.link}>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
-                    plan.popular
-                      ? 'bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 text-black'
-                      : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
-                  }`}
-                >
-                  {plan.button}
-                </motion.button>
+              <Link href="/signup" className="block text-center border border-white/10 py-4 text-xs uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all duration-500">
+                Register
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

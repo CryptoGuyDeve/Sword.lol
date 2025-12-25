@@ -2,138 +2,51 @@
 
 import { useEffect, useState, useRef, JSX } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { FiVolumeX, FiVolume2, FiMapPin, FiEye } from "react-icons/fi";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { FiVolumeX, FiVolume2, FiMapPin, FiEye, FiArrowRight, FiMaximize2, FiMaximize } from "react-icons/fi";
+import { FaUserPlus, FaUserCheck, FaUsers, FaCrown, FaStar, FaGavel, FaUserShield, FaLaptopCode, FaBug, FaUserTie, FaBolt, FaFire, FaChessQueen, FaSkullCrossbones, FaServer, FaGamepad, FaTrophy, FaRocket, FaCrosshairs, FaTree, FaMoon, FaGhost, FaHeart, FaMedal, FaShieldAlt, FaUserSecret, FaYoutube, FaInstagram, FaTwitter, FaSnapchatGhost, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard } from "react-icons/fa";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { FaUserPlus, FaUserCheck, FaUsers } from "react-icons/fa";
 import Link from "next/link";
 import Bowser from "bowser";
 import { useSession } from "next-auth/react";
 
-
-import {
-  FaYoutube,
-  FaInstagram,
-  FaTwitter,
-  FaSnapchatGhost,
-  FaGithub,
-  FaTiktok,
-  FaTelegram,
-  FaDiscord,
-  FaSpotify,
-  FaSoundcloud,
-  FaFacebook,
-  FaUserShield,
-  FaBolt,
-  FaTrophy,
-  FaMedal,
-  FaBug,
-  FaServer,
-  FaTree,
-  FaMoon,
-  FaCrown,
-  FaUserSecret,
-  FaGavel,
-  FaLaptopCode,
-  FaShieldAlt,
-  FaGamepad,
-  FaUserTie,
-  FaSkullCrossbones,
-  FaHeart,
-  FaFire,
-  FaChessQueen,
-  FaGhost,
-  FaRocket,
-  FaCrosshairs,
-  FaStar,
-  FaKickstarter,
-  FaTwitch,
-  FaLinkedin,
-  FaSteam,
-  FaPinterest,
-  FaPatreon,
-  FaBitcoin,
-  FaEthereum,
-  FaMonero,
-  FaAddressCard,
-} from "react-icons/fa";
-import Views from "@/components/views";
-
 declare global {
-  interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: () => void;
-  }
+    interface Window {
+        YT: any;
+        onYouTubeIframeAPIReady: () => void;
+    }
 }
 
 const badgeIcons: Record<string, JSX.Element> = {
-  // Staff Roles
-  Owner: <FaCrown />,
-  "Co-Owner": <FaStar />, // Replaced with a star icon
-  Admin: <FaGavel />, // Using gavel as admin authority
-  Moderator: <FaUserShield />,
-  "Support Team": <FaLaptopCode />,
-  "Bug Hunter": <FaBug />,
-  Helper: <FaUserTie />,
-
-  // Rank Roles
-  OG: <FaBolt />,
-  Legendary: <FaFire />,
-  Elite: <FaChessQueen />,
-  Veteran: <FaSkullCrossbones />,
-  "Server Booster": <FaServer />,
-  "Top Contributor": <FaGavel />,
-
-  // Gaming Roles
-  "Pro Gamer": <FaGamepad />,
-  "Esports Champion": <FaTrophy />,
-  Speedrunner: <FaRocket />, // Replaced with rocket icon
-  "Top Fragger": <FaCrosshairs />, // Now using the correct icon from Fa
-
-  // Event-Specific Badges
-  "Christmas 2024": <FaTree />,
-  "Ramzan Mubarak": <FaMoon />,
-  "Halloween 2024": <FaGhost />,
-  "Valentine's 2025": <FaHeart />,
-
-  // Achievement Badges
-  Winner: <FaTrophy />,
-  "Second Place": <FaMedal />,
-  "Third Place": <FaMedal />,
-  "Beta Tester": <FaShieldAlt />,
-  "Server OG": <FaUserSecret />,
+    Owner: <FaCrown />,
+    "Co-Owner": <FaStar />,
+    Admin: <FaGavel />,
+    Moderator: <FaUserShield />,
+    "Support Team": <FaLaptopCode />,
+    "Bug Hunter": <FaBug />,
+    Helper: <FaUserTie />,
+    OG: <FaBolt />,
+    Legendary: <FaFire />,
+    Elite: <FaChessQueen />,
+    Veteran: <FaSkullCrossbones />,
+    "Server Booster": <FaServer />,
+    "Top Contributor": <FaGavel />,
+    "Pro Gamer": <FaGamepad />,
+    "Esports Champion": <FaTrophy />,
+    Speedrunner: <FaRocket />,
+    "Top Fragger": <FaCrosshairs />,
+    "Christmas 2024": <FaTree />,
+    "Ramzan Mubarak": <FaMoon />,
+    "Halloween 2024": <FaGhost />,
+    "Valentine's 2025": <FaHeart />,
+    Winner: <FaTrophy />,
+    "Second Place": <FaMedal />,
+    "Third Place": <FaMedal />,
+    "Beta Tester": <FaShieldAlt />,
+    "Server OG": <FaUserSecret />,
 };
 
-// Remove supabase init
-
-
-const UserPage = () => {
-  const { username } = useParams();
-  const router = useRouter();
-  const { data: session } = useSession();
-  const [userData, setUserData] = useState<any>(null);
-
-  const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(50);
-  const [showControls, setShowControls] = useState(false);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<any>(null);
-  const [isBlurred, setIsBlurred] = useState(true);
-  const [views, setViews] = useState(0);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followersCount, setFollowersCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
-  const [followersModal, setFollowersModal] = useState(false);
-  const [followingModal, setFollowingModal] = useState(false);
-  const [followersList, setFollowersList] = useState<any[]>([]);
-  const [followingList, setFollowingList] = useState<any[]>([]);
-  const [followLoading, setFollowLoading] = useState(false);
-  type SocialPlatform = keyof typeof socialIcons;
-
-  const socialIcons = {
+const socialIcons = {
     youtube: <FaYoutube />,
     instagram: <FaInstagram />,
     twitter: <FaTwitter />,
@@ -154,633 +67,353 @@ const UserPage = () => {
     ethereum: <FaEthereum />,
     monero: <FaMonero />,
     customurl: <FaAddressCard />,
-  };
+};
 
-  useEffect(() => {
-    if (!username) return;
+const UserPage = () => {
+    const { username } = useParams();
+    const router = useRouter();
+    const { data: session } = useSession();
+    const [userData, setUserData] = useState<any>(null);
+    const [isMuted, setIsMuted] = useState(true);
+    const [volume, setVolume] = useState(50);
+    const [isBlurred, setIsBlurred] = useState(true);
+    const [views, setViews] = useState(0);
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followersCount, setFollowersCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
+    const [followersModal, setFollowersModal] = useState(false);
+    const [followingModal, setFollowingModal] = useState(false);
+    const [followersList, setFollowersList] = useState<any[]>([]);
+    const [followingList, setFollowingList] = useState<any[]>([]);
+    const [followLoading, setFollowLoading] = useState(false);
+    const playerRef = useRef<any>(null);
 
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(`/api/users/${username}`, { cache: 'no-store' });
-        if (!res.ok) {
-          router.push("/404");
-          return;
-        }
-        const data = await res.json();
-        setUserData(data);
-        // Views increment is handled by separate logging in next useEffect
-      } catch {
-        router.push("/404");
-      }
-    };
+    useEffect(() => {
+        if (!username) return;
+        const fetchUser = async () => {
+            try {
+                const res = await fetch(`/api/users/${username}`, { cache: 'no-store' });
+                if (!res.ok) {
+                    router.push("/404");
+                    return;
+                }
+                const data = await res.json();
+                setUserData(data);
+            } catch {
+                router.push("/404");
+            }
+        };
+        fetchUser();
+    }, [username, router]);
 
-    fetchUser();
-  }, [username, router]);
-
-  // incrementProfileViews removed, using API
-
-
-  const getVideoId = (url: string) => {
-    const match = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/v\/|.*\/embed\/|.*\/shorts\/))([\w-]{11})/
-    );
-    return match ? match[1] : null;
-  };
-
-  useEffect(() => {
-    if (!userData?.background_video) return;
-
-    const loadYouTubeAPI = () => {
-      if (window.YT && window.YT.Player) {
-        createPlayer();
-      } else {
-        const script = document.createElement("script");
-        script.src = "https://www.youtube.com/iframe_api";
-        script.async = true;
-        document.body.appendChild(script);
-        window.onYouTubeIframeAPIReady = createPlayer;
-      }
-    };
-
-    const createPlayer = () => {
-      const videoId = getVideoId(userData.background_video);
-      if (!videoId) return;
-
-      playerRef.current = new window.YT.Player("youtube-player", {
-        videoId,
-        playerVars: {
-          autoplay: 1,
-          loop: 1,
-          playlist: videoId, // Required for proper looping
-          mute: 0, // Start with sound
-          controls: 0,
-          disablekb: 1,
-          modestbranding: 1,
-          rel: 0,
-          showinfo: 0,
-          iv_load_policy: 3,
-          playsinline: 1,
-        },
-        events: {
-          onReady: (event: any) => {
-            event.target.setVolume(volume);
-            event.target.unMute();
-          },
-        },
-      });
-    };
-
-    loadYouTubeAPI();
-  }, [userData?.background_video]);
-
-  const toggleMute = () => {
-    if (playerRef.current) {
-      if (isMuted) {
-        playerRef.current.unMute();
-      } else {
-        playerRef.current.mute();
-      }
-      setIsMuted(!isMuted);
-    }
-  };
-
-  // Add persistent view logging and counting with analytics fields
-  useEffect(() => {
-    if (!userData?.id) return;
-
-    let sessionStart = Date.now();
-    let didLogView = false;
-    const viewerId = (session?.user as any)?.id || null;
-
-    const fetchViews = async () => {
-      try {
-        const res = await fetch(`/api/analytics?userId=${userData.id}`, { cache: 'no-store' });
-        const data = await res.json();
-        if (data.analytics?.totalViews !== undefined) {
-          setViews(data.analytics.totalViews);
-        }
-      } catch { }
-    };
-
-    const logAndFetchViews = async () => {
-      // Prevent self-views
-      if (viewerId === userData.id) return;
-
-      // Get country via geo-IP API
-      let country = "Unknown";
-      try {
-        const res = await fetch("https://ipapi.co/json/");
-        const geo = await res.json();
-        country = geo.country_name || geo.country || "Unknown";
-      } catch { }
-
-      // Parse device/browser
-      const browser = Bowser.getParser(window.navigator.userAgent);
-      const device = browser.getPlatformType(true) || "Unknown";
-      const browserName = browser.getBrowserName() || "Unknown";
-
-      // Log view via API
-      try {
-        const response = await fetch('/api/profile-view', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userData.id,
-            viewerId: viewerId || null,
-            country,
-            device,
-            browser: browserName,
-          }),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success && result.message !== 'View already logged today') {
-            didLogView = true;
-          }
-        }
-      } catch (error) {
-        console.error('Failed to log profile view:', error);
-      }
-
-      // Fetch total views immediately
-      fetchViews();
-    };
-
-    logAndFetchViews();
-
-    // Poll for views every 5 seconds to show "realtime" updates from other users
-    const interval = setInterval(fetchViews, 5000);
-
-    // On unmount, update session_duration
-    return () => {
-      clearInterval(interval);
-      if (!didLogView || !userData?.id) return; // allow logging duration even if viewerId is null (anonymous)
-      const sessionEnd = Date.now();
-      const duration = Math.floor((sessionEnd - sessionStart) / 1000); // seconds
-
-      // Update session duration via API
-      const updateDuration = async () => {
-        try {
-          // Fire and forget
-          fetch('/api/profile-view', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: userData.id,
-              viewerId: viewerId || null, // pass null if anonymous
-              duration,
-            }),
-            keepalive: true // Ensure request completes after unload
-          });
-        } catch (error) {
-          console.error('Failed to update session duration:', error);
-        }
-      };
-      updateDuration();
-    };
-  }, [userData?.id, session]);
-
-  // Fetch current user
-  useEffect(() => {
-    if (session?.user) {
-      setCurrentUser({ id: (session.user as any).id, username: session.user.name });
-    }
-  }, [session]);
-
-  // Fetch follow status and counts
-  useEffect(() => {
-    if (!userData?.id || !currentUser?.id) return;
-    const fetchFollowData = async () => {
-      // Check if following
-      try {
-        const res = await fetch(`/api/follow?userId=${userData.id}&type=followers`); // This gets list, inefficient but works
-        const data = await res.json();
-        const isFollowingMe = data.users.some((u: any) => u.id === currentUser.id);
-        setIsFollowing(isFollowingMe);
-        setFollowersCount(data.users.length);
-
-        const resFollowing = await fetch(`/api/follow?userId=${userData.id}&type=following`);
-        const dataFollowing = await resFollowing.json();
-        setFollowingCount(dataFollowing.users.length);
-      } catch { }
-    };
-    fetchFollowData();
-  }, [userData?.id, currentUser?.id]);
-
-
-  // Fetch followers/following lists for modals
-  const fetchFollowersList = async () => {
-    try {
-      const response = await fetch(`/api/follow?userId=${userData.id}&type=followers`);
-      if (response.ok) {
-        const result = await response.json();
-        setFollowersList(result.users || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch followers:', error);
-    }
-  };
-
-  const fetchFollowingList = async () => {
-    try {
-      const response = await fetch(`/api/follow?userId=${userData.id}&type=following`);
-      if (response.ok) {
-        const result = await response.json();
-        setFollowingList(result.users || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch following:', error);
-    }
-  };
-
-  // Follow/Unfollow logic
-  const handleFollow = async () => {
-    if (!currentUser?.id) {
-      alert("You must be logged in to follow users.");
-      return;
-    }
-    if (!userData?.id) return;
-    if (currentUser.id === userData.id) {
-      alert("You cannot follow yourself.");
-      return;
-    }
-    setFollowLoading(true);
-    try {
-      const response = await fetch('/api/follow', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          followerId: currentUser.id,
-          followingId: userData.id,
-          action: isFollowing ? 'unfollow' : 'follow'
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          if (result.action === 'followed') {
-            setIsFollowing(true);
-            setFollowersCount((c) => c + 1);
-          } else {
-            setIsFollowing(false);
-            setFollowersCount((c) => c - 1);
-          }
-        }
-      } else {
-        const error = await response.json();
-        alert("Error: " + (error.error || "Failed to process follow action"));
-      }
-    } catch (error) {
-      alert("Error: " + error);
-    } finally {
-      setFollowLoading(false);
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const { left, top, width, height } = card.getBoundingClientRect();
-
-    const x = (e.clientX - (left + width / 2)) / (width / 2);
-    const y = (e.clientY - (top + height / 2)) / (height / 2);
-
-    const rotateXValue = y * -20;
-    const rotateYValue = x * 20;
-
-    setRotateX(rotateXValue);
-    setRotateY(rotateYValue);
-  };
-
-  const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
-  };
-
-  const renderSocialIcons = (socialLinks: any) => {
-    return Object.entries(socialLinks || {}).map(([platform, url]) => (
-      <a
-        key={platform}
-        href={url as string}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-4xl m-2 hover:scale-110 transition-all duration-200 cursor-pointer relative z-50"
-        style={{
-          color: "white",
-          textShadow: "0 0 15px rgba(255, 255, 255, 0.8)",
-        }}
-        onClick={async () => {
-          // Track link click
-          try {
-            await fetch('/api/link-click', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: userData.id,
-                link: url,
-              }),
+    useEffect(() => {
+        if (!userData?.background_video) return;
+        const loadYouTubeAPI = () => {
+            if (window.YT && window.YT.Player) {
+                createPlayer();
+            } else {
+                const script = document.createElement("script");
+                script.src = "https://www.youtube.com/iframe_api";
+                script.async = true;
+                document.body.appendChild(script);
+                window.onYouTubeIframeAPIReady = createPlayer;
+            }
+        };
+        const createPlayer = () => {
+            const match = userData.background_video.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/v\/|.*\/embed\/|.*\/shorts\/))([\w-]{11})/);
+            const videoId = match ? match[1] : null;
+            if (!videoId) return;
+            playerRef.current = new window.YT.Player("youtube-player", {
+                videoId,
+                playerVars: {
+                    autoplay: 1, loop: 1, playlist: videoId, mute: isMuted ? 1 : 0,
+                    controls: 0, disablekb: 1, modestbranding: 1, rel: 0, showinfo: 0, iv_load_policy: 3, playsinline: 1
+                },
+                events: {
+                    onReady: (event: any) => { event.target.setVolume(volume); }
+                }
             });
-          } catch (error) {
-            console.error('Failed to track link click:', error);
-          }
-        }}
-      >
-        {socialIcons[platform as SocialPlatform]}
-      </a>
-    ));
-  };
+        };
+        loadYouTubeAPI();
+    }, [userData?.background_video]);
 
-  const handleScreenClick = () => {
-    setIsBlurred(false);
-  };
+    useEffect(() => {
+        if (session?.user) setCurrentUser({ id: (session.user as any).id, username: session.user.name });
+    }, [session]);
 
-  return (
-    <div
-      className={`relative w-full min-h-screen flex items-center justify-center ${userData?.theme === "light"
-        ? "bg-white text-black"
-        : "bg-black text-white"
-        }`}
-      onClick={handleScreenClick}
-    >
-      {userData?.background_video && (
-        <div className="absolute inset-0 w-full h-full overflow-hidden">
-          {/* YouTube Video Fullscreen */}
-          <div
-            id="youtube-player"
-            className="absolute inset-0 w-full h-full"
-            style={{
-              width: "100vw",
-              height: "56.25vw", // 16:9 Aspect Ratio
-              minHeight: "100vh",
-              minWidth: "177.78vh", // Ensures Full Coverage
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-            }}
-          ></div>
-        </div>
-      )}
+    const toggleMute = () => {
+        if (playerRef.current) {
+            if (isMuted) playerRef.current.unMute();
+            else playerRef.current.mute();
+            setIsMuted(!isMuted);
+        }
+    };
 
-      <AnimatePresence>
-        {isBlurred && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="absolute top-0 left-0 w-full h-full bg-black/70 flex items-center justify-center text-white text-4xl cursor-pointer z-20"
-          >
-            [Click Here]
-          </motion.div>
-        )}
-      </AnimatePresence>
+    const handleFollow = async () => {
+        if (!currentUser?.id || !userData?.id) return;
+        setFollowLoading(true);
+        try {
+            const response = await fetch('/api/follow', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ followerId: currentUser.id, followingId: userData.id, action: isFollowing ? 'unfollow' : 'follow' }),
+            });
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    setIsFollowing(result.action === 'followed');
+                    setFollowersCount((c) => result.action === 'followed' ? c + 1 : c - 1);
+                }
+            }
+        } catch { } finally { setFollowLoading(false); }
+    };
 
-      <div className="absolute top-4 left-4 z-10 bg-black/50 p-3 rounded-lg">
-        <button onClick={toggleMute} className="text-white text-3xl">
-          {!isMuted ? <FiVolume2 /> : <FiVolumeX />}
-        </button>
-      </div>
+    const fetchFollowersList = async () => {
+        if (!userData?.id) return;
+        try {
+            const response = await fetch(`/api/follow?userId=${userData.id}&type=followers`);
+            if (response.ok) {
+                const result = await response.json();
+                setFollowersList(result.users || []);
+            }
+        } catch (error) {
+            console.error('Failed to fetch followers:', error);
+        }
+    };
 
-      <motion.div
-        className="absolute top-4 left-4 flex flex-col items-center bg-black/50 p-3 rounded-lg z-10"
-        onMouseEnter={() => setShowControls(true)}
-        onMouseLeave={() => setShowControls(false)}
-      >
-        <button onClick={toggleMute} className="text-white text-3xl">
-          {isMuted ? <FiVolumeX /> : <FiVolume2 />}
-        </button>
-      </motion.div>
+    const fetchFollowingList = async () => {
+        if (!userData?.id) return;
+        try {
+            const response = await fetch(`/api/follow?userId=${userData.id}&type=following`);
+            if (response.ok) {
+                const result = await response.json();
+                setFollowingList(result.users || []);
+            }
+        } catch (error) {
+            console.error('Failed to fetch following:', error);
+        }
+    };
 
-      <div
-        className="relative w-full min-h-screen flex items-center justify-center"
-        style={{ perspective: "1000px" }}
-      >
-        {/* Background Video */}
-        {userData?.background_video && (
-          <div className="absolute top-0 left-0 w-full h-full z-0">
-            <div
-              id="youtube-player"
-              className="w-full h-full absolute top-0 left-0 blur-[6px] opacity-50 sm:blur-[4px]"
-            ></div>
-          </div>
-        )}
+    return (
+        <div className={`relative w-full min-h-screen flex items-center justify-center bg-black text-white overflow-hidden selection:bg-white selection:text-black`}>
+            {/* Background Video Layer */}
+            {userData?.background_video && (
+                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
+                    <div id="youtube-player" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-[100vw] min-h-[100vh] scale-110 blur-[4px]" />
+                </div>
+            )}
 
-        {/* Profile Card */}
-        <motion.div
-          ref={cardRef}
-          className="relative z-10 p-6 sm:p-8 rounded-3xl bg-white/10 backdrop-blur-3xl 
-             shadow-[0_4px_40px_rgba(255,255,255,0.3)] border border-white/20 
-             text-center transition-all duration-500 hover:scale-105 
-             w-[95%] max-w-[380px] sm:max-w-[450px] md:max-w-[500px] lg:max-w-[600px]"
-          style={{
-            transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        >
-          {/* Floating Soft Glow */}
-          <div className="absolute inset-0 w-full h-full rounded-3xl bg-white/10 blur-[120px] opacity-30"></div>
+            {/* Stage 3: Ambient Shading */}
+            <div className="absolute inset-0 pointer-events-none z-[1]">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/[0.03] blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-white/[0.03] blur-[120px] rounded-full" />
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+            </div>
 
-          {/* Profile Picture with 3D Glow */}
-          <div className="relative flex justify-center">
-            <div className="absolute inset-0 w-32 h-32 sm:w-36 sm:h-36 bg-white/20 blur-3xl opacity-50 rounded-full animate-pulse"></div>
-            <img
-              src={userData?.profile_pic}
-              alt="Profile"
-              className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full border-[5px] border-white/50 
-                 shadow-lg transition-transform duration-300 
-                 hover:scale-110 hover:border-white/70"
+            {/* Global Grain Texture */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.04] mix-blend-overlay z-[2] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+
+            {/* Background Grid */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.05] z-[1]"
+                style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '100px 100px' }}
             />
-          </div>
 
-          {/* Username with Elegant Glow */}
-          <h2
-            className="text-3xl sm:text-4xl md:text-5xl font-extrabold mt-5 bg-gradient-to-r from-white to-gray-300 
-                 text-transparent bg-clip-text tracking-wide drop-shadow-2xl leading-tight"
-          >
-            {userData?.username}
-          </h2>
-
-          {/* Follow/Unfollow Button & Counts */}
-          {currentUser && currentUser.id !== userData?.id && (
-            <div className="flex flex-col items-center mt-4 mb-2">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleFollow}
-                className={`px-6 py-2 rounded-full font-semibold shadow-lg transition-all duration-300 
-                  ${isFollowing
-                    ? "bg-gradient-to-r from-gray-400 to-gray-600 text-white"
-                    : "bg-gradient-to-r from-white to-gray-300 text-black"
-                  }
-                  glassmorphism-btn border border-white/20 backdrop-blur-xl`}
-                disabled={followLoading}
-              >
-                {followLoading ? (
-                  <span className="flex items-center gap-2 animate-pulse">
-                    Processing...
-                  </span>
-                ) : isFollowing ? (
-                  <span className="flex items-center gap-2">
-                    <FaUserCheck /> Following
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <FaUserPlus /> Follow
-                  </span>
+            <AnimatePresence>
+                {isBlurred && (
+                    <motion.div
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-3xl flex items-center justify-center cursor-pointer"
+                        onClick={() => setIsBlurred(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-[10px] uppercase font-bold tracking-[0.5em] text-gray-400 group flex flex-col items-center gap-4"
+                        >
+                            <span className="group-hover:text-white transition-colors underline underline-offset-8 decoration-white/10 italic">Enter Architecture</span>
+                            <div className="w-px h-12 bg-white/10 group-hover:h-16 transition-all duration-700" />
+                        </motion.div>
+                    </motion.div>
                 )}
-              </motion.button>
-              <div className="flex gap-6 mt-3">
-                <button
-                  className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm"
-                  onClick={() => {
-                    setFollowersModal(true);
-                    fetchFollowersList();
-                  }}
-                >
-                  <FaUsers className="mr-1" /> {followersCount} Followers
-                </button>
-                <button
-                  className="flex items-center gap-1 text-gray-300 hover:text-white transition text-sm"
-                  onClick={() => {
-                    setFollowingModal(true);
-                    fetchFollowingList();
-                  }}
-                >
-                  <FaUsers className="mr-1" /> {followingCount} Following
-                </button>
-              </div>
-            </div>
-          )}
+            </AnimatePresence>
 
-          {/* Followers Modal */}
-          {followersModal && (
-            <AlertDialog open={followersModal} onOpenChange={setFollowersModal}>
-              <AlertDialogContent className="bg-white dark:bg-[#18181b] rounded-2xl p-6 w-full max-w-md shadow-2xl">
-                <h3 className="text-lg font-bold mb-4 text-center">
-                  Followers
-                </h3>
-                <div className="max-h-60 overflow-y-auto">
-                  {followersList.length === 0 ? (
-                    <p className="text-center text-gray-400">
-                      No followers yet.
-                    </p>
-                  ) : (
-                    followersList.map((user) => (
-                      <Link
-                        key={user.id}
-                        href={`/${user.username}`}
-                        target="_blank"
-                        className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition"
-                      >
-                        <img
-                          src={user.profile_pic}
-                          alt={user.username}
-                          className="w-8 h-8 rounded-full"
-                        />
-                        <span className="text-gray-300 hover:underline">
-                          {user.username}
-                        </span>
-                      </Link>
-                    ))
-                  )}
+            {/* Audio Control */}
+            <motion.button
+                onClick={toggleMute}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="fixed top-10 left-10 z-[60] p-4 bg-black/20 border border-white/5 backdrop-blur-xl group hover:border-white/20 transition-all rounded-full"
+            >
+                {isMuted ? <FiVolumeX className="text-gray-500 group-hover:text-white transition-colors" /> : <FiVolume2 className="text-white" />}
+            </motion.button>
+
+            {/* Main Profile Frame */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                className="relative z-10 w-full max-w-[500px] p-12 md:p-16 bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+            >
+                {/* Subtle Architectural Accents */}
+                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none">
+                    <div className="absolute top-6 right-6 w-[1px] h-12 bg-white/10" />
+                    <div className="absolute top-6 right-6 h-[1px] w-12 bg-white/10" />
                 </div>
-                <button
-                  onClick={() => setFollowersModal(false)}
-                  className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg"
-                >
-                  Close
-                </button>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-          {/* Following Modal */}
-          {followingModal && (
-            <AlertDialog open={followingModal} onOpenChange={setFollowingModal}>
-              <AlertDialogContent className="bg-white dark:bg-[#18181b] rounded-2xl p-6 w-full max-w-md shadow-2xl">
-                <h3 className="text-lg font-bold mb-4 text-center">
-                  Following
-                </h3>
-                <div className="max-h-60 overflow-y-auto">
-                  {followingList.length === 0 ? (
-                    <p className="text-center text-gray-400">
-                      Not following anyone yet.
-                    </p>
-                  ) : (
-                    followingList.map((user) => (
-                      <Link
-                        key={user.id}
-                        href={`/${user.username}`}
-                        target="_blank"
-                        className="flex items-center gap-3 py-2 border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-100/10 rounded-lg transition"
-                      >
-                        <img
-                          src={user.profile_pic}
-                          alt={user.username}
-                          className="w-8 h-8 rounded-full"
-                        />
-                        <span className="text-gray-300 hover:underline">
-                          {user.username}
-                        </span>
-                      </Link>
-                    ))
-                  )}
+                <div className="absolute bottom-0 left-0 w-24 h-24 pointer-events-none">
+                    <div className="absolute bottom-6 left-6 w-[1px] h-12 bg-white/10" />
+                    <div className="absolute bottom-6 left-6 h-[1px] w-12 bg-white/10" />
                 </div>
-                <button
-                  onClick={() => setFollowingModal(false)}
-                  className="mt-4 w-full bg-gradient-to-r from-white to-gray-300 text-black py-2 rounded-lg"
-                >
-                  Close
-                </button>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
 
-          {/* Badges Section with Hover Effects */}
-          <div className="flex flex-wrap justify-center mt-3 gap-2 sm:gap-3">
-            {userData?.badges?.map((badge: string, index: number) => (
-              <span
-                key={index}
-                className="flex items-center gap-2 text-xs sm:text-sm md:text-md font-semibold px-4 py-1 sm:px-5 sm:py-2 
-                 bg-white/10 border border-white/30 rounded-full text-white shadow-lg 
-                 transition-all duration-500 hover:bg-white/20 hover:shadow-xl hover:scale-105"
-              >
-                {badgeIcons[badge]} {badge}
-              </span>
-            ))}
-          </div>
+                {/* Profile Header */}
+                <div className="flex flex-col items-center text-center">
+                    <div className="relative mb-10 group">
+                        <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full scale-110 group-hover:scale-150 transition-transform duration-1000" />
+                        <img
+                            src={userData?.profile_pic}
+                            alt="Entity"
+                            className="relative w-32 h-32 md:w-40 md:h-40 grayscale hover:grayscale-0 transition-all duration-700 rounded-none border border-white/10 p-2 bg-black"
+                        />
+                    </div>
 
-          {/* Bio Section - Emotional & Engaging */}
-          <p className="text-white text-sm sm:text-lg md:text-xl mt-3 opacity-90 tracking-wide leading-relaxed italic">
-            "{userData?.bio}"
-          </p>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 italic">
+                        {userData?.username}<span className="text-gray-600 font-normal">.</span>
+                    </h1>
 
-          {/* Location with Floating Glow Effect */}
-          {userData?.location && (
-            <div className="mt-5 flex items-center justify-center text-gray-300">
-              <FiMapPin className="mr-2 text-lg sm:text-xl md:text-2xl text-white animate-bounce" />
-              <span className="text-sm sm:text-lg md:text-xl font-medium">
-                {userData.location}
-              </span>
+                    <div className="flex gap-4 items-center mb-8">
+                        {userData?.badges?.map((badge: string, i: number) => (
+                            <div key={i} className="text-gray-500 hover:text-white transition-colors flex items-center gap-2 group cursor-help">
+                                {badgeIcons[badge]}
+                                <span className="text-[8px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">{badge}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <p className="text-gray-400 font-normal leading-relaxed mb-12 italic text-lg max-w-sm">
+                        "{userData?.bio || "No description provided."}"
+                    </p>
+
+                    {/* Stats Bar */}
+                    <div className="grid grid-cols-3 gap-px bg-white/5 border border-white/5 w-full mb-12 overflow-hidden">
+                        <div className="bg-black/40 p-6 flex flex-col gap-1 items-center">
+                            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 italic">Views</span>
+                            <span className="text-lg font-bold">{views}</span>
+                        </div>
+                        <button onClick={() => { setFollowersModal(true); fetchFollowersList(); }} className="bg-black/40 p-6 flex flex-col gap-1 items-center hover:bg-white/5 transition-colors">
+                            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 italic">Followers</span>
+                            <span className="text-lg font-bold">{followersCount}</span>
+                        </button>
+                        <button onClick={() => { setFollowingModal(true); fetchFollowingList(); }} className="bg-black/40 p-6 flex flex-col gap-1 items-center hover:bg-white/5 transition-colors">
+                            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 italic">Following</span>
+                            <span className="text-lg font-bold">{followingCount}</span>
+                        </button>
+                    </div>
+
+                    {/* Social Links */}
+                    <div className="flex flex-wrap justify-center gap-8 mb-12">
+                        {Object.entries(userData?.social_links || {}).map(([platform, url]) => (
+                            <a
+                                key={platform}
+                                href={url as string}
+                                target="_blank"
+                                className="text-gray-500 hover:text-white hover:scale-125 transition-all text-xl"
+                            >
+                                {socialIcons[platform as keyof typeof socialIcons]}
+                            </a>
+                        ))}
+                    </div>
+
+                    {/* Primary Action */}
+                    {currentUser && currentUser.id !== userData?.id ? (
+                        <button
+                            disabled={followLoading}
+                            onClick={handleFollow}
+                            className={`w-full py-5 text-[10px] uppercase font-bold tracking-[0.4em] transition-all duration-700 flex items-center justify-center gap-4 group/btn overflow-hidden relative
+                 ${isFollowing
+                                    ? "bg-transparent border border-white/10 text-white hover:border-white/30"
+                                    : "bg-white text-black hover:bg-gray-200"
+                                }`}
+                        >
+                            <span className="relative z-10">{followLoading ? "Processing..." : isFollowing ? "Verified Identity" : "Follow Entity"}</span>
+                            {!isFollowing && <FiArrowRight className="transition-transform group-hover/btn:translate-x-2" />}
+                        </button>
+                    ) : (
+                        <div className="w-full flex justify-center py-4 text-[10px] uppercase font-bold tracking-[0.5em] text-gray-800">
+                            Authenticated Entity
+                        </div>
+                    )}
+                </div>
+            </motion.div>
+
+            {/* Floating Meta Details */}
+            <div className="fixed bottom-12 left-12 hidden lg:block z-[2]">
+                <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-800 uppercase vertical-text">Profile ID / {userData?.id?.slice(0, 8)}</div>
             </div>
-          )}
+            <div className="fixed bottom-12 right-12 hidden lg:block z-[2]">
+                <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-800 uppercase vertical-text">
+                    {userData?.location ? `LOC / ${userData.location.toUpperCase()}` : "LOC / GLOBAL"}
+                </div>
+            </div>
 
-          {/* Social Icons with Smooth Glow & Tap Effects */}
-          <div className="relative z-50 flex items-center justify-center gap-5 sm:gap-6 mt-6">
-            {renderSocialIcons(userData?.social_links)}
-          </div>
+            {/* Modals */}
+            <AnimatePresence>
+                {(followersModal || followingModal) && (
+                    <AlertDialog open={true} onOpenChange={() => { setFollowersModal(false); setFollowingModal(false); }}>
+                        <AlertDialogContent className="bg-black border border-white/5 rounded-none p-12 max-w-lg backdrop-blur-3xl">
+                            <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-500 mb-10 italic">
+                                {followersModal ? "Network / Followers" : "Network / Following"}
+                            </h3>
+                            <div className="max-h-[40vh] overflow-y-auto space-y-6 pr-4 custom-scrollbar">
+                                {(followersModal ? followersList : followingList).map((user) => (
+                                    <Link
+                                        href={`/${user.username}`}
+                                        key={user.id}
+                                        className="flex items-center justify-between group"
+                                        onClick={() => { setFollowersModal(false); setFollowingModal(false); }}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <img src={user.profile_pic} className="w-8 h-8 rounded-none border border-white/10 grayscale group-hover:grayscale-0 transition-all" />
+                                            <span className="text-sm font-bold tracking-tight italic">{user.username}</span>
+                                        </div>
+                                        <FiArrowRight className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-gray-500" />
+                                    </Link>
+                                ))}
+                                {(followersModal ? followersList : followingList).length === 0 && (
+                                    <div className="text-gray-700 text-[10px] uppercase tracking-widest italic">No entities found.</div>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => { setFollowersModal(false); setFollowingModal(false); }}
+                                className="mt-12 w-full py-4 border border-white/5 text-[10px] uppercase font-bold tracking-widest text-gray-400 hover:text-white hover:border-white/20 transition-all"
+                            >
+                                Return
+                            </button>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
+            </AnimatePresence>
 
-          <div className="absolute bottom-4 left-4 flex items-center gap-1 text-white/70 text-sm sm:text-md md:text-lg font-semibold">
-            <FiEye className="text-white text-lg sm:text-xl md:text-2xl animate-pulse" />
-            <span>{views}</span>
-          </div>
-        </motion.div>
-      </div>
-    </div>
-  );
+            <style jsx global>{`
+        .vertical-text {
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 2px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
+        </div>
+    );
 };
 
 export default UserPage;

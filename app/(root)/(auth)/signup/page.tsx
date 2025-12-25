@@ -2,11 +2,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { GiPistolGun } from "react-icons/gi";
-import { FiMail, FiLock, FiUser, FiArrowRight, FiCheck } from "react-icons/fi";
+import { FiMail, FiLock, FiUser, FiArrowRight } from "react-icons/fi";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
-
+import { signIn, useSession } from "next-auth/react";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -14,9 +12,14 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { status } = useSession();
+
+  React.useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard");
+    }
+  }, [status, router]);
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,21 +32,14 @@ const Signup = () => {
       return;
     }
 
-    // Basic client-side username validation
     const valid = /^[a-zA-Z0-9_]{3,20}$/.test(username);
     if (!valid) {
-      setError("Username must be 3-20 chars: letters, numbers, underscores only.");
+      setError("Username must be 3-20 chars.");
       setLoading(false);
       return;
     }
 
-    // Check username availability (case-insensitive)
-    // Note: We skip client-side check for now and let the server handle it
-    // because existing API handles it.
-
-
     try {
-      // Create confirmed user via server (no email confirmation)
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,18 +53,13 @@ const Signup = () => {
         return;
       }
 
-      // Immediately sign in
-      const resultSignIn = await signIn("credentials", {
-        username, // Pass username as username field
+      await signIn("credentials", {
+        username,
         password,
         redirect: false
       });
 
-      if (resultSignIn?.error) {
-        setError(resultSignIn.error);
-      } else {
-        router.push("/dashboard"); // Redirect to dashboard root, which will redirect to specific user
-      }
+      window.location.href = "/dashboard";
     } catch (error) {
       setError("An unexpected error occurred");
     } finally {
@@ -76,305 +67,151 @@ const Signup = () => {
     }
   };
 
+  if (status === "loading" || status === "authenticated") {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0">
-        {/* Gradient Orbs */}
-        <motion.div
-          className="absolute top-1/3 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 50, 0],
-            scale: [1, 1.3, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/3 left-1/4 w-80 h-80 bg-gray-400/5 rounded-full blur-3xl"
-          animate={{
-            x: [0, 80, 0],
-            y: [0, -60, 0],
-            scale: [1, 0.7, 1],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 3,
-          }}
-        />
-        <motion.div
-          className="absolute top-1/2 right-1/2 w-64 h-64 bg-white/3 rounded-full blur-2xl"
-          animate={{
-            x: [0, -120, 0],
-            y: [0, 120, 0],
-            scale: [1, 1.5, 1],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 7,
-          }}
-        />
+    <div className="min-h-screen bg-black relative overflow-hidden flex flex-col items-center justify-center p-6">
+      {/* Stage 3: Ambient Shading */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-white/[0.03] blur-[120px] rounded-full" />
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-gray-500/[0.03] blur-[120px] rounded-full" />
       </div>
 
-      {/* Floating Particles */}
-      <div className="absolute inset-0">
-        {[...Array(25)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-white/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -150, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 4 + Math.random() * 3,
-              repeat: Infinity,
-              delay: Math.random() * 3,
-            }}
-          />
-        ))}
-      </div>
+      {/* Global Grain Texture Overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="w-full max-w-md"
-        >
-          {/* Glassmorphism Card */}
-          <div className="relative">
-            {/* Card Glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-3xl blur-xl" />
+      {/* Background Grid */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.05]"
+        style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '100px 100px' }}
+      />
 
-            {/* Main Card */}
-            <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-              {/* Logo Section */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="text-center mb-8"
-              >
-                <div className="relative inline-block">
-                  <motion.div
-                    className="absolute inset-0 bg-white/20 rounded-full blur-xl"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                  <GiPistolGun size={60} className="relative text-white mx-auto mb-4" />
-                </div>
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2"
-                >
-                  Join the Community
-                </motion.h1>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="text-gray-400 text-lg"
-                >
-                  Create your account
-                </motion.p>
-              </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-lg relative z-10"
+      >
+        {/* Branding */}
+        <div className="text-center mb-12">
+          <Link href="/" className="inline-block mb-8">
+            <h2 className="text-2xl font-bold tracking-tighter text-white italic">
+              sword<span className="text-gray-500 font-normal">.lol</span>
+            </h2>
+          </Link>
+          <h1 className="text-4xl font-bold tracking-tight mb-3 italic">Join the Club.</h1>
+          <p className="text-gray-400 font-normal italic opacity-80">Shape your identity in the architectural *age*.</p>
+        </div>
 
-              {/* Error Message */}
-              <AnimatePresence>
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm"
-                  >
-                    <p className="text-red-400 text-sm text-center font-medium">
-                      {error}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Signup Form */}
-              <form onSubmit={handleEmailSignup} className="space-y-6">
-                {/* Username Field */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="relative"
-                >
-                  <label className="block text-sm font-semibold text-gray-300 mb-3">
-                    Username
-                  </label>
-                  <div className={`relative transition-all duration-300 ${focusedField === 'username' ? 'scale-105' : ''
-                    }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'username' ? 'opacity-100' : 'opacity-50'
-                      }`} />
-                    <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
-                      <FiUser className="text-gray-400 mr-3 text-lg" />
-                      <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        onFocus={() => setFocusedField('username')}
-                        onBlur={() => setFocusedField(null)}
-                        className="flex-1 bg-transparent outline-none text-white placeholder-gray-500 text-lg"
-                        placeholder="Choose a username"
-                        required
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Email Field */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1 }}
-                  className="relative"
-                >
-                  <label className="block text-sm font-semibold text-gray-300 mb-3">
-                    Email Address
-                  </label>
-                  <div className={`relative transition-all duration-300 ${focusedField === 'email' ? 'scale-105' : ''
-                    }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'email' ? 'opacity-100' : 'opacity-50'
-                      }`} />
-                    <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
-                      <FiMail className="text-gray-400 mr-3 text-lg" />
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField(null)}
-                        className="flex-1 bg-transparent outline-none text-white placeholder-gray-500 text-lg"
-                        placeholder="Enter your email"
-                        required
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Password Field */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.2 }}
-                  className="relative"
-                >
-                  <label className="block text-sm font-semibold text-gray-300 mb-3">
-                    Password
-                  </label>
-                  <div className={`relative transition-all duration-300 ${focusedField === 'password' ? 'scale-105' : ''
-                    }`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r from-white/10 to-gray-400/10 rounded-xl blur-sm transition-opacity ${focusedField === 'password' ? 'opacity-100' : 'opacity-50'
-                      }`} />
-                    <div className="relative flex items-center bg-black/20 border border-white/20 rounded-xl px-4 py-3 focus-within:border-white/40 focus-within:bg-white/5 transition-all duration-300">
-                      <FiLock className="text-gray-400 mr-3 text-lg" />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField(null)}
-                        className="flex-1 bg-transparent outline-none text-white placeholder-gray-500 text-lg"
-                        placeholder="Create a password"
-                        required
-                      />
-                      <motion.button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="text-gray-400 hover:text-white transition-colors"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        {showPassword ? <FiCheck size={20} /> : <FiLock size={20} />}
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Submit Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4 }}
-                  className="pt-4"
-                >
-                  <motion.button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full relative group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {/* Button Glow */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-white to-gray-300 rounded-xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
-
-                    {/* Button Content */}
-                    <div className="relative bg-gradient-to-r from-white to-gray-300 text-black font-bold py-4 px-6 rounded-xl flex items-center justify-center text-lg shadow-xl">
-                      <span className="mr-2">
-                        {loading ? "Creating account..." : "Create Account"}
-                      </span>
-                      <motion.div
-                        animate={{ x: loading ? [0, 5, 0] : 0 }}
-                        transition={{ duration: 1, repeat: loading ? Infinity : 0 }}
-                      >
-                        <FiArrowRight size={20} />
-                      </motion.div>
-                    </div>
-                  </motion.button>
-                </motion.div>
-              </form>
-
-              {/* Terms and Login Link */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.6 }}
-                className="text-center mt-8 pt-6 border-t border-white/10 space-y-4"
-              >
-                <p className="text-xs text-gray-400">
-                  By signing up, you agree to our{" "}
-                  <Link href="/tos" className="text-white hover:text-gray-300 font-semibold transition-colors duration-300 hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-white hover:text-gray-300 font-semibold transition-colors duration-300 hover:underline">
-                    Privacy Policy
-                  </Link>
-                </p>
-                <p className="text-gray-400">
-                  Already have an account?{" "}
-                  <Link
-                    href="/login"
-                    className="text-white hover:text-gray-300 font-semibold transition-colors duration-300 hover:underline"
-                  >
-                    Sign in
-                  </Link>
-                </p>
-              </motion.div>
-            </div>
+        {/* Auth Container */}
+        <div className="bg-white/[0.02] border border-white/5 p-8 md:p-12 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+          {/* Subtle Corner Accent */}
+          <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none">
+            <div className="absolute top-4 right-4 w-px h-8 bg-white/10" />
+            <div className="absolute top-4 right-4 h-px w-8 bg-white/10" />
           </div>
-        </motion.div>
+
+          <form onSubmit={handleEmailSignup} className="space-y-8">
+            {/* Error Message */}
+            <AnimatePresence mode="wait">
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-red-500/10 border border-red-500/20 p-4"
+                >
+                  <p className="text-red-400 text-xs font-bold uppercase tracking-widest text-center">{error}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Fields */}
+            <div className="space-y-10">
+              <div className="group">
+                <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 mb-2 block group-focus-within:text-white transition-colors italic">
+                  Choose Handle
+                </label>
+                <div className="relative border-b border-white/10 group-focus-within:border-white transition-all duration-500 py-2">
+                  <FiUser className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors h-4 w-4" />
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full bg-transparent pl-8 pr-4 text-white placeholder-gray-700 outline-none text-sm font-normal"
+                    placeholder="username"
+                    required
+                  />
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] font-mono text-gray-600">.sword.lol</div>
+                </div>
+              </div>
+
+              <div className="group">
+                <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 mb-2 block group-focus-within:text-white transition-colors italic">
+                  Email Address
+                </label>
+                <div className="relative border-b border-white/10 group-focus-within:border-white transition-all duration-500 py-2">
+                  <FiMail className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors h-4 w-4" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent pl-8 pr-4 text-white placeholder-gray-700 outline-none text-sm font-normal"
+                    placeholder="email@example.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="group">
+                <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-500 mb-2 block group-focus-within:text-white transition-colors italic">
+                  Set Password
+                </label>
+                <div className="relative border-b border-white/10 group-focus-within:border-white transition-all duration-500 py-2">
+                  <FiLock className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-white transition-colors h-4 w-4" />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent pl-8 pr-4 text-white placeholder-gray-700 outline-none text-sm font-normal"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-white text-black py-5 text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-gray-200 transition-all duration-500 flex items-center justify-center gap-4 group/btn overflow-hidden relative"
+            >
+              <span className="relative z-10">{loading ? "Establishing..." : "Create Account"}</span>
+              <FiArrowRight className="h-4 w-4 relative z-10 transition-transform group-hover/btn:translate-x-2" />
+              <div className="absolute inset-x-0 bottom-0 h-0 group-hover/btn:h-full bg-gray-100 transition-all duration-500 -z-0" />
+            </button>
+          </form>
+        </div>
+
+        {/* Footer Link */}
+        <div className="mt-12 text-center space-y-4">
+          <p className="text-[10px] text-gray-500 uppercase tracking-widest leading-relaxed px-12">
+            By joining, you agree to our architectural <Link href="/tos" className="text-white hover:underline underline-offset-4">ToS</Link> and <Link href="/privacy" className="text-white hover:underline underline-offset-4">Privacy</Link>.
+          </p>
+          <p className="text-sm text-gray-500">
+            Already registered?{" "}
+            <Link href="/login" className="text-white hover:underline underline-offset-4 decoration-white/20">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Architectural Accents */}
+      <div className="fixed top-12 right-12 hidden lg:block">
+        <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-800 uppercase vertical-text">Join / Network</div>
       </div>
     </div>
   );

@@ -1,249 +1,175 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { Star, ArrowRight, CheckCircle } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, ChevronRight } from "lucide-react";
 
 const features = [
   {
-    title: "Custom Bio Links",
-    description: "Create stunning bio link pages with your unique style and branding.",
-    color: "text-white",
+    title: "Instant Propagation",
+    description: "Global edge delivery for your bio links and assets.",
   },
   {
-    title: "Lightning Fast",
-    description: "Blazing-fast file hosting and link generation for optimal performance.",
-    color: "text-gray-300",
+    title: "Advanced Analytics",
+    description: "Deep insights into your audience without compromising privacy.",
   },
   {
-    title: "Premium Features",
-    description: "Unlock advanced customization options and exclusive layouts.",
-    color: "text-gray-400",
-  },
-  {
-    title: "Analytics Dashboard",
-    description: "Track your performance with detailed analytics and insights.",
-    color: "text-gray-500",
+    title: "Secure Hosting",
+    description: "Encrypted asset storage with lightning-fast retrieval.",
   },
 ];
 
 const ThirdHero = () => {
-  return (
-    <div className="relative min-h-screen bg-black flex items-center justify-center overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-gray-900/20 via-black to-gray-800/20"
-        animate={{ 
-          background: [
-            "linear-gradient(45deg, rgba(75, 75, 75, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.1) 100%)",
-            "linear-gradient(45deg, rgba(100, 100, 100, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(75, 75, 75, 0.1) 100%)",
-            "linear-gradient(45deg, rgba(75, 75, 75, 0.1) 0%, rgba(0, 0, 0, 1) 50%, rgba(100, 100, 100, 0.1) 100%)",
-          ]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-      />
+  const { scrollYProgress } = useScroll();
+  const rotateX = useTransform(scrollYProgress, [0.5, 1], [0, 10]);
+  const translateZ = useTransform(scrollYProgress, [0.5, 1], [0, 50]);
 
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(30)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full"
-            animate={{
-              x: [0, Math.random() * 1000 - 500],
-              y: [0, Math.random() * 1000 - 500],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 15 + 15,
-              repeat: Infinity,
-              delay: Math.random() * 10,
-            }}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-          />
-        ))}
+  return (
+    <div className="relative min-h-screen bg-black flex items-center justify-center overflow-hidden py-40">
+      {/* Stage 3: Ambient Shading */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.05, 0.08, 0.05],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white rounded-full blur-[150px]"
+        />
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/[0.02] blur-[100px]" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gray-500/[0.02] blur-[120px]" />
       </div>
 
-      {/* Glowing Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/15 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gray-400/15 rounded-full blur-3xl animate-pulse delay-1000" />
+      <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
+        <div className="grid lg:grid-cols-12 gap-24 items-center">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left Column - Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center lg:text-left"
-          >
-            {/* Badge */}
+          <div className="lg:col-span-5 order-2 lg:order-1 text-center lg:text-left">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-white/10 to-gray-400/10 border border-white/20 rounded-full px-6 py-3 mb-8 backdrop-blur-sm"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Star className="w-5 h-5 text-white animate-spin" />
-              <span className="text-sm font-medium text-gray-300">
-                The Ultimate Digital Solution
-              </span>
-            </motion.div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-8 tracking-tighter leading-tight">
+                Refined Control. <br />
+                <span className="text-gray-300 italic">Absolute Simplicity.</span>
+              </h2>
 
-            {/* Main Heading */}
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-              className="text-4xl md:text-6xl font-extrabold mb-6"
-            >
-              <span className="bg-gradient-to-r from-white via-gray-300 to-gray-500 text-transparent bg-clip-text">
-                Your Complete
-              </span>
-              <br />
-              <span className="text-white">Digital Solution</span>
-            </motion.h2>
+              <p className="text-lg text-gray-300 mb-16 font-normal leading-relaxed max-w-md mx-auto lg:mx-0 opacity-80">
+                A toolkit designed for the modern *era* of creator economy. Performance that feels *invisible*.
+              </p>
 
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl text-gray-300 mb-8 leading-relaxed"
-            >
-              <span className="text-white font-semibold">sword.lol</span> delivers{" "}
-              <span className="text-white font-semibold">modern biolinks</span>,{" "}
-              <span className="text-white font-semibold">blazing-fast file hosting</span>, and{" "}
-              <span className="text-white font-semibold">advanced analytics</span> in one sleek platform.
-            </motion.p>
-
-            {/* Features List */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="space-y-4 mb-8"
-            >
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                  className="flex items-start space-x-3"
-                >
-                  <CheckCircle className={`w-6 h-6 ${feature.color} mt-0.5 flex-shrink-0`} />
-                  <div>
-                    <h3 className={`text-lg font-semibold ${feature.color} mb-1`}>
-                      {feature.title}
-                    </h3>
-                    <p className="text-gray-400">{feature.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* CTA Button */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative px-8 py-4 bg-gradient-to-r from-white to-gray-300 hover:from-gray-200 hover:to-gray-400 rounded-full font-semibold text-black transition-all duration-300 shadow-2xl hover:shadow-white/25 overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center space-x-2">
-                  <span>Get Started Now</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-white/5 backdrop-blur-sm border border-white/20 hover:bg-white/10 rounded-full font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-white/10"
-              >
-                Learn More
-              </motion.button>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Column - Visual */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="relative"
-          >
-            {/* Mockup Container */}
-            <div className="relative bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-white/20 rounded-2xl p-8 backdrop-blur-sm">
-              {/* Mockup Header */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-white rounded-full"></div>
-                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
-                </div>
-                <div className="text-white text-sm font-medium">sword.lol</div>
+              <div className="space-y-12">
+                {features.map((f, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 + i * 0.1, duration: 0.8 }}
+                    className="group"
+                  >
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="w-1 h-1 bg-white opacity-40 group-hover:opacity-100 transition-opacity" />
+                      <h3 className="text-xs font-bold uppercase tracking-[0.2em] italic">{f.title}</h3>
+                    </div>
+                    <p className="text-sm text-gray-400 font-normal group-hover:text-gray-200 transition-colors">{f.description}</p>
+                  </motion.div>
+                ))}
               </div>
 
-              {/* Mockup Content */}
-              <div className="space-y-4">
-                <div className="h-4 bg-white/20 rounded animate-pulse"></div>
-                <div className="h-4 bg-white/10 rounded w-3/4 animate-pulse"></div>
-                <div className="h-4 bg-white/15 rounded w-1/2 animate-pulse"></div>
-                
-                {/* Feature Cards */}
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                    <div className="w-8 h-8 bg-white/20 rounded-full mb-3"></div>
-                    <div className="h-3 bg-white/20 rounded w-full mb-2"></div>
-                    <div className="h-2 bg-white/10 rounded w-2/3"></div>
+              <motion.button
+                whileHover={{ gap: "2rem" }}
+                className="mt-20 flex items-center gap-6 text-xs uppercase tracking-[0.4em] font-bold text-gray-300 hover:text-white transition-all duration-500 group"
+              >
+                <span>Full Developer API</span>
+                <ChevronRight className="w-4 h-4 opacity-40 group-hover:opacity-100" />
+              </motion.button>
+            </motion.div>
+          </div>
+
+          {/* Right Column - Parallax Mockup */}
+          <div className="lg:col-span-7 order-1 lg:order-2 perspective-[2000px]">
+            <motion.div
+              style={{ rotateX, translateZ }}
+              className="relative bg-white/[0.02] border border-white/5 p-4 rounded-xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
+            >
+              {/* Inner UI container with grain */}
+              <div className="relative bg-black rounded-lg overflow-hidden border border-white/5 aspect-[1.1] md:aspect-auto md:h-[600px] flex flex-col">
+                {/* Browser bar */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+                  <div className="flex gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-white/10" />
+                    <div className="w-2 h-2 rounded-full bg-white/10" />
+                    <div className="w-2 h-2 rounded-full bg-white/10" />
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-                    <div className="w-8 h-8 bg-white/20 rounded-full mb-3"></div>
-                    <div className="h-3 bg-white/20 rounded w-full mb-2"></div>
-                    <div className="h-2 bg-white/10 rounded w-2/3"></div>
+                  <div className="text-[10px] text-gray-600 tracking-widest font-light">SWORD.LOL / DASHBOARD</div>
+                  <div className="w-2 h-2" />
+                </div>
+
+                {/* Main UI Area */}
+                <div className="flex-1 p-8 md:p-12 overflow-hidden">
+                  <div className="grid grid-cols-12 gap-6 h-full">
+                    {/* UI Sidebar Skeleton */}
+                    <div className="col-span-3 space-y-6">
+                      <div className="h-10 w-10 bg-white/5 rounded-full" />
+                      <div className="space-y-3">
+                        <div className="h-2 w-full bg-white/10 rounded" />
+                        <div className="h-2 w-2/3 bg-white/5 rounded" />
+                        <div className="h-2 w-3/4 bg-white/5 rounded" />
+                      </div>
+                    </div>
+
+                    {/* UI Main Skeleton */}
+                    <div className="col-span-9 space-y-8">
+                      <div className="flex justify-between items-end">
+                        <div className="h-8 w-1/2 bg-white/10 rounded" />
+                        <div className="h-10 w-24 bg-white rounded" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="h-32 bg-white/[0.03] border border-white/5 rounded-xl p-6">
+                          <div className="h-2 w-12 bg-white/10 rounded mb-4" />
+                          <div className="h-6 w-20 bg-white/20 rounded" />
+                        </div>
+                        <div className="h-32 bg-white/[0.03] border border-white/5 rounded-xl p-6">
+                          <div className="h-2 w-12 bg-white/10 rounded mb-4" />
+                          <div className="h-6 w-20 bg-white/20 rounded" />
+                        </div>
+                      </div>
+                      <div className="h-40 bg-white/[0.03] border border-white/5 rounded-xl p-6 overflow-hidden relative">
+                        <div className="absolute inset-x-0 bottom-0 h-px bg-white/10" />
+                        <div className="space-y-4">
+                          <div className="h-2 w-full bg-white/10 rounded" />
+                          <div className="h-2 w-full bg-white/5 rounded" />
+                          <div className="h-2 w-2/3 bg-white/5 rounded" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Stats */}
-                <div className="flex justify-between mt-6 pt-6 border-t border-white/10">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">50K+</div>
-                    <div className="text-sm text-gray-400">Views</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">1.7K+</div>
-                    <div className="text-sm text-gray-400">Users</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">99.9%</div>
-                    <div className="text-sm text-gray-400">Uptime</div>
-                  </div>
-                </div>
+                {/* Floating Glow Inside Mockup */}
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/5 blur-[80px] rounded-full" />
               </div>
-            </div>
 
-            {/* Floating Elements */}
-            <motion.div
-              animate={{ y: [-10, 10, -10] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -top-4 -right-4 w-16 h-16 bg-white/10 rounded-full blur-xl"
-            />
-            <motion.div
-              animate={{ y: [10, -10, 10] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-4 -left-4 w-12 h-12 bg-gray-400/10 rounded-full blur-xl"
-            />
-          </motion.div>
+              {/* External Floating Elements */}
+              <motion.div
+                animate={{ y: [0, -20, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-10 -right-10 px-6 py-4 bg-white text-black text-[10px] font-bold uppercase tracking-widest shadow-2xl"
+              >
+                99.9% UPTIME
+              </motion.div>
+              <motion.div
+                animate={{ y: [0, 20, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-10 -left-10 px-6 py-4 bg-black border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest shadow-2xl"
+              >
+                ENCRYPTED STORAGE
+              </motion.div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
