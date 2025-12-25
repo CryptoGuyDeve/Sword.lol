@@ -300,14 +300,53 @@ const UserPage = () => {
                         {userData?.username}<span className="text-gray-600 font-normal">.</span>
                     </h1>
 
-                    <div className="flex gap-4 items-center mb-8">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8 }}
+                        className="flex flex-wrap justify-center gap-4 items-center mb-10"
+                    >
                         {userData?.badges?.map((badge: string, i: number) => (
-                            <div key={i} className="text-gray-500 hover:text-white transition-colors flex items-center gap-2 group cursor-help">
-                                {badgeIcons[badge]}
-                                <span className="text-[8px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">{badge}</span>
-                            </div>
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                    delay: 1 + (i * 0.15),
+                                    duration: 1.2,
+                                    ease: [0.16, 1, 0.3, 1]
+                                }}
+                                className="group relative"
+                            >
+                                {/* Floating Container */}
+                                <motion.div
+                                    animate={{
+                                        y: [0, -6, 0],
+                                        rotateZ: [0, 1, 0, -1, 0]
+                                    }}
+                                    transition={{
+                                        y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 },
+                                        rotateZ: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }
+                                    }}
+                                    className="flex items-center gap-3 px-5 py-2.5 bg-white/[0.03] border border-white/10 backdrop-blur-2xl rounded-none hover:border-white/40 hover:bg-white/[0.06] transition-all duration-700 relative overflow-hidden"
+                                >
+                                    {/* Luminous Glow Background */}
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+
+                                    <div className="text-white/60 group-hover:text-white transition-colors duration-500 text-sm relative z-10">
+                                        {badgeIcons[badge] || badgeIcons["Winner"]}
+                                    </div>
+                                    <span className="text-[9px] uppercase font-bold tracking-[0.25em] text-gray-500 group-hover:text-white transition-all duration-500 italic relative z-10">
+                                        {badge}
+                                    </span>
+
+                                    {/* Architectural Corners */}
+                                    <div className="absolute top-0 left-0 w-1 h-[1px] bg-white/20 group-hover:w-full transition-all duration-700" />
+                                    <div className="absolute bottom-0 right-0 w-1 h-[1px] bg-white/20 group-hover:w-full transition-all duration-700" />
+                                </motion.div>
+                            </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
 
                     <p className="text-gray-400 font-normal leading-relaxed mb-12 italic text-lg max-w-sm">
                         "{userData?.bio || "No description provided."}"
