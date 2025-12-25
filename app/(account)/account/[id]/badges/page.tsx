@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
+import Loading from "@/components/Loading";
 import {
   FaUserShield, FaBolt, FaTrophy, FaMedal, FaBug, FaServer,
   FaTree, FaMoon, FaCrown, FaUserSecret, FaGavel, FaLaptopCode,
@@ -48,6 +49,7 @@ const BadgesPage = () => {
   const userId = params?.id as string;
 
   const [username, setUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchUserData = async () => {
     try {
@@ -65,6 +67,8 @@ const BadgesPage = () => {
   useEffect(() => {
     if (userId) fetchUserData();
   }, [userId]);
+
+  if (loading) return <Loading fullScreen text="FETCHING_BADGES" />;
 
   return (
     <div className="flex bg-[#0e0e0e] min-h-screen text-white overflow-hidden">

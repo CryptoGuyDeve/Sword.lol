@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Loading from "@/components/Loading";
 import {
   User,
   Edit3,
@@ -38,6 +39,7 @@ const Customize = () => {
   const [newUsername, setNewUsername] = useState<string>("");
   const [usernameError, setUsernameError] = useState<string>("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
@@ -57,6 +59,8 @@ const Customize = () => {
         }
       } catch (e) {
         console.error("Error fetching user", e);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -151,6 +155,8 @@ const Customize = () => {
     { value: "sunset", label: "Sunset", icon: "🌅", gradient: "from-orange-500 to-pink-500" },
     { value: "forest", label: "Forest", icon: "🌲", gradient: "from-green-900 to-emerald-900" },
   ];
+
+  if (loading) return <Loading fullScreen text="FETCHING_CONFIG" />;
 
   return (
     <div className="flex bg-[#0e0e0e] min-h-screen text-white overflow-hidden">

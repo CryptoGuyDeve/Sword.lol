@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import Sidebar from "@/components/Sidebar";
 import { motion } from "framer-motion";
+import Loading from "@/components/Loading";
 import { FaUserEdit, FaEye, FaSignOutAlt, FaUsers, FaUserPlus, FaMedal, FaBolt, FaCrown, FaFire, FaShareAlt } from "react-icons/fa";
 import Link from "next/link";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -207,7 +208,7 @@ const AccountPage = () => {
     });
   };
 
-  if (loading) return <div className="text-white">Loading...</div>;
+  if (loading) return <Loading fullScreen text="CALIBRATING_SYNERGY" />;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (

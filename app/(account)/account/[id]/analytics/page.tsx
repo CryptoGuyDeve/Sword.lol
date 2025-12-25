@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import { motion } from "framer-motion";
+import Loading from "@/components/Loading";
 import { FaEye, FaUsers, FaUserPlus, FaFire, FaChartLine, FaGlobe, FaMobile, FaDesktop } from "react-icons/fa";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -110,7 +111,7 @@ const AnalyticsPage = () => {
     fetchAnalytics();
   }, [id, dateRange]);
 
-  if (loading) return <div className="text-white">Loading...</div>;
+  if (loading) return <Loading fullScreen text="DECODING_ANALYTICS" />;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (

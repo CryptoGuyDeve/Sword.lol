@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Loading from "@/components/Loading";
 import Sidebar from "@/components/Sidebar";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -230,10 +231,8 @@ const ExplorePage = () => {
 
           {/* User Grid/List */}
           {loading ? (
-            <div className={`grid gap-5 ${viewMode === "grid" ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" : "grid-cols-1"}`}>
-              {Array(10).fill(0).map((_, i) => (
-                <Skeleton key={i} className={`bg-[#121212] rounded-xl border border-white/5 ${viewMode === "grid" ? "h-64" : "h-20"}`} />
-              ))}
+            <div className="flex-1 flex items-center justify-center p-20">
+              <Loading text="DISCOVERING_ENTITIES" />
             </div>
           ) : (
             <div className={`grid gap-5 ${viewMode === "grid" ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" : "grid-cols-1"}`}>

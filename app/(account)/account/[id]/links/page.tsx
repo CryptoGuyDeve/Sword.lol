@@ -3,6 +3,7 @@
 import Sidebar from '@/components/Sidebar';
 import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
+import Loading from '@/components/Loading';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from '@/components/ui/alert-dialog';
 import { FaSnapchatGhost, FaYoutube, FaInstagram, FaTwitter, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaEdit, FaTrash, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard } from 'react-icons/fa';
 
@@ -39,6 +40,7 @@ const Links = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { data: session } = useSession();
 
@@ -61,6 +63,8 @@ const Links = () => {
       }
     } catch (error) {
       console.error("Error fetching links", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -114,6 +118,8 @@ const Links = () => {
     setUrl(currentUrl);
     setEditMode(true);
   };
+
+  if (loading) return <Loading fullScreen text="SYNCING_IDENTITY" />;
 
   return (
     <div className="flex bg-[#0e0e0e] min-h-screen text-white overflow-hidden">
