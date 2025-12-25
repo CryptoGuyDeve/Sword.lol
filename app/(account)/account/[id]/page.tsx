@@ -99,23 +99,23 @@ const AccountPage = () => {
 
   const tutorialSteps = [
     {
-      title: "Module Overview",
-      description: "This is your central command node. Track reach, manage identity, and analyze network performance.",
+      title: "Dashboard Overview",
+      description: "Welcome to your home base. Track your stats, manage your profile, and see how you're growing.",
       target: "header"
     },
     {
-      title: "Real-time Analytics",
-      description: "Visual projection of your platform influence. Every interaction is logged in the Sword network.",
+      title: "Real-time Stats",
+      description: "A live view of your progress. Every visit and follower is tracked here.",
       target: "stats"
     },
     {
-      title: "Identity Configuration",
-      description: "Access the engineering bay to customize your profile's architectural parameters.",
+      title: "Quick Actions",
+      description: "Use these buttons to quickly update your profile or learn how things work.",
       target: "actions"
     }
   ];
 
-  if (loading) return <Loading fullScreen text="CALIBRATING_OVERVIEW" />;
+  if (loading) return <Loading fullScreen text="LOADING_DASHBOARD" />;
   if (error) return <div className="min-h-screen bg-[#0E0E0E] flex items-center justify-center text-red-500 font-mono tracking-widest">{error}</div>;
 
   return (
@@ -149,7 +149,7 @@ const AccountPage = () => {
             >
               <div className="flex items-center gap-4 mb-6">
                 <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/30 uppercase">
-                  SWORD_HUB / 001
+                  SWORD_DASHBOARD / 001
                 </span>
                 <div className="h-px w-12 bg-white/10" />
               </div>
@@ -164,10 +164,10 @@ const AccountPage = () => {
                 />
                 <div>
                   <p className="text-sm font-bold tracking-tight text-white mb-0.5 uppercase italic">
-                    Entity / {userData?.username}
+                    User / {userData?.username}
                   </p>
                   <p className="text-[10px] font-mono text-gray-500 tracking-widest uppercase">
-                    Current Lifecycle: Active
+                    Status: Online
                   </p>
                 </div>
               </div>
@@ -183,13 +183,13 @@ const AccountPage = () => {
                 onClick={() => setShowTutorial(true)}
                 className="px-6 py-4 bg-white/[0.03] border border-white/5 text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-white/[0.07] transition-all flex items-center gap-3"
               >
-                <FiCpu className="text-xs" /> Protocol Briefing
+                <FiCpu className="text-xs" /> Feature Guide
               </button>
               <button
                 onClick={() => router.push(`/account/${id}/customize`)}
                 className="px-8 py-4 bg-white text-black text-[10px] font-bold tracking-[0.3em] uppercase hover:bg-gray-200 transition-all flex items-center gap-3"
               >
-                <FaUserEdit /> Engineering Bay
+                <FaUserEdit /> Edit Profile
               </button>
             </motion.div>
           </div>
@@ -197,10 +197,10 @@ const AccountPage = () => {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5 mb-24 overflow-hidden shadow-2xl">
             {[
-              { label: "Total Reach", value: analytics.totalViews, icon: FaEye, technical: "VIEWS_AGGREGATE" },
-              { label: "Unique Nodes", value: analytics.uniqueVisitors, icon: FaUsers, technical: "VISITOR_ID_UNIQUE" },
-              { label: "Network Size", value: analytics.followers, icon: FaUserPlus, technical: "FOLLOWER_NODE_COUNT" },
-              { label: "Connectivity", value: analytics.following, icon: FiActivity, technical: "OUTGOING_FOLLOW_VEC" }
+              { label: "Total Views", value: analytics.totalViews, icon: FaEye, technical: "TOTAL_VIEWS" },
+              { label: "Visitors", value: analytics.uniqueVisitors, icon: FaUsers, technical: "UNIQUE_VISITORS" },
+              { label: "Followers", value: analytics.followers, icon: FaUserPlus, technical: "FOLLOWER_COUNT" },
+              { label: "Following", value: analytics.following, icon: FiActivity, technical: "FOLLOWING_COUNT" }
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -241,8 +241,8 @@ const AccountPage = () => {
             >
               <div className="flex justify-between items-end mb-16">
                 <div>
-                  <h3 className="text-2xl font-bold italic mb-2">Reach Trajectory<span className="text-gray-600">.</span></h3>
-                  <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-600">Temporal Projection of Influence</p>
+                  <h3 className="text-2xl font-bold italic mb-2">Growth Chart<span className="text-gray-600">.</span></h3>
+                  <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-600">Visualizing your views over time</p>
                 </div>
                 <div className="flex bg-white/[0.03] p-1 border border-white/5">
                   {['7', '30'].map((r) => (
@@ -310,16 +310,16 @@ const AccountPage = () => {
                 <h4 className="text-[10px] uppercase font-bold tracking-[0.4em] text-gray-600 mb-8 italic">System Status</h4>
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold italic text-gray-400">Security Clearance</span>
-                    <span className="text-[10px] font-mono text-green-500 uppercase tracking-widest">VERIFIED</span>
+                    <span className="text-xs font-bold italic text-gray-400">Account Security</span>
+                    <span className="text-[10px] font-mono text-green-500 uppercase tracking-widest">SECURE</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold italic text-gray-400">Node Latency</span>
+                    <span className="text-xs font-bold italic text-gray-400">Platform Ping</span>
                     <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">24ms</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold italic text-gray-400">Core Sync</span>
-                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">COMPLETE</span>
+                    <span className="text-xs font-bold italic text-gray-400">Data Sync</span>
+                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">UPDATED</span>
                   </div>
                 </div>
               </motion.div>
@@ -331,7 +331,7 @@ const AccountPage = () => {
                 className="p-12 bg-white text-black flex flex-col gap-8 group cursor-pointer hover:bg-gray-200 transition-all duration-700"
                 onClick={() => router.push(`/dashboard/${userData?.username}`)}
               >
-                <h4 className="text-[10px] uppercase font-bold tracking-[0.5em] mb-2">View Public Artifact</h4>
+                <h4 className="text-[10px] uppercase font-bold tracking-[0.5em] mb-2">View Your Page</h4>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold tracking-tighter italic whitespace-nowrap overflow-hidden">sword.lol/{userData?.username}</span>
                   <FiArrowRight className="text-2xl group-hover:translate-x-2 transition-transform duration-700 flex-shrink-0" />
@@ -344,7 +344,7 @@ const AccountPage = () => {
         {/* Floating Meta Details */}
         <div className="fixed bottom-12 left-12 hidden lg:block z-[2]">
           <div className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-800 uppercase vertical-text italic">
-            Dashboard_Cycle / {new Date().getFullYear()}_Q4
+            Dashboard / {new Date().getFullYear()}
           </div>
         </div>
         <div className="fixed bottom-12 right-12 hidden lg:block z-[2]">
@@ -373,7 +373,7 @@ const AccountPage = () => {
                 </div>
 
                 <span className="text-[10px] font-mono font-bold tracking-[0.5em] text-gray-500 uppercase mb-4 block italic">
-                  Protocol Step / 0{tutorialStep + 1}
+                  Step / 0{tutorialStep + 1}
                 </span>
 
                 <h2 className="text-4xl font-bold italic mb-8 tracking-tighter">
@@ -402,7 +402,7 @@ const AccountPage = () => {
                     }}
                     className="group flex items-center gap-6 px-10 py-5 bg-white text-black font-bold text-[10px] uppercase tracking-[0.4em] hover:bg-gray-200 transition-all duration-700 shadow-xl"
                   >
-                    {tutorialStep === tutorialSteps.length - 1 ? "Initialize Session" : "Next Protocol"}
+                    {tutorialStep === tutorialSteps.length - 1 ? "Start Now" : "Continue"}
                     <FiArrowRight className="text-xs group-hover:translate-x-2 transition-transform duration-700" />
                   </button>
                 </div>

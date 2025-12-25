@@ -135,7 +135,7 @@ const Customize = () => {
     { value: "forest", label: "Forest", icon: "🌲", gradient: "from-green-900 to-emerald-900" },
   ];
 
-  if (loading) return <Loading fullScreen text="FETCHING_CONFIG" />;
+  if (loading) return <Loading fullScreen text="LOADING_PROFILE" />;
 
   return (
     <div className="flex bg-[#0E0E0E] min-h-screen text-white overflow-hidden selection:bg-white selection:text-black font-sans">
@@ -169,21 +169,21 @@ const Customize = () => {
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 bg-purple-500 animate-pulse rounded-full" />
                   <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/40 uppercase">
-                    Active_Initialization_Protocol
+                    Profile Setup Progress
                   </span>
                 </div>
-                <h2 className="text-xl font-bold italic tracking-tight">System Configuration / {(
+                <h2 className="text-xl font-bold italic tracking-tight">Configuration / {(
                   (profilePic ? 25 : 0) +
                   (newUsername !== "" ? 25 : 0) +
                   (bio !== "" ? 25 : 0) +
                   (theme !== "dark" ? 25 : 10)
-                )}% Synced</h2>
+                )}% Complete</h2>
               </div>
 
               <div className="flex gap-4 md:gap-8">
                 {[
                   { label: "Avatar", active: !!profilePic, step: "01" },
-                  { label: "ID", active: newUsername !== "", step: "02" },
+                  { label: "Username", active: !!newUsername, step: "02" },
                   { label: "Bio", active: bio !== "", step: "03" },
                   { label: "Theme", active: theme !== "dark", step: "04" }
                 ].map((s, i) => (
@@ -214,15 +214,15 @@ const Customize = () => {
             >
               <div className="flex items-center gap-4 mb-6">
                 <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/30 uppercase">
-                  IDENTITY_CONFIG / MODULE_02
+                  PROFILE_EDIT / CUSTOMIZATION
                 </span>
                 <div className="h-px w-12 bg-white/10" />
               </div>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tighter italic mb-4">
-                Engineering<span className="text-gray-600 font-normal">.</span>
+                Edit Profile<span className="text-gray-600 font-normal">.</span>
               </h1>
               <p className="text-zinc-400 font-medium italic tracking-tight text-lg">
-                Modify your architectural footprint in the Sword network.
+                Personalize your public presence on the Sword network.
               </p>
             </motion.div>
           </div>
@@ -239,10 +239,10 @@ const Customize = () => {
                 >
                   <div className="flex justify-between items-start mb-10">
                     <FiCamera className="text-gray-600 group-hover:text-white transition-colors duration-500" />
-                    <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">ASSET_MGR</span>
+                    <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">AVATAR</span>
                   </div>
                   <div className="space-y-6">
-                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Avatar Endpoint</label>
+                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Profile Picture URL</label>
                     <input
                       type="text"
                       value={profilePic || ""}
@@ -260,10 +260,10 @@ const Customize = () => {
                 >
                   <div className="flex justify-between items-start mb-10">
                     <FiCpu className="text-gray-600 group-hover:text-white transition-colors duration-500" />
-                    <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">DOMAIN_ID</span>
+                    <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">IDENTITY</span>
                   </div>
                   <div className="space-y-6">
-                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Identifier</label>
+                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Username</label>
                     <div className="relative">
                       <input
                         type="text"
@@ -288,15 +288,15 @@ const Customize = () => {
               >
                 <div className="flex justify-between items-start mb-10">
                   <FiEdit3 className="text-gray-600 group-hover:text-white transition-colors duration-500" />
-                  <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">METADATA_STR</span>
+                  <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">ABOUT</span>
                 </div>
                 <div className="space-y-8">
-                  <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">System Bio</label>
+                  <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Bio</label>
                   <textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     className="w-full bg-transparent border-b border-white/10 py-4 text-sm focus:border-white transition-all outline-none font-medium placeholder:text-gray-800 resize-none h-32"
-                    placeholder="Explain your node's function..."
+                    placeholder="Tell the world about yourself..."
                   />
                   <div className="flex justify-end text-[9px] font-mono text-gray-700 tracking-widest">
                     CAPACITY / {bio.length}/500
@@ -314,7 +314,7 @@ const Customize = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
                     <FiVideo className="text-gray-600 text-xs" />
-                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Visual Stream</label>
+                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Background Video</label>
                   </div>
                   <input
                     type="text"
@@ -329,7 +329,7 @@ const Customize = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
                     <FiMapPin className="text-gray-600 text-xs" />
-                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Coordinate Lock</label>
+                    <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Location</label>
                   </div>
                   <input
                     type="text"
@@ -345,7 +345,7 @@ const Customize = () => {
               <div className="space-y-10">
                 <div className="flex items-center gap-4">
                   <FiGrid className="text-gray-600" />
-                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Palette Schema</h3>
+                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Theme Selection</h3>
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5 overflow-hidden">
                   {themes.map((t) => (
@@ -400,7 +400,7 @@ const Customize = () => {
                   <div className="absolute bottom-6 right-6 w-3 h-3 border-b border-r border-white/20" />
                 </div>
                 <div className="py-4 text-center">
-                  <span className="text-[9px] font-mono tracking-[0.5em] text-gray-800 uppercase italic">Real-time Projection</span>
+                  <span className="text-[9px] font-mono tracking-[0.5em] text-gray-800 uppercase italic">Live Preview</span>
                 </div>
               </motion.div>
 
@@ -414,11 +414,11 @@ const Customize = () => {
                   {isSaving ? (
                     <span className="flex items-center gap-3">
                       <div className="w-3 h-3 border border-gray-600 border-t-transparent animate-spin" />
-                      <span className="text-[10px] font-bold tracking-[0.5em] uppercase">SYNCING_CORE</span>
+                      <span className="text-[10px] font-bold tracking-[0.5em] uppercase">SAVING...</span>
                     </span>
                   ) : (
                     <span className="flex items-center gap-3">
-                      <span className="text-[10px] font-bold tracking-[0.5em] uppercase">Commit Changes</span>
+                      <span className="text-[10px] font-bold tracking-[0.5em] uppercase">Save Changes</span>
                       <FiSave className="text-xs group-hover:translate-x-1 transition-transform" />
                     </span>
                   )}
