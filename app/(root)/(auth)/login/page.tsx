@@ -58,7 +58,7 @@ const LoginPage = () => {
   };
 
   const handleDiscordLogin = async () => {
-    setNotice('Feature not available');
+    signIn("discord", { callbackUrl: "/dashboard" });
   };
 
   if (status === "loading" || status === "authenticated") {

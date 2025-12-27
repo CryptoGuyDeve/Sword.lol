@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS users (
   discord_id TEXT,
   discord_username TEXT,
   discord_avatar TEXT,
+  discord_public_flags INTEGER,
+  discord_premium_type INTEGER,
+  is_verified BOOLEAN DEFAULT FALSE,
+  widgets JSONB DEFAULT '[]'::jsonb,
   onboarding_completed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

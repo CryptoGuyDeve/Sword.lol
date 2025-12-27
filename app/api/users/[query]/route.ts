@@ -122,6 +122,11 @@ export async function PUT(
       background_video,
       location,
       social_links,
+      widgets,
+      is_verified,
+      discord_id,
+      discord_username,
+      discord_avatar,
     } = body;
 
     // Build update query dynamically
@@ -165,6 +170,26 @@ export async function PUT(
     if (social_links !== undefined) {
       updates.push(`social_links = $${paramIndex++}`);
       values.push(social_links);
+    }
+    if (widgets !== undefined) {
+      updates.push(`widgets = $${paramIndex++}`);
+      values.push(JSON.stringify(widgets));
+    }
+    if (is_verified !== undefined) {
+      updates.push(`is_verified = $${paramIndex++}`);
+      values.push(is_verified);
+    }
+    if (discord_id !== undefined) {
+      updates.push(`discord_id = $${paramIndex++}`);
+      values.push(discord_id);
+    }
+    if (discord_username !== undefined) {
+      updates.push(`discord_username = $${paramIndex++}`);
+      values.push(discord_username);
+    }
+    if (discord_avatar !== undefined) {
+      updates.push(`discord_avatar = $${paramIndex++}`);
+      values.push(discord_avatar);
     }
 
     if (updates.length === 0) {

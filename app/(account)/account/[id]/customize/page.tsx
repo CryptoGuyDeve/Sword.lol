@@ -9,6 +9,7 @@ import {
   FiUser, FiEdit3, FiPackage, FiMapPin,
   FiVideo, FiSave, FiEye, FiCamera, FiCheck, FiArrowRight, FiCpu, FiGrid
 } from "react-icons/fi";
+import { FaSpotify, FaGithub, FaDiscord } from "react-icons/fa";
 
 // Force dynamic rendering to prevent static generation errors
 export const dynamic = "force-dynamic";
@@ -34,6 +35,14 @@ const Customize = () => {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // New features state
+  const [widgets, setWidgets] = useState<any[]>([]);
+  const [discordId, setDiscordId] = useState<string | null>(null);
+  const [discordUsername, setDiscordUsername] = useState<string | null>(null);
+  const [discordAvatar, setDiscordAvatar] = useState<string | null>(null);
+  const [spotifyUrl, setSpotifyUrl] = useState<string>("");
+  const [githubUser, setGithubUser] = useState<string>("");
+
   useEffect(() => {
     if (!id) return;
 
@@ -49,6 +58,19 @@ const Customize = () => {
           setLocation(data.location || "");
           setUsername(data.username || "");
           setNewUsername(data.username || "");
+
+          // New fields
+          setWidgets(data.widgets || []);
+          setDiscordId(data.discord_id);
+          setDiscordUsername(data.discord_username);
+          setDiscordAvatar(data.discord_avatar);
+
+          // Extract values from widgets for editing
+          const spotify = data.widgets?.find((w: any) => w.type === "spotify");
+          if (spotify) setSpotifyUrl(spotify.url);
+
+          const github = data.widgets?.find((w: any) => w.type === "github");
+          if (github) setGithubUser(github.username);
         }
       } catch (e) {
         console.error("Error fetching user", e);
@@ -64,6 +86,15 @@ const Customize = () => {
     if (!id) return;
     setIsSaving(true);
 
+    // Construct widgets array
+    const updatedWidgets = [];
+    if (spotifyUrl.trim()) {
+      updatedWidgets.push({ type: "spotify", url: spotifyUrl.trim() });
+    }
+    if (githubUser.trim()) {
+      updatedWidgets.push({ type: "github", username: githubUser.trim() });
+    }
+
     try {
       const res = await fetch(`/api/users/${id}`, {
         method: "PUT",
@@ -74,12 +105,14 @@ const Customize = () => {
           theme,
           background_video: videoUrl,
           location,
-          username: newUsername !== username ? newUsername : undefined
+          username: newUsername !== username ? newUsername : undefined,
+          widgets: updatedWidgets
         })
       });
 
       if (res.ok) {
         setUsername(newUsername);
+        setWidgets(updatedWidgets);
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
       }
@@ -88,6 +121,10 @@ const Customize = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleDiscordConnect = () => {
+    window.location.href = "/api/discord/connect";
   };
 
   const checkUsernameAvailability = async (u: string) => {
@@ -364,6 +401,101 @@ const Customize = () => {
                 </div>
               </div>
 
+              {/* Custom Widgets Section */}
+              <div className="space-y-10">
+                <div className="flex items-center gap-4">
+                  <FiPackage className="text-gray-600" />
+                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Custom Widgets</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/5 overflow-hidden">
+                  {/* Spotify Widget Input */}
+                  <motion.div
+                    whileHover={{ backgroundColor: "rgba(255,255,255,0.01)" }}
+                    className="bg-black/40 p-10 relative group border-r border-white/5"
+                  >
+                    <div className="flex justify-between items-start mb-10">
+                      <FaSpotify className="text-gray-600 group-hover:text-white transition-colors duration-500" />
+                      <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">SPOTIFY</span>
+                    </div>
+                    <div className="space-y-6">
+                      <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Playlist / Track URL</label>
+                      <input
+                        type="text"
+                        value={spotifyUrl}
+                        onChange={(e) => setSpotifyUrl(e.target.value)}
+                        className="w-full bg-transparent border-b border-white/10 py-4 text-sm focus:border-white transition-all outline-none font-medium placeholder:text-zinc-800 text-white"
+                        placeholder="https://open.spotify.com/..."
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* GitHub Widget Input */}
+                  <motion.div
+                    whileHover={{ backgroundColor: "rgba(255,255,255,0.01)" }}
+                    className="bg-black/40 p-10 relative group"
+                  >
+                    <div className="flex justify-between items-start mb-10">
+                      <FaGithub className="text-gray-600 group-hover:text-white transition-colors duration-500" />
+                      <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">GITHUB</span>
+                    </div>
+                    <div className="space-y-6">
+                      <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Username</label>
+                      <input
+                        type="text"
+                        value={githubUser}
+                        onChange={(e) => setGithubUser(e.target.value)}
+                        className="w-full bg-transparent border-b border-white/10 py-4 text-sm focus:border-white transition-all outline-none font-medium placeholder:text-zinc-800 text-white"
+                        placeholder="github_username"
+                      />
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Social Integration Section */}
+              <div className="space-y-10">
+                <div className="flex items-center gap-4">
+                  <FaDiscord className="text-gray-600" />
+                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Social Integration</h3>
+                </div>
+                <div className="bg-black/40 border border-white/5 p-10 relative group">
+                  <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex items-center gap-6">
+                      {discordId ? (
+                        <>
+                          <img
+                            src={`https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png`}
+                            className="w-16 h-16 border border-white/10 p-1"
+                            alt="Discord Avatar"
+                          />
+                          <div>
+                            <p className="text-sm font-bold italic tracking-tight">{discordUsername}</p>
+                            <p className="text-[9px] uppercase font-bold tracking-widest text-green-500">Connected</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-16 h-16 bg-white/[0.02] border border-white/5 flex items-center justify-center">
+                            <FaDiscord className="text-2xl text-white/10" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold italic tracking-tight">Discord Profile</p>
+                            <p className="text-[9px] uppercase font-bold tracking-widest text-zinc-600">Not Connected</p>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <button
+                      onClick={handleDiscordConnect}
+                      className="px-8 py-3 bg-white text-black text-[10px] uppercase font-bold tracking-widest hover:bg-gray-200 transition-all flex items-center gap-3"
+                    >
+                      {discordId ? "Reconnect Discord" : "Connect Discord"}
+                      <FiArrowRight />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             {/* Right Column - Preview & Finalize */}
@@ -391,6 +523,15 @@ const Customize = () => {
                       <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/40">{location || "NETWORK_UNKNOWN"}</p>
                     </div>
                     {bio && <p className="text-xs text-gray-500 max-w-[200px] line-clamp-3 italic font-medium leading-relaxed mx-auto italic">"{bio}"</p>}
+
+                    {/* Widget Preview Stubs */}
+                    {(spotifyUrl || githubUser || discordId) && (
+                      <div className="flex gap-2 justify-center mt-4">
+                        {spotifyUrl && <div className="w-6 h-6 bg-green-500/20 flex items-center justify-center text-[10px]"><FaSpotify /></div>}
+                        {githubUser && <div className="w-6 h-6 bg-white/20 flex items-center justify-center text-[10px]"><FaGithub /></div>}
+                        {discordId && <div className="w-6 h-6 bg-blue-500/20 flex items-center justify-center text-[10px]"><FaDiscord /></div>}
+                      </div>
+                    )}
                   </div>
 
                   {/* Corner Markers */}

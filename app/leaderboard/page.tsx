@@ -13,6 +13,7 @@ import {
   FiAward,
   FiActivity
 } from "react-icons/fi";
+import { MdVerified } from "react-icons/md";
 import { useSession } from "next-auth/react";
 import Sidebar from "@/components/Sidebar";
 import {
@@ -233,8 +234,11 @@ export default function LeaderboardPage() {
                       {/* Identity */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-4 mb-1">
-                          <h3 className="text-lg font-bold tracking-tight italic">
+                          <h3 className="text-lg font-bold tracking-tight italic flex items-center gap-1.5">
                             @{creator.username}
+                            {creator.is_verified && (
+                              <MdVerified className="text-blue-500 text-base" />
+                            )}
                           </h3>
                           {/* Mini Badges */}
                           <div className="flex gap-2">

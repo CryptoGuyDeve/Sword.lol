@@ -4,7 +4,8 @@ import { useEffect, useState, useRef, JSX } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { FiVolumeX, FiVolume2, FiMapPin, FiEye, FiArrowRight, FiMaximize2, FiMaximize } from "react-icons/fi";
-import { FaUserPlus, FaUserCheck, FaUsers, FaCrown, FaStar, FaGavel, FaUserShield, FaLaptopCode, FaBug, FaUserTie, FaBolt, FaFire, FaChessQueen, FaSkullCrossbones, FaServer, FaGamepad, FaTrophy, FaRocket, FaCrosshairs, FaTree, FaMoon, FaGhost, FaHeart, FaMedal, FaShieldAlt, FaUserSecret, FaYoutube, FaInstagram, FaTwitter, FaSnapchatGhost, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard, FaUserFriends, FaHandshake } from "react-icons/fa";
+import { MdVerified } from "react-icons/md";
+import { FaUserPlus, FaUserCheck, FaUsers, FaCrown, FaStar, FaGavel, FaUserShield, FaLaptopCode, FaBug, FaUserTie, FaBolt, FaFire, FaChessQueen, FaSkullCrossbones, FaServer, FaGamepad, FaTrophy, FaRocket, FaCrosshairs, FaTree, FaMoon, FaGhost, FaHeart, FaMedal, FaShieldAlt, FaUserSecret, FaYoutube, FaInstagram, FaTwitter, FaSnapchatGhost, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard, FaUserFriends, FaHandshake, FaGem, FaCertificate } from "react-icons/fa";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import Bowser from "bowser";
@@ -345,8 +346,12 @@ const UserPage = () => {
                         />
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 italic">
-                        {userData?.username}<span className="text-gray-600 font-normal">.</span>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 italic flex items-center justify-center gap-2">
+                        {userData?.username}
+                        {userData?.is_verified && (
+                            <MdVerified className="text-blue-500 text-2xl md:text-3xl" />
+                        )}
+                        <span className="text-gray-600 font-normal">.</span>
                     </h1>
 
                     <motion.div
@@ -400,6 +405,107 @@ const UserPage = () => {
                     <p className="text-gray-400 font-normal leading-relaxed mb-12 italic text-lg max-w-sm">
                         "{userData?.bio || "No description provided."}"
                     </p>
+
+                    {/* Widgets & Integrations Section */}
+                    <div className="w-full space-y-8 mb-12">
+                        {/* Discord Profile Card */}
+                        {userData?.discord_id && (
+                            <div className="bg-blue-500/5 border border-blue-500/10 p-6 flex items-center justify-between group hover:bg-blue-500/10 transition-all duration-500">
+                                <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                        <img
+                                            src={`https://cdn.discordapp.com/avatars/${userData.discord_id}/${userData.discord_avatar}.png`}
+                                            className="w-12 h-12 border border-white/10 p-1"
+                                            alt="Discord"
+                                        />
+                                        <div className="absolute -bottom-1 -right-1 bg-blue-500 p-1 rounded-full text-[8px]">
+                                            <FaDiscord />
+                                        </div>
+                                    </div>
+                                    <div className="text-left">
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-xs font-bold italic tracking-tight">{userData.discord_username}</p>
+
+                                            {/* Discord Badges */}
+                                            <div className="flex gap-1">
+                                                {(() => {
+                                                    const badges = [];
+                                                    const flags = userData.discord_public_flags || 0;
+                                                    const premium = userData.discord_premium_type || 0;
+
+                                                    if (flags & (1 << 0)) badges.push(<FaCrown className="text-yellow-500" title="Discord Staff" key="staff" />);
+                                                    if (flags & (1 << 1)) badges.push(<FaStar className="text-yellow-400" title="Partner" key="partner" />);
+                                                    if (flags & (1 << 2)) badges.push(<FaBolt className="text-yellow-300" title="HypeSquad Events" key="h-events" />);
+                                                    if (flags & (1 << 3)) badges.push(<FaBug className="text-green-500" title="Bug Hunter L1" key="bug1" />);
+                                                    if (flags & (1 << 6)) badges.push(<FaBolt className="text-blue-400" title="Bravery" key="bravery" />);
+                                                    if (flags & (1 << 7)) badges.push(<FaBolt className="text-red-400" title="Brilliance" key="brilliance" />);
+                                                    if (flags & (1 << 8)) badges.push(<FaBolt className="text-pink-400" title="Balance" key="balance" />);
+                                                    if (flags & (1 << 9)) badges.push(<FaStar className="text-blue-300" title="Early Supporter" key="early" />);
+                                                    if (flags & (1 << 14)) badges.push(<FaBug className="text-yellow-600" title="Bug Hunter L2" key="bug2" />);
+                                                    if (flags & (1 << 17)) badges.push(<FaCertificate className="text-blue-500" title="Verified Developer" key="vdev" />);
+                                                    if (flags & (1 << 18)) badges.push(<FaUserShield className="text-gray-400" title="Certified Mod" key="mod" />);
+                                                    if (flags & (1 << 22)) badges.push(<FaLaptopCode className="text-white" title="Active Developer" key="adev" />);
+                                                    if (premium > 0) badges.push(<FaGem className="text-pink-500 animate-pulse" title="Nitro" key="nitro" />);
+
+                                                    return badges.map((Icon: any, idx) => (
+                                                        <span key={idx} className="text-[10px] transform hover:scale-110 transition-transform cursor-help">
+                                                            {Icon}
+                                                        </span>
+                                                    ));
+                                                })()}
+                                            </div>
+                                        </div>
+                                        <p className="text-[8px] uppercase font-bold tracking-[0.2em] text-blue-400">Discord Authenticated</p>
+                                    </div>
+                                </div>
+                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                            </div>
+                        )}
+
+                        {/* Custom Widgets */}
+                        {userData?.widgets?.map((widget: any, i: number) => (
+                            <div key={i} className="w-full">
+                                {widget.type === "spotify" && (
+                                    <div className="bg-green-500/5 border border-green-500/10 p-1 group hover:bg-green-500/10 transition-all duration-500">
+                                        <iframe
+                                            style={{ borderRadius: "0px" }}
+                                            src={`https://open.spotify.com/embed${new URL(widget.url).pathname}`}
+                                            width="100%"
+                                            height="152"
+                                            frameBorder="0"
+                                            allowFullScreen
+                                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                )}
+
+                                {widget.type === "github" && (
+                                    <div className="bg-white/5 border border-white/10 p-6 flex flex-col gap-4 group hover:bg-white/10 transition-all duration-500">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <FaGithub className="text-xl" />
+                                                <span className="text-xs font-bold italic tracking-tight">@{widget.username}</span>
+                                            </div>
+                                            <a
+                                                href={`https://github.com/${widget.username}`}
+                                                target="_blank"
+                                                className="text-[9px] uppercase font-bold tracking-widest text-gray-500 hover:text-white transition-colors"
+                                            >
+                                                View Source
+                                            </a>
+                                        </div>
+                                        {/* Simple visualization for GitHub contributions or similar could go here */}
+                                        <div className="flex gap-px opacity-20">
+                                            {Array.from({ length: 24 }).map((_, j) => (
+                                                <div key={j} className={`flex-1 h-3 ${Math.random() > 0.5 ? 'bg-green-500' : 'bg-white/10'}`} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
 
                     {/* Stats Bar */}
                     <div className="grid grid-cols-3 gap-px bg-white/5 border border-white/5 w-full mb-12 overflow-hidden">

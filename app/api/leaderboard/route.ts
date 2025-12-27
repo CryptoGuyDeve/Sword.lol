@@ -17,6 +17,7 @@ export async function GET(request: Request) {
           u.username, 
           u.profile_pic, 
           u.badges,
+          u.is_verified,
           (SELECT COUNT(*) FROM profile_views WHERE user_id = u.id) as views_count,
           (SELECT COUNT(*) FROM follows WHERE following_id = u.id) as followers_count
         FROM users u
@@ -30,6 +31,7 @@ export async function GET(request: Request) {
           u.username, 
           u.profile_pic, 
           u.badges,
+          u.is_verified,
           (SELECT COUNT(*) FROM follows WHERE following_id = u.id) as followers_count,
           (SELECT COUNT(*) FROM profile_views WHERE user_id = u.id) as views_count
         FROM users u
@@ -45,6 +47,7 @@ export async function GET(request: Request) {
           u.username, 
           u.profile_pic, 
           u.badges,
+          u.is_verified,
           (SELECT COUNT(*) FROM profile_views WHERE user_id = u.id) as views_count,
           (SELECT COUNT(*) FROM follows WHERE following_id = u.id) as followers_count,
           ((SELECT COUNT(*) FROM profile_views WHERE user_id = u.id) + (SELECT COUNT(*) FROM follows WHERE following_id = u.id) * 10) as engagement_score

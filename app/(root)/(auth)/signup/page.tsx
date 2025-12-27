@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { FiMail, FiLock, FiUser, FiArrowRight } from "react-icons/fi";
+import { FaDiscord } from "react-icons/fa";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 
@@ -193,6 +194,16 @@ const Signup = () => {
               <div className="absolute inset-x-0 bottom-0 h-0 group-hover/btn:h-full bg-gray-100 transition-all duration-500 -z-0" />
             </button>
           </form>
+
+          {/* Social Auth */}
+          <div className="mt-10 pt-10 border-t border-white/5">
+            <button
+              onClick={() => signIn("discord", { callbackUrl: "/onboarding" })}
+              className="w-full border border-white/5 py-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-3"
+            >
+              <FaDiscord size={14} /> Continue with Discord
+            </button>
+          </div>
         </div>
 
         {/* Footer Link */}
