@@ -93,6 +93,8 @@ export default function RootLayout({
           crossOrigin="anonymous"
         ></script>
 
+        {/* haha */}
+
         {/* Google Ads Tracking */}
         <script
           async
