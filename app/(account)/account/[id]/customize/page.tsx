@@ -12,6 +12,7 @@ import {
   Github
 } from "lucide-react";
 import { FaSpotify, FaDiscord } from "react-icons/fa";
+import { FileUpload } from "@/components/file-upload";
 
 // Force dynamic rendering to prevent static generation errors
 export const dynamic = "force-dynamic";
@@ -278,8 +279,21 @@ const Customize = () => {
                     <Camera className="text-gray-600 group-hover:text-white transition-colors duration-500" />
                     <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">AVATAR</span>
                   </div>
-                  <div className="space-y-6">
-                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Profile Picture URL</label>
+                  <div className="space-y-6 flex flex-col items-center">
+                    <label className="block text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic self-start">Profile Picture</label>
+                    <FileUpload
+                      endpoint="imageUploader"
+                      value={profilePic || ""}
+                      onChange={(url) => setProfilePic(url || "")}
+                    />
+                    <div className="w-full relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-white/10" />
+                      </div>
+                      <div className="relative flex justify-center text-[9px] uppercase tracking-widest">
+                        <span className="bg-[#0E0E0E] px-2 text-zinc-600">Or use URL</span>
+                      </div>
+                    </div>
                     <input
                       type="text"
                       value={profilePic || ""}
