@@ -180,13 +180,13 @@ const CollabPage = () => {
                                 </p>
                             </div>
 
-                            <div className="p-12 bg-white text-black group hover:bg-zinc-200 transition-all cursor-pointer">
+                            <a href="https://faizurrehman.vercel.app/" target="_blank" className="block p-12 bg-white text-black group hover:bg-zinc-200 transition-all cursor-pointer">
                                 <h5 className="text-[10px] uppercase font-bold tracking-[0.5em] mb-4">Inquiry Line</h5>
                                 <div className="flex items-center justify-between">
                                     <span className="text-lg font-bold italic">Message Founder</span>
                                     <FiArrowRight />
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>

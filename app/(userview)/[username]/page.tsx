@@ -7,6 +7,7 @@ import { FiVolumeX, FiVolume2, FiMapPin, FiEye, FiArrowRight, FiMaximize2, FiMax
 import { MdVerified } from "react-icons/md";
 import { FaUserPlus, FaUserCheck, FaUsers, FaCrown, FaStar, FaGavel, FaUserShield, FaLaptopCode, FaBug, FaUserTie, FaBolt, FaFire, FaChessQueen, FaSkullCrossbones, FaServer, FaGamepad, FaTrophy, FaRocket, FaCrosshairs, FaTree, FaMoon, FaGhost, FaHeart, FaMedal, FaShieldAlt, FaUserSecret, FaYoutube, FaInstagram, FaTwitter, FaSnapchatGhost, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard, FaUserFriends, FaHandshake, FaGem, FaCertificate } from "react-icons/fa";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import CursorEffects from "@/components/CursorEffects";
 import Link from "next/link";
 import Bowser from "bowser";
 import { useSession } from "next-auth/react";
@@ -218,7 +219,9 @@ const UserPage = () => {
     };
 
     return (
-        <div className={`relative w-full min-h-screen flex items-center justify-center bg-black text-white overflow-hidden selection:bg-white selection:text-black`}>
+        <div className={`relative w-full h-screen flex items-center justify-center bg-black text-white overflow-hidden selection:bg-white selection:text-black`}>
+            <CursorEffects effect={userData?.cursor_effect || "none"} />
+
             {/* Background Video Layer */}
             {userData?.background_video && (
                 <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
@@ -323,7 +326,7 @@ const UserPage = () => {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="relative z-10 w-full max-w-[500px] p-12 md:p-16 bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+                className="relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto custom-scrollbar p-8 md:p-12 bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)] rounded-none"
             >
                 {/* Subtle Architectural Accents */}
                 <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none">

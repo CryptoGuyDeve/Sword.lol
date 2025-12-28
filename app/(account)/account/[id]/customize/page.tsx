@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
+import CursorEffects from "@/components/CursorEffects";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Loading from "@/components/Loading";
 import {
-  FiUser, FiEdit3, FiPackage, FiMapPin,
-  FiVideo, FiSave, FiEye, FiCamera, FiCheck, FiArrowRight, FiCpu, FiGrid
-} from "react-icons/fi";
-import { FaSpotify, FaGithub, FaDiscord } from "react-icons/fa";
+  User, Edit3, Package, MapPin,
+  Video, Save, Eye, Camera, Check, ArrowRight, Cpu, Grid, Zap, DollarSign,
+  Github
+} from "lucide-react";
+import { FaSpotify, FaDiscord } from "react-icons/fa";
 
 // Force dynamic rendering to prevent static generation errors
 export const dynamic = "force-dynamic";
@@ -24,7 +26,6 @@ const Customize = () => {
 
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [bio, setBio] = useState<string>("");
-  const [theme, setTheme] = useState<string>("dark");
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -42,6 +43,7 @@ const Customize = () => {
   const [discordAvatar, setDiscordAvatar] = useState<string | null>(null);
   const [spotifyUrl, setSpotifyUrl] = useState<string>("");
   const [githubUser, setGithubUser] = useState<string>("");
+  const [cursorEffect, setCursorEffect] = useState<string>("none");
 
   useEffect(() => {
     if (!id) return;
@@ -53,11 +55,11 @@ const Customize = () => {
           const data = await res.json();
           setProfilePic(data.profile_pic);
           setBio(data.bio || "");
-          setTheme(data.theme || "dark");
           setVideoUrl(data.background_video || "");
           setLocation(data.location || "");
           setUsername(data.username || "");
           setNewUsername(data.username || "");
+          setCursorEffect(data.cursor_effect || "none");
 
           // New fields
           setWidgets(data.widgets || []);
@@ -102,10 +104,10 @@ const Customize = () => {
         body: JSON.stringify({
           profile_pic: profilePic,
           bio,
-          theme,
           background_video: videoUrl,
           location,
           username: newUsername !== username ? newUsername : undefined,
+          cursor_effect: cursorEffect,
           widgets: updatedWidgets
         })
       });
@@ -212,8 +214,7 @@ const Customize = () => {
                 <h2 className="text-xl font-bold italic tracking-tight">Configuration / {(
                   (profilePic ? 25 : 0) +
                   (newUsername !== "" ? 25 : 0) +
-                  (bio !== "" ? 25 : 0) +
-                  (theme !== "dark" ? 25 : 10)
+                  (bio !== "" ? 25 : 0) + 25
                 )}% Complete</h2>
               </div>
 
@@ -222,7 +223,6 @@ const Customize = () => {
                   { label: "Avatar", active: !!profilePic, step: "01" },
                   { label: "Username", active: !!newUsername, step: "02" },
                   { label: "Bio", active: bio !== "", step: "03" },
-                  { label: "Theme", active: theme !== "dark", step: "04" }
                 ].map((s, i) => (
                   <div key={i} className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
@@ -275,7 +275,7 @@ const Customize = () => {
                   className="bg-black/40 p-10 relative group border-r border-white/5"
                 >
                   <div className="flex justify-between items-start mb-10">
-                    <FiCamera className="text-gray-600 group-hover:text-white transition-colors duration-500" />
+                    <Camera className="text-gray-600 group-hover:text-white transition-colors duration-500" />
                     <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">AVATAR</span>
                   </div>
                   <div className="space-y-6">
@@ -296,7 +296,7 @@ const Customize = () => {
                   className="bg-black/40 p-10 relative group"
                 >
                   <div className="flex justify-between items-start mb-10">
-                    <FiCpu className="text-gray-600 group-hover:text-white transition-colors duration-500" />
+                    <Cpu className="text-gray-600 group-hover:text-white transition-colors duration-500" />
                     <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">IDENTITY</span>
                   </div>
                   <div className="space-y-6">
@@ -324,7 +324,7 @@ const Customize = () => {
                 className="bg-black/40 border border-white/5 p-10 md:p-16 relative group"
               >
                 <div className="flex justify-between items-start mb-10">
-                  <FiEdit3 className="text-gray-600 group-hover:text-white transition-colors duration-500" />
+                  <Edit3 className="text-gray-600 group-hover:text-white transition-colors duration-500" />
                   <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">ABOUT</span>
                 </div>
                 <div className="space-y-8">
@@ -350,7 +350,7 @@ const Customize = () => {
                 {/* Video URL */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
-                    <FiVideo className="text-gray-600 text-xs" />
+                    <Video className="text-gray-600 text-xs" />
                     <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Background Video</label>
                   </div>
                   <input
@@ -365,7 +365,7 @@ const Customize = () => {
                 {/* Location */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
-                    <FiMapPin className="text-gray-600 text-xs" />
+                    <MapPin className="text-gray-600 text-xs" />
                     <label className="text-[10px] uppercase font-bold tracking-[0.3em] text-zinc-400 italic">Location</label>
                   </div>
                   <input
@@ -378,24 +378,28 @@ const Customize = () => {
                 </div>
               </div>
 
-              {/* Theme Selection */}
+
+
+              {/* Cursor Effects Selection */}
               <div className="space-y-10">
                 <div className="flex items-center gap-4">
-                  <FiGrid className="text-gray-600" />
-                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Theme Selection</h3>
+                  <Zap className="text-gray-600" />
+                  <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Cursor Effects</h3>
                 </div>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5 overflow-hidden">
-                  {themes.map((t) => (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5 overflow-hidden">
+                  {[
+                    { value: "none", label: "None", icon: "🚫" },
+                    { value: "sparkle", label: "Sparkles", icon: "✨" },
+                    { value: "fire", label: "Fire", icon: "🔥" },
+                    { value: "neon", label: "Neon", icon: "💎" },
+                  ].map((c) => (
                     <button
-                      key={t.value}
-                      onClick={() => setTheme(t.value)}
-                      className={`p-10 text-left transition-all duration-700 group relative ${theme === t.value ? "bg-white text-black" : "bg-black/40 hover:bg-white/[0.02]"}`}
+                      key={c.value}
+                      onClick={() => setCursorEffect(c.value)}
+                      className={`p-8 text-center transition-all duration-700 group relative flex flex-col items-center gap-4 ${cursorEffect === c.value ? "bg-white text-black" : "bg-black/40 hover:bg-white/[0.02]"}`}
                     >
-                      <div className="flex justify-between items-start mb-6">
-                        <span className="text-xl">{t.icon}</span>
-                        {theme === t.value && <FiCheck className="text-xs" />}
-                      </div>
-                      <span className={`text-[10px] uppercase font-bold tracking-[0.3em] ${theme === t.value ? "text-black" : "text-zinc-400 group-hover:text-white"}`}>{t.label}</span>
+                      <span className="text-2xl">{c.icon}</span>
+                      <span className={`text-[10px] uppercase font-bold tracking-[0.2em] ${cursorEffect === c.value ? "text-black" : "text-zinc-400 group-hover:text-white"}`}>{c.label}</span>
                     </button>
                   ))}
                 </div>
@@ -404,7 +408,7 @@ const Customize = () => {
               {/* Custom Widgets Section */}
               <div className="space-y-10">
                 <div className="flex items-center gap-4">
-                  <FiPackage className="text-gray-600" />
+                  <Package className="text-gray-600" />
                   <h3 className="text-[10px] uppercase font-bold tracking-[0.4em] text-zinc-400 italic">Custom Widgets</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/5 overflow-hidden">
@@ -435,7 +439,7 @@ const Customize = () => {
                     className="bg-black/40 p-10 relative group"
                   >
                     <div className="flex justify-between items-start mb-10">
-                      <FaGithub className="text-gray-600 group-hover:text-white transition-colors duration-500" />
+                      <Github className="text-gray-600 group-hover:text-white transition-colors duration-500" />
                       <span className="text-[9px] font-mono tracking-widest uppercase opacity-40">GITHUB</span>
                     </div>
                     <div className="space-y-6">
@@ -490,7 +494,7 @@ const Customize = () => {
                       className="px-8 py-3 bg-white text-black text-[10px] uppercase font-bold tracking-widest hover:bg-gray-200 transition-all flex items-center gap-3"
                     >
                       {discordId ? "Reconnect Discord" : "Connect Discord"}
-                      <FiArrowRight />
+                      <ArrowRight />
                     </button>
                   </div>
                 </div>
@@ -508,14 +512,14 @@ const Customize = () => {
               >
                 <div className="bg-[#121212]/50 p-12 text-center h-[500px] flex flex-col items-center justify-center relative overflow-hidden backdrop-blur-sm">
                   {/* Preview Shading */}
-                  <div className={`absolute inset-0 bg-gradient-to-br opacity-5 ${themes.find(t => t.value === theme)?.gradient || "from-white/10 to-transparent"}`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br opacity-5 from-white/10 to-transparent`} />
 
                   <div className="relative z-10 space-y-8">
                     {profilePic ? (
                       <img src={profilePic} className="w-32 h-32 mx-auto grayscale group-hover:grayscale-0 transition-all duration-1000 border border-white/10 p-2 object-cover" alt="Preview" />
                     ) : (
                       <div className="w-32 h-32 mx-auto bg-white/[0.03] flex items-center justify-center border border-white/10 border-dashed">
-                        <FiUser className="text-4xl text-white/20" />
+                        <User className="text-4xl text-white/20" />
                       </div>
                     )}
                     <div>
@@ -528,7 +532,7 @@ const Customize = () => {
                     {(spotifyUrl || githubUser || discordId) && (
                       <div className="flex gap-2 justify-center mt-4">
                         {spotifyUrl && <div className="w-6 h-6 bg-green-500/20 flex items-center justify-center text-[10px]"><FaSpotify /></div>}
-                        {githubUser && <div className="w-6 h-6 bg-white/20 flex items-center justify-center text-[10px]"><FaGithub /></div>}
+                        {githubUser && <div className="w-6 h-6 bg-white/20 flex items-center justify-center text-[10px]"><Github size={12} /></div>}
                         {discordId && <div className="w-6 h-6 bg-blue-500/20 flex items-center justify-center text-[10px]"><FaDiscord /></div>}
                       </div>
                     )}
@@ -560,7 +564,7 @@ const Customize = () => {
                   ) : (
                     <span className="flex items-center gap-3">
                       <span className="text-[10px] font-bold tracking-[0.5em] uppercase">Save Changes</span>
-                      <FiSave className="text-xs group-hover:translate-x-1 transition-transform" />
+                      <Save className="text-xs group-hover:translate-x-1 transition-transform" />
                     </span>
                   )}
                 </button>
@@ -573,16 +577,16 @@ const Customize = () => {
                       exit={{ opacity: 0 }}
                       className="py-4 border border-green-500/20 bg-green-500/[0.02] text-green-500 flex items-center justify-center gap-3"
                     >
-                      <FiCheck />
+                      <Check />
                       <span className="text-[10px] font-bold tracking-[0.4em] uppercase">Identity Updated</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </div >
 
-            </div>
-          </div>
-        </div>
+            </div >
+          </div >
+        </div >
 
         {/* Floating Meta Details */}
         <div className="fixed bottom-12 left-12 hidden lg:block z-[2]">
@@ -615,6 +619,7 @@ const Customize = () => {
                 }
             `}</style>
       </main>
+      <CursorEffects effect={cursorEffect} />
     </div>
   );
 };

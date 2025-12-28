@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS users (
   is_verified BOOLEAN DEFAULT FALSE,
   widgets JSONB DEFAULT '[]'::jsonb,
   onboarding_completed BOOLEAN DEFAULT FALSE,
+  is_admin BOOLEAN DEFAULT FALSE,
+  cursor_effect TEXT DEFAULT 'none',
+  is_banned BOOLEAN DEFAULT FALSE,
+  stripe_account_id TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
