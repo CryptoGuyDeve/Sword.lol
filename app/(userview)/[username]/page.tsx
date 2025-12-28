@@ -410,56 +410,80 @@ const UserPage = () => {
                     <div className="w-full space-y-8 mb-12">
                         {/* Discord Profile Card */}
                         {userData?.discord_id && (
-                            <div className="bg-blue-500/5 border border-blue-500/10 p-6 flex items-center justify-between group hover:bg-blue-500/10 transition-all duration-500">
-                                <div className="flex items-center gap-4">
-                                    <div className="relative">
-                                        <img
-                                            src={`https://cdn.discordapp.com/avatars/${userData.discord_id}/${userData.discord_avatar}.png`}
-                                            className="w-12 h-12 border border-white/10 p-1"
-                                            alt="Discord"
-                                        />
-                                        <div className="absolute -bottom-1 -right-1 bg-blue-500 p-1 rounded-full text-[8px]">
-                                            <FaDiscord />
-                                        </div>
-                                    </div>
-                                    <div className="text-left">
-                                        <div className="flex items-center gap-2">
-                                            <p className="text-xs font-bold italic tracking-tight">{userData.discord_username}</p>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 1.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                                className="relative group overflow-hidden"
+                            >
+                                {/* Animated Gradient Background */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0" />
 
-                                            {/* Discord Badges */}
-                                            <div className="flex gap-1">
-                                                {(() => {
-                                                    const badges = [];
-                                                    const flags = userData.discord_public_flags || 0;
-                                                    const premium = userData.discord_premium_type || 0;
+                                <div className="relative z-10 bg-white/[0.02] border border-white/5 backdrop-blur-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-blue-500/20 transition-all duration-700">
+                                    <div className="flex items-center gap-6 w-full md:w-auto">
+                                        <div className="relative flex-shrink-0">
+                                            {/* Avatar Glow */}
+                                            <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
-                                                    if (flags & (1 << 0)) badges.push(<FaCrown className="text-yellow-500" title="Discord Staff" key="staff" />);
-                                                    if (flags & (1 << 1)) badges.push(<FaStar className="text-yellow-400" title="Partner" key="partner" />);
-                                                    if (flags & (1 << 2)) badges.push(<FaBolt className="text-yellow-300" title="HypeSquad Events" key="h-events" />);
-                                                    if (flags & (1 << 3)) badges.push(<FaBug className="text-green-500" title="Bug Hunter L1" key="bug1" />);
-                                                    if (flags & (1 << 6)) badges.push(<FaBolt className="text-blue-400" title="Bravery" key="bravery" />);
-                                                    if (flags & (1 << 7)) badges.push(<FaBolt className="text-red-400" title="Brilliance" key="brilliance" />);
-                                                    if (flags & (1 << 8)) badges.push(<FaBolt className="text-pink-400" title="Balance" key="balance" />);
-                                                    if (flags & (1 << 9)) badges.push(<FaStar className="text-blue-300" title="Early Supporter" key="early" />);
-                                                    if (flags & (1 << 14)) badges.push(<FaBug className="text-yellow-600" title="Bug Hunter L2" key="bug2" />);
-                                                    if (flags & (1 << 17)) badges.push(<FaCertificate className="text-blue-500" title="Verified Developer" key="vdev" />);
-                                                    if (flags & (1 << 18)) badges.push(<FaUserShield className="text-gray-400" title="Certified Mod" key="mod" />);
-                                                    if (flags & (1 << 22)) badges.push(<FaLaptopCode className="text-white" title="Active Developer" key="adev" />);
-                                                    if (premium > 0) badges.push(<FaGem className="text-pink-500 animate-pulse" title="Nitro" key="nitro" />);
+                                            <img
+                                                src={`https://cdn.discordapp.com/avatars/${userData.discord_id}/${userData.discord_avatar}.png`}
+                                                className="relative w-16 h-16 border border-white/10 p-1.5 bg-black/40 backdrop-blur-md transform transition-transform duration-700 group-hover:scale-105"
+                                                alt="Discord Entity"
+                                            />
 
-                                                    return badges.map((Icon: any, idx) => (
-                                                        <span key={idx} className="text-[10px] transform hover:scale-110 transition-transform cursor-help">
-                                                            {Icon}
-                                                        </span>
-                                                    ));
-                                                })()}
+                                            {/* Platform Icon Overlay */}
+                                            <div className="absolute -bottom-2 -right-2 bg-[#5865F2] p-1.5 shadow-xl border border-white/10 flex items-center justify-center">
+                                                <FaDiscord className="text-[10px] text-white" />
                                             </div>
                                         </div>
-                                        <p className="text-[8px] uppercase font-bold tracking-[0.2em] text-blue-400">Discord Authenticated</p>
+
+                                        <div className="text-left space-y-1.5">
+                                            <div className="flex flex-wrap items-center gap-3">
+                                                <p className="text-lg font-bold italic tracking-tight text-white/90 group-hover:text-white transition-colors">
+                                                    {userData.discord_username}
+                                                </p>
+
+                                                {/* Discord Badges Container */}
+                                                <div className="flex items-center gap-1.5 bg-white/[0.03] px-2 py-1 border border-white/5 backdrop-blur-sm">
+                                                    {(() => {
+                                                        const badges = [];
+                                                        const flags = userData.discord_public_flags || 0;
+                                                        const premium = userData.discord_premium_type || 0;
+
+                                                        if (flags & (1 << 0)) badges.push(<FaCrown className="text-yellow-500" title="Discord Staff" key="staff" />);
+                                                        if (flags & (1 << 1)) badges.push(<FaStar className="text-yellow-400" title="Partner" key="partner" />);
+                                                        if (flags & (1 << 2)) badges.push(<FaBolt className="text-yellow-300" title="HypeSquad Events" key="h-events" />);
+                                                        if (flags & (1 << 3)) badges.push(<FaBug className="text-green-500" title="Bug Hunter L1" key="bug1" />);
+                                                        if (flags & (1 << 6)) badges.push(<FaBolt className="text-blue-400" title="Bravery" key="bravery" />);
+                                                        if (flags & (1 << 7)) badges.push(<FaBolt className="text-red-400" title="Brilliance" key="brilliance" />);
+                                                        if (flags & (1 << 8)) badges.push(<FaBolt className="text-pink-400" title="Balance" key="balance" />);
+                                                        if (flags & (1 << 9)) badges.push(<FaStar className="text-blue-300" title="Early Supporter" key="early" />);
+                                                        if (flags & (1 << 14)) badges.push(<FaBug className="text-yellow-600" title="Bug Hunter L2" key="bug2" />);
+                                                        if (flags & (1 << 17)) badges.push(<FaCertificate className="text-blue-500" title="Verified Developer" key="vdev" />);
+                                                        if (flags & (1 << 18)) badges.push(<FaUserShield className="text-gray-400" title="Certified Mod" key="mod" />);
+                                                        if (flags & (1 << 22)) badges.push(<FaLaptopCode className="text-white" title="Active Developer" key="adev" />);
+                                                        if (premium > 0) badges.push(<FaGem className="text-pink-500 animate-pulse" title="Nitro" key="nitro" />);
+
+                                                        return badges.map((Icon: any, idx) => (
+                                                            <span key={idx} className="text-[12px] transform hover:scale-125 transition-transform duration-300 cursor-help hover:brightness-125">
+                                                                {Icon}
+                                                            </span>
+                                                        ));
+                                                    })()}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+                                                <p className="text-[9px] uppercase font-bold tracking-[0.3em] text-blue-400/80 group-hover:text-blue-400 transition-colors">Discord Sync Active</p>
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    {/* Architectural Accents */}
+                                    <div className="hidden md:block absolute top-0 left-0 w-8 h-[1px] bg-white/10 group-hover:w-16 transition-all duration-700" />
+                                    <div className="hidden md:block absolute bottom-0 right-0 w-8 h-[1px] bg-white/10 group-hover:w-16 transition-all duration-700" />
                                 </div>
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-                            </div>
+                            </motion.div>
                         )}
 
                         {/* Custom Widgets */}
