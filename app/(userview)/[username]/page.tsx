@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, JSX } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { FiVolumeX, FiVolume2, FiMapPin, FiEye, FiArrowRight, FiMaximize2, FiMaximize } from "react-icons/fi";
 import { MdVerified } from "react-icons/md";
 import { FaUserPlus, FaUserCheck, FaUsers, FaCrown, FaStar, FaGavel, FaUserShield, FaLaptopCode, FaBug, FaUserTie, FaBolt, FaFire, FaChessQueen, FaSkullCrossbones, FaServer, FaGamepad, FaTrophy, FaRocket, FaCrosshairs, FaTree, FaMoon, FaGhost, FaHeart, FaMedal, FaShieldAlt, FaUserSecret, FaYoutube, FaInstagram, FaTwitter, FaSnapchatGhost, FaGithub, FaTiktok, FaTelegram, FaDiscord, FaKickstarter, FaSpotify, FaSoundcloud, FaTwitch, FaLinkedin, FaSteam, FaPinterest, FaPatreon, FaBitcoin, FaEthereum, FaMonero, FaAddressCard, FaUserFriends, FaHandshake, FaGem, FaCertificate } from "react-icons/fa";
@@ -91,6 +91,40 @@ const UserPage = () => {
     const [followersList, setFollowersList] = useState<any[]>([]);
     const [followingList, setFollowingList] = useState<any[]>([]);
     const [followLoading, setFollowLoading] = useState(false);
+
+
+    // 3D Tilt Logic
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+    const mouseX = useSpring(x, { stiffness: 500, damping: 50 });
+    const mouseY = useSpring(y, { stiffness: 500, damping: 50 });
+
+    function handleMouseMove({ currentTarget, clientX, clientY }: any) {
+        const { left, top, width, height } = currentTarget.getBoundingClientRect();
+        x.set(clientX - left - width / 2);
+        y.set(clientY - top - height / 2);
+    }
+
+    const rotateX = useTransform(mouseY, [-300, 300], [15, -15]);
+    const rotateY = useTransform(mouseX, [-300, 300], [-15, 15]);
+    const rotateXSpring = useSpring(rotateX, { stiffness: 300, damping: 30 });
+    const rotateYSpring = useSpring(rotateY, { stiffness: 300, damping: 30 });
+
+    // Rare Border Logic
+    let borderColor = "border-white/5"; // Default
+    let shadowColor = "shadow-[0_0_100px_rgba(0,0,0,0.5)]";
+
+    if (userData?.is_verified || userData?.is_admin || userData?.badges?.includes("Owner")) {
+        borderColor = "border-cyan-500/30";
+        shadowColor = "shadow-[0_0_80px_rgba(6,182,212,0.15)]";
+    } else if ((userData?.views_count || 0) > 1000) {
+        borderColor = "border-yellow-500/30";
+        shadowColor = "shadow-[0_0_80px_rgba(234,179,8,0.15)]";
+    } else if (userData?.badges?.includes("OG")) {
+        borderColor = "border-purple-500/30";
+        shadowColor = "shadow-[0_0_80px_rgba(168,85,247,0.15)]";
+    }
+
     const playerRef = useRef<any>(null);
 
     useEffect(() => {
@@ -326,7 +360,17 @@ const UserPage = () => {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto custom-scrollbar p-8 md:p-12 bg-white/[0.02] border border-white/5 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)] rounded-none"
+                style={{
+                    rotateX: rotateXSpring,
+                    rotateY: rotateYSpring,
+                    transformStyle: "preserve-3d",
+                }}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={() => {
+                    x.set(0);
+                    y.set(0);
+                }}
+                className={`relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto custom-scrollbar p-8 md:p-12 bg-white/[0.02] backdrop-blur-3xl rounded-none transition-colors duration-500 border ${borderColor} ${shadowColor}`}
             >
                 {/* Subtle Architectural Accents */}
                 <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none">
@@ -349,7 +393,10 @@ const UserPage = () => {
                         />
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 italic flex items-center justify-center gap-2">
+                    <h1 className={`text-4xl md:text-5xl font-bold tracking-tighter mb-4 italic flex items-center justify-center gap-2 
+                        ${userData?.is_verified ? "bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent" : "text-white"}
+                        ${userData?.views_count > 5000 ? "bg-gradient-to-r from-yellow-100 via-yellow-400 to-yellow-100 bg-clip-text text-transparent" : ""}
+                    `}>
                         {userData?.username}
                         {userData?.is_verified && (
                             <MdVerified className="text-blue-500 text-2xl md:text-3xl" />
@@ -363,6 +410,13 @@ const UserPage = () => {
                         transition={{ delay: 0.8 }}
                         className="flex flex-wrap justify-center gap-4 items-center mb-10"
                     >
+                        {/* OG Badge Logic: auto-inject for demonstration or if in data */}
+                        {userData?.created_at && new Date(userData.created_at).getFullYear() < 2024 && !userData.badges?.includes("OG") && (
+                            <div className="px-5 py-2.5 bg-yellow-500/10 border border-yellow-500/20 text-[10px] uppercase font-bold tracking-[0.25em] text-yellow-500 flex items-center gap-2">
+                                <FaBolt /> OG_MEMBER
+                            </div>
+                        )}
+
                         {userData?.badges?.map((badge: string, i: number) => (
                             <motion.div
                                 key={i}
