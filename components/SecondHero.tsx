@@ -1,10 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, Activity } from "lucide-react";
 import { FiShield, FiZap, FiGlobe } from "react-icons/fi";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
   { label: "Views", value: "50K+", sub: "Total profile engagement" },
@@ -33,8 +37,93 @@ const plans = [
 ];
 
 const SecondHero = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const pricingRef = useRef<HTMLDivElement>(null);
+
+  // 3D Tilt Effect Helper
+  const handleTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const { left, top, width, height } = card.getBoundingClientRect();
+    const relativeX = (e.clientX - left) / width;
+    const relativeY = (e.clientY - top) / height;
+
+    const tiltX = (relativeY - 0.5) * 10; // Max tilt rotation X
+    const tiltY = (relativeX - 0.5) * -10; // Max tilt rotation Y
+
+    gsap.to(card, {
+      rotationX: tiltX,
+      rotationY: tiltY,
+      transformPerspective: 1000,
+      scale: 1.02,
+      duration: 0.4,
+      ease: "power2.out"
+    });
+  };
+
+  const handleResetTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    gsap.to(e.currentTarget, {
+      rotationX: 0,
+      rotationY: 0,
+      scale: 1,
+      duration: 0.5,
+      ease: "elastic.out(1, 0.5)"
+    });
+  };
+
+  useGSAP(() => {
+    // Header Animation
+    gsap.from(headerRef.current, {
+      scrollTrigger: {
+        trigger: headerRef.current,
+        start: "top 80%",
+        toggleActions: "play none none reverse",
+      },
+      opacity: 0,
+      x: -50,
+      duration: 1,
+      ease: "power3.out"
+    });
+
+    // Bento Grid Stagger
+    const cards = gridRef.current?.children;
+    if (cards) {
+      gsap.from(cards, {
+        scrollTrigger: {
+          trigger: gridRef.current,
+          start: "top 75%",
+          toggleActions: "play none none reverse",
+        },
+        opacity: 0,
+        y: 50,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+    }
+
+    // Pricing Plans Stagger
+    const pricingCards = pricingRef.current?.children;
+    if (pricingCards) {
+      gsap.from(pricingCards, {
+        scrollTrigger: {
+          trigger: pricingRef.current,
+          start: "top 75%",
+          toggleActions: "play none none reverse",
+        },
+        opacity: 0,
+        y: 50,
+        stagger: 0.2,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+    }
+
+  }, { scope: containerRef });
+
   return (
-    <div className="relative bg-[#0E0E0E] text-white py-48 px-6 overflow-hidden border-t border-white/5 selection:bg-white selection:text-black">
+    <div ref={containerRef} className="relative bg-[#0E0E0E] text-white py-48 px-6 overflow-hidden border-t border-white/5 selection:bg-white selection:text-black">
 
       {/* Background Grid */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-0"
@@ -47,36 +136,28 @@ const SecondHero = () => {
       <div className="max-w-7xl mx-auto relative z-10">
 
         {/* Header Area */}
-        <div className="mb-32">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/30 uppercase">
-                PLATFORM FEATURES / TOOLS
-              </span>
-              <div className="h-px w-12 bg-white/10" />
-            </div>
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter italic">
-              Simple Controls<span className="text-gray-600 font-normal">.</span>
-            </h2>
-          </motion.div>
+        <div ref={headerRef} className="mb-32">
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-[10px] font-mono font-bold tracking-[0.4em] text-white/30 uppercase">
+              PLATFORM FEATURES / TOOLS
+            </span>
+            <div className="h-px w-12 bg-white/10" />
+          </div>
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter italic">
+            Simple Controls<span className="text-gray-600 font-normal">.</span>
+          </h2>
         </div>
 
         {/* Bento Matrix Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-px bg-white/5 border border-white/5 mb-48 overflow-hidden">
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-12 gap-px bg-white/5 border border-white/5 mb-48 overflow-hidden">
 
           {/* Performance Lead Card */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="col-span-1 md:col-span-8 bg-black/40 p-12 md:p-16 flex flex-col justify-between min-h-[500px] group transition-colors duration-700 hover:bg-white/[0.01]"
+          <div
+            onMouseMove={handleTilt}
+            onMouseLeave={handleResetTilt}
+            className="col-span-1 md:col-span-8 bg-black/40 p-12 md:p-16 flex flex-col justify-between min-h-[500px] group transition-colors duration-700 hover:bg-white/[0.01] backface-hidden will-change-transform"
           >
-            <div>
+            <div className="pointer-events-none">
               <div className="flex items-center gap-3 mb-10 text-zinc-500">
                 <FiZap className="text-xl" />
                 <span className="text-[9px] font-mono font-bold tracking-widest uppercase">System Status: Optimized</span>
@@ -89,7 +170,7 @@ const SecondHero = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 pt-16 border-t border-white/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 pt-16 border-t border-white/5 pointer-events-none">
               {stats.map((stat, i) => (
                 <div key={i} className="flex flex-col gap-1">
                   <div className="text-2xl font-bold tracking-tighter italic">{stat.value}</div>
@@ -97,51 +178,48 @@ const SecondHero = () => {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Privacy Protocol Card */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="col-span-1 md:col-span-4 bg-black/60 p-12 flex flex-col justify-between hover:bg-white transition-all duration-700 group/card"
+          <div
+            onMouseMove={handleTilt}
+            onMouseLeave={handleResetTilt}
+            className="col-span-1 md:col-span-4 bg-black/60 p-12 flex flex-col justify-between hover:bg-white transition-all duration-700 group/card backface-hidden will-change-transform"
           >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start pointer-events-none">
               <FiShield className="text-3xl text-zinc-500 group-hover/card:text-black transition-colors duration-700" />
               <span className="text-[9px] font-mono font-bold text-zinc-800 group-hover/card:text-black transition-colors uppercase italic">SECURED</span>
             </div>
-            <div>
+            <div className="pointer-events-none">
               <h4 className="text-2xl font-bold mb-4 italic text-zinc-300 group-hover/card:text-black transition-colors duration-700 uppercase">Privacy Focused</h4>
               <p className="text-sm text-zinc-600 font-medium italic leading-relaxed group-hover:text-zinc-800 transition-colors duration-700">
                 Your data is yours. We prioritize privacy and security in every single interaction.
               </p>
             </div>
-          </motion.div>
+          </div>
 
           {/* Global Node Card */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="col-span-1 md:col-span-4 bg-black/60 p-12 border-t border-white/5 flex flex-col gap-12 group/node hover:bg-white transition-all duration-700"
+          <div
+            onMouseMove={handleTilt}
+            onMouseLeave={handleResetTilt}
+            className="col-span-1 md:col-span-4 bg-black/60 p-12 border-t border-white/5 flex flex-col gap-12 group/node hover:bg-white transition-all duration-700 backface-hidden will-change-transform"
           >
-            <FiGlobe className="text-3xl text-zinc-500 group-hover/node:text-black transition-colors duration-700" />
-            <div>
+            <FiGlobe className="text-3xl text-zinc-500 group-hover/node:text-black transition-colors duration-700 pointer-events-none" />
+            <div className="pointer-events-none">
               <h4 className="text-2xl font-bold mb-4 italic text-zinc-300 group-hover/node:text-black transition-colors duration-700 uppercase">Lightning Fast</h4>
-              <p className="text-sm text-zinc-600 font-medium italic leading-relaxed group-hover:node:text-zinc-800 transition-colors duration-700">
+              <p className="text-sm text-zinc-600 font-medium italic leading-relaxed group-hover/node:text-zinc-800 transition-colors duration-700">
                 Instant page loads across our global delivery network.
               </p>
             </div>
-          </motion.div>
+          </div>
 
           {/* Reservation Card */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="col-span-1 md:col-span-8 bg-black/40 p-12 border-l border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-12 group"
+          <div
+            onMouseMove={handleTilt}
+            onMouseLeave={handleResetTilt}
+            className="col-span-1 md:col-span-8 bg-black/40 p-12 border-l border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-12 group backface-hidden will-change-transform"
           >
-            <div className="max-w-md">
+            <div className="max-w-md pointer-events-none">
               <div className="flex items-center gap-3 mb-6 text-zinc-700">
                 <Activity className="w-4 h-4" />
                 <span className="text-[9px] font-mono tracking-widest uppercase">USERNAME_SEARCH</span>
@@ -159,7 +237,7 @@ const SecondHero = () => {
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Pricing Protocol */}
@@ -174,26 +252,24 @@ const SecondHero = () => {
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-px bg-white/5 border border-white/5 max-w-5xl mx-auto overflow-hidden">
+        <div ref={pricingRef} className="grid md:grid-cols-2 gap-px bg-white/5 border border-white/5 max-w-5xl mx-auto overflow-hidden">
           {plans.map((plan, i) => (
-            <motion.div
+            <div
               key={i}
-              className="bg-black/40 p-16 flex flex-col justify-between group hover:bg-white transition-all duration-1000 relative"
+              onMouseMove={handleTilt}
+              onMouseLeave={handleResetTilt}
+              className="bg-black/40 p-16 flex flex-col justify-between group hover:bg-white transition-all duration-1000 relative backface-hidden will-change-transform"
             >
-              <div className="mb-16">
+              <div className="mb-16 pointer-events-none">
                 <div className="flex justify-between items-start mb-12">
                   <div className="space-y-2">
                     <span className="text-[9px] font-mono font-bold tracking-[0.3em] text-zinc-700 uppercase italic opacity-60 group-hover:text-black">{plan.module}</span>
                     <h4 className="text-3xl font-bold tracking-tighter italic uppercase group-hover:text-black">{plan.title}</h4>
                   </div>
                   {plan.popular && (
-                    <motion.span
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="text-[9px] font-bold uppercase tracking-[0.2em] text-white border border-white/10 px-4 py-2 group-hover:text-black group-hover:border-black/20"
-                    >
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white border border-white/10 px-4 py-2 group-hover:text-black group-hover:border-black/20">
                       Recommended
-                    </motion.span>
+                    </span>
                   )}
                 </div>
                 <div className="text-7xl font-bold mb-12 tracking-tighter leading-none group-hover:text-black italic">
@@ -216,7 +292,7 @@ const SecondHero = () => {
               <div className="absolute bottom-6 right-8 text-[70px] font-bold italic opacity-[0.01] uppercase group-hover:opacity-0 pointer-events-none">
                 {plan.title.slice(0, 3)}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

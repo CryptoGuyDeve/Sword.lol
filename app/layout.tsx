@@ -77,6 +77,10 @@ export const metadata: Metadata = {
 };
 
 import SessionProvider from "@/components/SessionProvider";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
+import SmoothScroll from "@/components/SmoothScroll";
 
 export default function RootLayout({
   children,
@@ -112,8 +116,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
+        <NextSSRPlugin
+          routerConfig={extractRouterConfig(ourFileRouter)}
+        />
         <SessionProvider>
-          {children}
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
         </SessionProvider>
         <Analytics />
       </body>

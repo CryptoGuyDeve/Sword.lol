@@ -39,7 +39,7 @@ const Navbar = () => {
           borderRadius,
         }}
         className={`fixed left-1/2 -translate-x-1/2 z-[100] transition-colors duration-500 overflow-hidden
-          ${isOpen ? "bg-black/95" : "bg-black/20 backdrop-blur-2xl"}
+          ${isOpen ? "bg-[#0E0E0E]/95" : "bg-[#0E0E0E]/20 backdrop-blur-2xl"}
           border border-white/5 shadow-2xl`}
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -135,7 +135,7 @@ const Navbar = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-white/5 bg-black/95 px-6 py-12"
+              className="md:hidden border-t border-white/5 bg-[#0E0E0E]/95 px-6 py-12"
             >
               <div className="flex flex-col space-y-8">
                 {navLinks.map((link, i) => (

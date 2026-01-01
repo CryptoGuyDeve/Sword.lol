@@ -1,11 +1,18 @@
 'use client'
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useRef, useEffect } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Plus } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const answerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const faqs = [
     {
@@ -30,8 +37,48 @@ const FAQ = () => {
     }
   ];
 
+  useGSAP(() => {
+    // Title Reveal
+    gsap.from(titleRef.current, {
+      scrollTrigger: {
+        trigger: titleRef.current,
+        start: "top 90%",
+        toggleActions: "play none none reverse",
+      },
+      y: "100%",
+      duration: 1,
+      ease: "power3.out"
+    });
+
+  }, { scope: containerRef });
+
+  useEffect(() => {
+    // Accordion Animation
+    answerRefs.current.forEach((el, index) => {
+      if (!el) return;
+
+      const isOpen = openIndex === index;
+
+      if (isOpen) {
+        gsap.to(el, {
+          height: "auto",
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.out"
+        });
+      } else {
+        gsap.to(el, {
+          height: 0,
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.in"
+        });
+      }
+    });
+  }, [openIndex]);
+
   return (
-    <div className="relative bg-[#0E0E0E] text-white py-40 px-6 overflow-hidden">
+    <div ref={containerRef} className="relative bg-[#0E0E0E] text-white py-40 px-6 overflow-hidden">
       {/* Stage 3: Ambient Shading */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-t from-white/[0.03] to-transparent blur-[100px]" />
@@ -42,14 +89,12 @@ const FAQ = () => {
         {/* Minimalist Header */}
         <div className="mb-32">
           <h3 className="text-[10px] uppercase tracking-[0.4em] text-zinc-600 font-bold mb-8 overflow-hidden italic">
-            <motion.span
-              initial={{ y: "100%" }}
-              whileInView={{ y: 0 }}
-              viewport={{ once: true }}
+            <span
+              ref={titleRef}
               className="inline-block"
             >
               QUESTIONS & ANSWERS
-            </motion.span>
+            </span>
           </h3>
           <h2 className="text-5xl md:text-6xl font-bold tracking-tighter uppercase italic">Frequently *Asked*<span className="text-zinc-700 font-normal">.</span></h2>
         </div>
@@ -68,32 +113,23 @@ const FAQ = () => {
                     {faq.question}
                   </h3>
                 </div>
-                <motion.div
-                  animate={{ rotate: openIndex === index ? 45 : 0 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-white/20"
+                <div
+                  className={`text-white/20 transition-transform duration-500 ease-out ${openIndex === index ? "rotate-45" : ""}`}
                 >
                   <Plus className="w-6 h-6" strokeWidth={1} />
-                </motion.div>
+                </div>
               </button>
 
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pb-12 pl-[5.5rem] max-w-2xl">
-                      <p className="text-zinc-400 font-medium leading-relaxed text-lg italic opacity-90">
-                        {faq.answer}
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div
+                ref={(el) => { answerRefs.current[index] = el; }} // Ensure void return
+                className="overflow-hidden h-0 opacity-0"
+              >
+                <div className="pb-12 pl-[5.5rem] max-w-2xl">
+                  <p className="text-zinc-400 font-medium leading-relaxed text-lg italic opacity-90">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
