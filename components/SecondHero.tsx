@@ -19,19 +19,35 @@ const stats = [
 
 const plans = [
   {
-    title: "Standard",
-    module: "MODULE_01",
+    title: "Free",
+    module: "STARTER",
     price: "$0",
-    features: ["Custom Links", "Social Integration", "100MB Hosting"],
+    period: "Forever",
+    description: "Perfect for getting started",
+    features: [
+      "Unlimited custom links",
+      "Connect all social accounts",
+      "100MB file storage",
+      "Basic analytics"
+    ],
     cta: "Start Free",
     popular: false,
   },
   {
-    title: "Architect",
-    module: "MODULE_02",
-    price: "$4.00",
-    features: ["Priority Support", "Custom Domains", "Unlimited Hosting", "Global VIP Storage"],
-    cta: "Go Premium",
+    title: "Pro",
+    module: "PREMIUM",
+    price: "$4",
+    period: "One-time payment",
+    description: "Everything you need, forever",
+    features: [
+      "Everything in Free",
+      "Custom domain support",
+      "Unlimited file storage",
+      "Advanced analytics",
+      "Priority support",
+      "Remove branding"
+    ],
+    cta: "Get Pro",
     popular: true,
   },
 ];
@@ -103,20 +119,23 @@ const SecondHero = () => {
       });
     }
 
-    // Pricing Plans Stagger
+    // Pricing Plans Stagger - Fixed with once: false to ensure it always shows
     const pricingCards = pricingRef.current?.children;
     if (pricingCards) {
       gsap.from(pricingCards, {
         scrollTrigger: {
           trigger: pricingRef.current,
-          start: "top 75%",
-          toggleActions: "play none none reverse",
+          start: "top 85%",
+          end: "top 20%",
+          toggleActions: "play none none reset",
+          once: false,
         },
         opacity: 0,
-        y: 50,
-        stagger: 0.2,
-        duration: 0.8,
-        ease: "power2.out"
+        y: 30,
+        stagger: 0.15,
+        duration: 1,
+        ease: "power3.out",
+        clearProps: "all"
       });
     }
 
@@ -244,54 +263,71 @@ const SecondHero = () => {
         <div className="flex flex-col items-center mb-24">
           <div className="flex items-center gap-4 mb-8">
             <div className="h-[2px] w-6 bg-white/10" />
-            <span className="text-[10px] font-mono font-bold tracking-[0.5em] text-zinc-600 uppercase">PRICING PLANS</span>
+            <span className="text-[10px] font-mono font-bold tracking-[0.5em] text-zinc-600 uppercase">PRICING</span>
             <div className="h-[2px] w-6 bg-white/10" />
           </div>
           <h2 className="text-5xl md:text-6xl font-bold tracking-tighter italic uppercase text-center">
-            Transparent Pricing<span className="text-gray-600 font-normal">.</span>
+            Simple Pricing<span className="text-gray-600 font-normal">.</span>
           </h2>
+          <p className="text-zinc-400 text-center mt-6 max-w-2xl italic">Choose the plan that works for you. No hidden fees, no subscriptions.</p>
         </div>
 
-        <div ref={pricingRef} className="grid md:grid-cols-2 gap-px bg-white/5 border border-white/5 max-w-5xl mx-auto overflow-hidden">
+        <div ref={pricingRef} className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, i) => (
             <div
               key={i}
               onMouseMove={handleTilt}
               onMouseLeave={handleResetTilt}
-              className="bg-black/40 p-16 flex flex-col justify-between group hover:bg-white transition-all duration-1000 relative backface-hidden will-change-transform"
+              className={`relative bg-[#0E0E0E] border-2 ${plan.popular ? 'border-white/20' : 'border-white/5'
+                } p-10 md:p-12 flex flex-col group hover:border-white/40 transition-all duration-700 backface-hidden will-change-transform overflow-hidden`}
             >
-              <div className="mb-16 pointer-events-none">
-                <div className="flex justify-between items-start mb-12">
-                  <div className="space-y-2">
-                    <span className="text-[9px] font-mono font-bold tracking-[0.3em] text-zinc-700 uppercase italic opacity-60 group-hover:text-black">{plan.module}</span>
-                    <h4 className="text-3xl font-bold tracking-tighter italic uppercase group-hover:text-black">{plan.title}</h4>
+              {/* Popular Badge */}
+              {plan.popular && (
+                <div className="absolute top-0 right-0 bg-white text-black text-[8px] font-bold uppercase tracking-[0.3em] px-6 py-2">
+                  Popular
+                </div>
+              )}
+
+              <div className="flex-1 pointer-events-none">
+                {/* Header */}
+                <div className="mb-8">
+                  <span className="text-[9px] font-mono font-bold tracking-[0.4em] text-zinc-600 uppercase">{plan.module}</span>
+                  <h3 className="text-4xl font-bold tracking-tight mt-2 text-white">{plan.title}</h3>
+                  <p className="text-sm text-zinc-500 mt-2 italic">{plan.description}</p>
+                </div>
+
+                {/* Price */}
+                <div className="mb-10 pb-10 border-b border-white/5">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-6xl font-bold tracking-tight text-white">{plan.price}</span>
+                    <span className="text-sm text-zinc-500 italic">USD</span>
                   </div>
-                  {plan.popular && (
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white border border-white/10 px-4 py-2 group-hover:text-black group-hover:border-black/20">
-                      Recommended
-                    </span>
-                  )}
+                  <p className="text-xs text-zinc-600 mt-2 uppercase tracking-wider">{plan.period}</p>
                 </div>
-                <div className="text-7xl font-bold mb-12 tracking-tighter leading-none group-hover:text-black italic">
-                  {plan.price} <span className="text-sm font-mono tracking-widest uppercase opacity-40">/ LIFETIME</span>
-                </div>
-                <ul className="space-y-6">
-                  {plan.features.map((f, j) => (
-                    <li key={j} className="flex items-center gap-4 text-[10px] font-bold tracking-widest uppercase italic text-zinc-500 group-hover:text-zinc-800 transition-colors">
-                      <div className="w-1.5 h-[1.5px] bg-zinc-800 group-hover:bg-black transition-all" />
-                      {f}
+
+                {/* Features */}
+                <ul className="space-y-4 mb-10">
+                  {plan.features.map((feature, j) => (
+                    <li key={j} className="flex items-start gap-3 text-sm text-zinc-300">
+                      <svg className="w-5 h-5 text-white mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-              <Link href="/signup" className="block text-center border border-white/10 py-6 text-[10px] font-bold uppercase tracking-[0.4em] transition-all duration-700 hover:bg-black hover:text-white group-hover:border-black/20 group-hover:bg-black group-hover:text-white">
+
+              {/* CTA Button */}
+              <Link
+                href="/signup"
+                className={`block text-center py-4 text-[10px] font-bold uppercase tracking-[0.4em] transition-all duration-300 ${plan.popular
+                    ? 'bg-white text-black hover:bg-gray-100'
+                    : 'border-2 border-white/10 text-white hover:bg-white hover:text-black'
+                  }`}
+              >
                 {plan.cta}
               </Link>
-
-              {/* Decorative Corner Label */}
-              <div className="absolute bottom-6 right-8 text-[70px] font-bold italic opacity-[0.01] uppercase group-hover:opacity-0 pointer-events-none">
-                {plan.title.slice(0, 3)}
-              </div>
             </div>
           ))}
         </div>
