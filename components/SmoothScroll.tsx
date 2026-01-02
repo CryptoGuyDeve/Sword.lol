@@ -1,38 +1,42 @@
 "use client";
 
-import { useEffect } from "react";
-import Lenis from "lenis";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+}
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+    const smootherRef = useRef<ScrollSmoother | null>(null);
+
     useEffect(() => {
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            orientation: "vertical",
-            gestureOrientation: "vertical",
-            smoothWheel: true,
+        // Create wrapper and content divs for ScrollSmoother
+        const wrapper = document.querySelector("#smooth-wrapper");
+        const content = document.querySelector("#smooth-content");
+
+        if (!wrapper || !content) return;
+
+        // Initialize GSAP ScrollSmoother
+        smootherRef.current = ScrollSmoother.create({
+            wrapper: "#smooth-wrapper",
+            content: "#smooth-content",
+            smooth: 1.5,
+            effects: true,
+            smoothTouch: 0.1,
         });
-
-        lenis.on("scroll", ScrollTrigger.update);
-
-        // Synchronize Lenis scroll with GSAP ScrollTrigger
-        gsap.ticker.add((time) => {
-            lenis.raf(time * 1000);
-        });
-
-        gsap.ticker.lagSmoothing(0);
 
         return () => {
-            lenis.destroy();
-            gsap.ticker.remove((time) => {
-                lenis.raf(time * 1000);
-            });
+            smootherRef.current?.kill();
+            smootherRef.current = null;
         };
     }, []);
 
-    return <>{children}</>;
+    return (
+        <div id="smooth-wrapper">
+            <div id="smooth-content">{children}</div>
+        </div>
+    );
 }

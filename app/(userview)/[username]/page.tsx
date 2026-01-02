@@ -253,7 +253,7 @@ const UserPage = () => {
     };
 
     return (
-        <div className={`relative w-full h-screen flex items-center justify-center bg-black text-white overflow-hidden selection:bg-white selection:text-black`}>
+        <div className={`relative w-full min-h-screen flex items-center justify-center bg-black text-white selection:bg-white selection:text-black`}>
             <CursorEffects effect={userData?.cursor_effect || "none"} />
 
             {/* Background Video Layer */}
@@ -370,7 +370,7 @@ const UserPage = () => {
                     x.set(0);
                     y.set(0);
                 }}
-                className={`relative z-10 w-full max-w-xl max-h-[85vh] overflow-y-auto custom-scrollbar p-8 md:p-12 bg-white/[0.02] backdrop-blur-3xl rounded-none transition-colors duration-500 border ${borderColor} ${shadowColor}`}
+                className={`relative z-10 w-full max-w-xl my-8 p-8 md:p-12 bg-white/[0.02] backdrop-blur-3xl rounded-none transition-colors duration-500 border ${borderColor} ${shadowColor}`}
             >
                 {/* Subtle Architectural Accents */}
                 <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none">

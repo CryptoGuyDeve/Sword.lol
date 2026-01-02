@@ -178,7 +178,7 @@ const DashboardPage = () => {
             <Sidebar username={userData?.username} id={userData?.id} />
 
             <motion.main
-                className="flex-1 p-8 md:p-12 relative z-10 min-h-screen overflow-y-auto"
+                className="flex-1 p-8 md:p-12 relative z-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
